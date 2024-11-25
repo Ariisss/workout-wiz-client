@@ -1,13 +1,17 @@
 "use client"
-import CircularRunes, { CircularRunesProp } from "./CircularRunes"
+import CircularRunes from "./CircularRunes"
 import { ReactNode, Children } from "react"
 import { useMeasure } from "react-use"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
+import Logo from "./Logo"
 
-type CoverRunesProp = Pick<CircularRunesProp, 'parentHeight'>
+type CoverRunesProp = {
+    parentHeight: number,
+    children?: React.ReactElement
+}
 
-function CoverRunes({ parentHeight }: CoverRunesProp) {
+export function CoverRunes({ parentHeight, children }: CoverRunesProp) {
 
     return (
         <>
@@ -18,11 +22,13 @@ function CoverRunes({ parentHeight }: CoverRunesProp) {
                 glow="intense"
             />
             <CircularRunes
-                parentHeight={parentHeight / 2}
+                parentHeight={parentHeight / 1.8}
                 fontSize={64}
                 letterSpacing={0}
                 glow="off"
             />
+
+            {children}
         </>
     )
 }
@@ -64,13 +70,20 @@ export function BookHalf({ children, side }: BookHalfProps) {
             <div className={cn('bg-[#25262A]', tw.page, childExists ?? tw.front, 'relative')}
                 style={padding("page")} ref={ref}
             >
-                {childExists ? (
-                    <div className={cn('bg-[#2A2B33]', tw.page)} style={padding("page")}>
-                        <div className={cn('bg-[#343541] drop-shadow-2xl', tw.front, tw.page)}>
-                            {children}
+                {childExists
+                    ? (
+                        <div className={cn('bg-[#2A2B33]', tw.page)} style={padding("page")}>
+                            <div className={cn('bg-[#343541] drop-shadow-2xl', tw.front, tw.page)}>
+                                {children}
+                            </div>
                         </div>
-                    </div>
-                ) : <CoverRunes parentHeight={height} />}
+                    ) : (
+                        <CoverRunes parentHeight={height}>
+                            <div className={`absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-45%]`}>
+                                <Logo height={height/1.4} width={height/1.4}/>
+                            </div>
+                        </CoverRunes>
+                    )}
             </div>
         </div>
     )
