@@ -1,14 +1,28 @@
+"use client"
+import CircularRunes, { CircularRunesProp } from "./CircularRunes"
 import { ReactNode, Children } from "react"
+import { useMeasure } from "react-use"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 
-type RuneCoverProps = {
+type CoverRunesProp = Pick<CircularRunesProp, 'parentHeight'>
 
-}
+function CoverRunes({ parentHeight }: CoverRunesProp) {
 
-export function RuneCover() {
     return (
         <>
+            <CircularRunes
+                parentHeight={parentHeight}
+                fontSize={128}
+                letterSpacing={0}
+                glow="intense"
+            />
+            <CircularRunes
+                parentHeight={parentHeight / 2}
+                fontSize={64}
+                letterSpacing={0}
+                glow="off"
+            />
         </>
     )
 }
@@ -20,6 +34,7 @@ type BookHalfProps = {
 }
 
 export function BookHalf({ children, side }: BookHalfProps) {
+    const [ref, { height }] = useMeasure<HTMLDivElement>();
     const childExists = Children.count(children) !== 0
 
     const isLeft = side === "left"
@@ -46,14 +61,16 @@ export function BookHalf({ children, side }: BookHalfProps) {
 
     return (
         <div className={cn(tw.cover, borderRadius)} style={padding("cover")}>
-            <div className={cn('bg-[#25262A]', tw.page)} style={padding("page")}>
+            <div className={cn('bg-[#25262A]', tw.page, childExists ?? tw.front, 'relative')}
+                style={padding("page")} ref={ref}
+            >
                 {childExists ? (
                     <div className={cn('bg-[#2A2B33]', tw.page)} style={padding("page")}>
                         <div className={cn('bg-[#343541] drop-shadow-2xl', tw.front, tw.page)}>
                             {children}
                         </div>
                     </div>
-                ) : null}
+                ) : <CoverRunes parentHeight={height} />}
             </div>
         </div>
     )
