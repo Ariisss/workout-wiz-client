@@ -87,3 +87,21 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  p, input, .highlight {
+    @apply font-sans
+  }
+  .highlight {
+    @apply text-primary font-[500]
+  }
+  .button, .subtitle {
+    @apply font-roboto
+  }
+  .title-primary {
+    @apply text-4xl font-bold text-primary-light font-sora;
+  }
+  .title-secondary {
+    @apply text-2xl font-semibold text-gray-400;
+  }
+}

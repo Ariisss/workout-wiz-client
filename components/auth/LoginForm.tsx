@@ -43,7 +43,7 @@ export default function LoginForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
                     name="email"
@@ -68,7 +68,7 @@ export default function LoginForm() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button type="submit">Login</Button>
             </form>
         </Form>
     )

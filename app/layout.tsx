@@ -1,24 +1,32 @@
 import localFont from 'next/font/local'
+import { Poppins, Roboto, Sora } from 'next/font/google'
 import type { Metadata } from "next";
 import "./globals.css";
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-roboto'
+})
+
+
+const sora = Sora({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-sora'
+})
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-poppins'
+})
 
 const bramhamSerif = localFont({
   src: "./fonts/BramhamSerif.otf",
   variable: "--font-bramham-serif",
 
 })
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 
 const metadata: Metadata = {
@@ -34,7 +42,10 @@ export default function RootLayout({
   return (
     <html lang="en" className='dark'>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}
+        className={`
+          ${bramhamSerif.variable} ${poppins.variable} ${sora.variable} ${roboto.variable}
+          antialiased h-screen
+        `}
       >
         {children}
       </body>
