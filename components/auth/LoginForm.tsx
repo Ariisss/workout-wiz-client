@@ -18,12 +18,12 @@ import { Input } from "@/components/ui/input"
 const formSchema = z.object({
     email: z
         .string()
-        .min(1, { message: "This field needs to be filled." })
+        .min(1, { message: "Email is required." })
         .email("This is not a valid email."),
     // . refine(async (e) => { }) // search database for "email not found"
     password: z
         .string()
-        .min(1)
+        .min(1, { message: "Password is required." })
 })
 
 export default function LoginForm() {
