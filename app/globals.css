@@ -2,19 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
+@font-face {
+  font-family: 'BramhamSerif';
+  src: url('fonts/BramhamSerif.otf') format('otf');
+  font-weight: normal;
+  font-style: normal
 }
+
+body {
+  font-family: Arial, Helvetica, sans-serif, 'BramhamSerif';
+}
+
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: #343541;
+    --background-darker: #2A2B33;
+    --background-darkest: #25262A;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    --primary: #17B978;
+    --primary-dark: #005B3A;
+    --primary-light: #3CFBB5;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
@@ -33,15 +45,20 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --primary-font: 'BramhamSerif'
   }
   .dark {
-    --background: 240 10% 3.9%;
+    --background: #343541;
+    --background-darker: #2A2B33;
+    --background-darkest: #25262A;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
+    --primary: #17B978;
+    --primary-dark: #005B3A;
+    --primary-light: #3CFBB5;
     --primary-foreground: 240 5.9% 10%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -68,5 +85,23 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  p, input, .highlight {
+    @apply font-sans
+  }
+  .highlight {
+    @apply text-primary font-[500]
+  }
+  .button, .subtitle {
+    @apply font-roboto
+  }
+  .title-primary {
+    @apply text-4xl font-bold text-primary-light font-sora;
+  }
+  .title-secondary {
+    @apply text-2xl font-semibold text-gray-400;
   }
 }
