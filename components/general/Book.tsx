@@ -79,7 +79,7 @@ export function BookHalf({ children, side }: BookHalfProps) {
                         </div>
                     ) : (
                         <CoverRunes parentHeight={height}>
-                            <div className={`absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-45%]`}>
+                            <div className={cn('absolute-center',`translate-y-[-45%]`)}>
                                 <Logo height={height/1.4} width={height/1.4}/>
                             </div>
                         </CoverRunes>
@@ -98,7 +98,7 @@ type BookProps = {
 export function Book({ children }: BookProps) {
 
     return (
-        <div className="w-[80%] h-[90%] flex flex-row rounded-[27px]">
+        <div className="aspect-[5/3] h-[90%] max-h-[768px] flex flex-row rounded-[27px]">
             {children}
         </div>
     )
