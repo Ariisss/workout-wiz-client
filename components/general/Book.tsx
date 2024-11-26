@@ -98,7 +98,7 @@ type BookProps = {
 export function Book({ children }: BookProps) {
 
     return (
-        <div className="aspect-[5/3] h-[90%] max-h-[768px] flex flex-row rounded-[27px]">
+        <div className="aspect-[5/3] max-h-[768px] h-[90%] md:min-h-[560px] flex flex-row rounded-[27px]">
             {children}
         </div>
     )

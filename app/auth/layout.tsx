@@ -12,8 +12,8 @@ type AuthLayoutType = {
 
 export default function AuthLayout({ children }: AuthLayoutType) {
   return (
-    <div className="bg-gradient-to-r from-[#131313] to-[#031900] container-center">
-      {children}
+    <div className="bg-gradient-to-r from-[#131313] to-[#031900] h-screen">
+        {children}
     </div>
   );
 }
