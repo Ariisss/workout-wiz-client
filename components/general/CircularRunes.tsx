@@ -8,9 +8,13 @@ export type CircularRunesProp = {
     glow: 'off' | 'mild' | 'intense'
 }
 
-export default function CircularRunes({ parentHeight, fontSize, letterSpacing, glow }: CircularRunesProp) {
+export default function CircularRunes({ parentHeight, letterSpacing, glow }: CircularRunesProp) {
     // scaling factor based on figma
     const scaleFactor = 1.4;
+    const maxFont = 128
+    const minFont = 100
+
+    const actualFont = minFont + (maxFont - minFont) * 100*(parentHeight - 640)/(75*256) 
     const targetSize = parentHeight * scaleFactor;
     const fill = {
         off: 'var(--primary-dark)',
@@ -19,7 +23,7 @@ export default function CircularRunes({ parentHeight, fontSize, letterSpacing, g
     }
 
     return (
-        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+        <div className="absolute absolute-center">
             <ReactCurvedText
                 width={targetSize}
                 height={targetSize}
@@ -29,12 +33,12 @@ export default function CircularRunes({ parentHeight, fontSize, letterSpacing, g
                 ry={targetSize / 3}           // Adjusted radius y
                 startOffset={0}              // Offset to control text placement
                 reversed={true}
-                text="ᚠᚢᚦᚩᚱᚳᚷᚹᛥᚻᚾᛁᛄᛇᛈᛉᛋᚻᛏᛒᛖᛗᛚᛝᛞᛟᛢᚪᚫᚣᛡᛠᛣᚩᚱᚳᚷ"
+                text="ᛈᛉᛋᚻᛏᛒᛖᚠᚢᚦᚩᚱᚳᚷᚹᛥᚻᚾᛁᛄᛇᛈᛉᛋᚻᛏᛒᛖᛗᛚᛝᛞᛟᛢᚪᚫᚣᛡᛠᛣᚩᚱᚳᚷ"
                 textProps={{
                     style: {
                         letterSpacing: letterSpacing,
                         fill: fill[glow],
-                        fontSize: fontSize,
+                        fontSize: actualFont,
                     }
                 }}
             />
