@@ -8,7 +8,7 @@ export default function Login() {
             <BookHalf side="left" />
             <BookHalf side="right">
                 <div className="flex flex-col space-y-4">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col space-y-2">
                         <p className="title-primary">Welcome Back</p>
                         <p className="text-gray-400 text-sm">
                             Your physical enhancement spells need working!

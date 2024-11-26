@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'BramhamSerif';
-  src: url('fonts/BramhamSerif.otf') format('otf');
+  src: url('fonts/BramhamSerif.otf') format('opentype');
   font-weight: normal;
   font-style: normal
 }
