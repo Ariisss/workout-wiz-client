@@ -1,5 +1,5 @@
 "use client"
-import { Book, BookHalf } from "@/components/general/Book";
+import { Book, BookHalf } from "@/components/general/Book/Book";
 import SignupForm from "@/components/auth/SignupForm";
 import Link from "next/link";
 
@@ -25,10 +25,10 @@ export default function Signup() {
         <>
             <div className="hidden lg:container-center">
                 <Book>
-                    <BookHalf side="left" >
+                    <BookHalf side="left">
                         <Content />
                     </BookHalf>
-                    <BookHalf side="right" />
+                    <BookHalf side="right" centerImg="next"/>
                 </Book>
             </div>
             <div className="container-center lg:hidden">

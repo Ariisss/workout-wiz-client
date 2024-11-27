@@ -1,45 +1,22 @@
 "use client"
-import CircularRunes from "./CircularRunes"
 import { ReactNode, Children } from "react"
 import { useMeasure } from "react-use"
+import { Endpaper } from "./Endpaper"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
-import Logo from "./Logo"
 
-type CoverRunesProp = {
-    parentHeight: number,
-    children?: React.ReactElement
-}
-
-export function CoverRunes({ parentHeight, children }: CoverRunesProp) {
-
-    return (
-        <>
-            <CircularRunes
-                parentHeight={parentHeight}
-                fontSize={128}
-                letterSpacing={0}
-                glow="intense"
-            />
-            <CircularRunes
-                parentHeight={parentHeight / 1.8}
-                fontSize={64}
-                letterSpacing={0}
-                glow="off"
-            />
-
-            {children}
-        </>
-    )
-}
-
-type BookHalfProps = {
+export type BookHalfProps = {
     id?: string
     children?: ReactNode
     side: "left" | "right"
+    centerImg?: "logo" | "next"
 }
 
-export function BookHalf({ children, side }: BookHalfProps) {
+export function BookHalf({
+    children,
+    side,
+    centerImg = "logo"
+}: BookHalfProps) {
     const [ref, { height }] = useMeasure<HTMLDivElement>();
     const childExists = Children.count(children) !== 0
 
@@ -78,18 +55,12 @@ export function BookHalf({ children, side }: BookHalfProps) {
                             </div>
                         </div>
                     ) : (
-                        <CoverRunes parentHeight={height}>
-                            <div className={cn('absolute-center',`translate-y-[-45%]`)}>
-                                <Logo height={height/1.4} width={height/1.4}/>
-                            </div>
-                        </CoverRunes>
+                        <Endpaper parentHeight={height} centerImg={centerImg} />
                     )}
             </div>
         </div>
     )
 }
-
-
 
 type BookProps = {
     children: ReactNode

@@ -1,5 +1,5 @@
 "use client"
-import { Book, BookHalf } from "@/components/general/Book";
+import { Book, BookHalf } from "@/components/general/Book/Book";
 import LoginForm from "@/components/auth/LoginForm";
 import Link from "next/link";
 
