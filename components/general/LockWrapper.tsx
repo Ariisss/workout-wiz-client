@@ -7,9 +7,7 @@ type LockWrapperProps = {
 
 
 export function LockWrapper({ lock }: LockWrapperProps) {
-    const stateStyle = clsx({
-        'hidden': !lock
-    })
+    const stateStyle = clsx({ 'hidden': !lock })
 
     const animateStyle = {
         base: 'animate-once delay-150 duration-1000',
