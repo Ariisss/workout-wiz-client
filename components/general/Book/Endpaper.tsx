@@ -31,7 +31,7 @@ export function Endpaper({
         { children }: CoverRunesProps
     ): React.ReactNode => {
         return (
-            <>
+            <div className="select-none">
                 <CircularRunes
                     parentHeight={parentHeight}
                     fontSize={128}
@@ -46,7 +46,7 @@ export function Endpaper({
                 />
 
                 {children}
-            </>
+            </div>
         )
     }
 
