@@ -1,5 +1,6 @@
 "use client"
 
+import { useFormContext } from "../context/FormProvider"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -40,8 +41,11 @@ export default function SignupForm() {
             confirm: "",
         },
     })
-
+    
+    
+    const {isSubmitted, setIsSubmitted} = useFormContext()
     function onSubmit(values: z.infer<typeof formSchema>) {
+        setIsSubmitted(true)
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
         console.log(values)

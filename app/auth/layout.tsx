@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Workout Wizard | Login",
-  description: "Login page",
+  title: "Workout Wizard",
 };
 
 type AuthLayoutType = {
@@ -15,7 +14,7 @@ type AuthLayoutType = {
 export default function AuthLayout({ children }: AuthLayoutType) {
   return (
     <FormProvider>
-      <div className="bg-gradient-to-r from-[#131313] to-[#031900] h-screen">
+      <div className="bg-gradient-to-r from-[#131313] to-[#031900] h-screen w-screen p-10">
         {children}
       </div>
     </FormProvider>

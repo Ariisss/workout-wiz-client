@@ -66,8 +66,11 @@ export default {
 				sans: ['var(--font-poppins)', 'sans-serif'],
 				sora: ['var(--font-sora)', 'sans-serif'],
 				roboto: ['var(--font-roboto)', 'sans-serif']
+			},
+			dropShadow: {
+				glow: "0px 0px 12px var(--primary-light)"
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animated")],
 } satisfies Config;

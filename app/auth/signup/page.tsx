@@ -14,7 +14,7 @@ export default function Signup() {
                 </p>
             </div>
             <SignupForm />
-            <span className="flex flex-row space-x-2">
+            <span className="flex flex-row space-x-2 text-sm">
                 <p className="text-gray-400">Already have an account?</p>
                 <Link href={'login'} className="highlight">Login here.</Link>
             </span>
@@ -28,7 +28,7 @@ export default function Signup() {
                     <BookHalf side="left">
                         <Content />
                     </BookHalf>
-                    <BookHalf side="right" centerImg="next"/>
+                    <BookHalf side="right" centerImg="next" />
                 </Book>
             </div>
             <div className="container-center lg:hidden">

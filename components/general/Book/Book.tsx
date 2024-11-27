@@ -10,6 +10,7 @@ export type BookHalfProps = {
     children?: ReactNode
     side: "left" | "right"
     centerImg?: "logo" | "next"
+    isActive?: boolean
 }
 
 export function BookHalf({
@@ -55,7 +56,7 @@ export function BookHalf({
                             </div>
                         </div>
                     ) : (
-                        <Endpaper parentHeight={height} centerImg={centerImg} />
+                        <Endpaper parentHeight={height} centerImg={centerImg}/>
                     )}
             </div>
         </div>

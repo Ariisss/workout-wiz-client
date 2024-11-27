@@ -13,14 +13,12 @@ export default function NextIndicator({
             width={width}
             height={size}
             viewBox={`0 0 ${width} ${size}`}
-            fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
         >
             <g filter="url(#filter0_d_205_139)" transform={`scale(${size / 200})`}>
                 <path
                     d="M67.7898 107.378L20.5 194.5L202.5 107.378L20.5 20.5L67.7898 107.378Z"
-                    fill="#25282A"
                 />
             </g>
             <defs>
