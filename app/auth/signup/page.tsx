@@ -1,9 +1,12 @@
 "use client"
 import { Book, BookHalf } from "@/components/general/Book/Book";
+import { useFormContext } from "@/components/context/FormProvider";
+import { LockWrapper } from "@/components/general/LockWrapper";
 import SignupForm from "@/components/auth/SignupForm";
 import Link from "next/link";
 
 export default function Signup() {
+    const { isSubmitted } = useFormContext()
 
     const Content = (): React.ReactNode => (
         <div className="flex flex-col space-y-4">
@@ -27,6 +30,7 @@ export default function Signup() {
                 <Book>
                     <BookHalf side="left">
                         <Content />
+                        <LockWrapper lock={isSubmitted} />
                     </BookHalf>
                     <BookHalf side="right" centerImg="next" />
                 </Book>

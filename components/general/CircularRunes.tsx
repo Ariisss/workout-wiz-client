@@ -11,10 +11,13 @@ export type CircularRunesProp = {
 export default function CircularRunes({ parentHeight, letterSpacing, glow }: CircularRunesProp) {
     // scaling factor based on figma
     const scaleFactor = 1.4;
+    const fontRatio = 1 / 0.75
     const maxFont = 128
     const minFont = 100
+    const minHeight = 640
+    const maxHeight = 896
 
-    const actualFont = minFont + (maxFont - minFont) * 100*(parentHeight - 640)/(75*256) 
+    const actualFont = minFont + (maxFont - minFont) * fontRatio * (parentHeight - minHeight) / (maxHeight - minHeight)
     const targetSize = parentHeight * scaleFactor;
     const fill = {
         off: 'var(--primary-dark)',

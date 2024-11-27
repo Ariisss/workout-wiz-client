@@ -50,7 +50,7 @@ export function BookHalf({
             >
                 {childExists
                     ? (
-                        <div className={cn('bg-[#2A2B33]', tw.page)} style={padding("page")}>
+                        <div className={cn('bg-[#2A2B33] relative', tw.page)} style={padding("page")}>
                             <div className={cn('bg-[#343541] drop-shadow-2xl', tw.front, tw.page)}>
                                 {children}
                             </div>

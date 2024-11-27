@@ -41,9 +41,9 @@ export default function SignupForm() {
             confirm: "",
         },
     })
-    
-    
-    const {isSubmitted, setIsSubmitted} = useFormContext()
+
+
+    const { isSubmitted, setIsSubmitted } = useFormContext()
     function onSubmit(values: z.infer<typeof formSchema>) {
         setIsSubmitted(true)
         // Do something with the form values.
@@ -60,7 +60,7 @@ export default function SignupForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input placeholder="Email" {...field} />
+                                <Input placeholder="Email" {...field} disabled={isSubmitted} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -72,7 +72,7 @@ export default function SignupForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input type="password" placeholder="Password" {...field} />
+                                <Input type="password" placeholder="Password" {...field} disabled={isSubmitted} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -84,13 +84,13 @@ export default function SignupForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input type="password" placeholder="Confirm Password" {...field} />
+                                <Input type="password" placeholder="Confirm Password" {...field} disabled={isSubmitted} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Sign Up</Button>
+                <Button type="submit" disabled={isSubmitted}>Sign Up</Button>
             </form>
         </Form>
     )
