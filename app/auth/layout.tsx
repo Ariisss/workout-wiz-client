@@ -14,7 +14,7 @@ type AuthLayoutType = {
 export default function AuthLayout({ children }: AuthLayoutType) {
   return (
     <FormProvider>
-      <div className="bg-gradient-to-r from-[#131313] to-[#031900] h-screen w-screen p-10">
+      <div className="bg-gradient-to-r from-[#131313] to-[#031900] h-screen w-screen">
         {children}
       </div>
     </FormProvider>
