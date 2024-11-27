@@ -1,6 +1,4 @@
 "use client"
-
-import { useState, useEffect } from "react";
 import { Book, BookHalf } from "@/components/general/Book";
 import LoginForm from "@/components/auth/LoginForm";
 import Link from "next/link";
@@ -20,7 +18,7 @@ export default function Login() {
                 <Link href={'forgotPassword'} className="highlight">Forgot Password?</Link>
                 <span className="flex flex-row space-x-2">
                     <p className="text-gray-400">Don't have an account?</p>
-                    <Link href={'register'} className="highlight">Sign up here.</Link>
+                    <Link href={'signup'} className="highlight">Sign up here.</Link>
                 </span>
             </div>
         </div>
