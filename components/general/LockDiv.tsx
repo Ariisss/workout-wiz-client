@@ -7,7 +7,7 @@ type LockDivProps = {
 
 
 export function LockDiv({ lock }: LockDivProps) {
-    const stateStyle = clsx({ 'hidden': !lock })
+    const stateStyle = clsx({ 'hidden': !lock, "hidden lg:block": lock })
 
     const animateStyle = {
         base: 'animate-once delay-150 duration-1000',
@@ -16,7 +16,7 @@ export function LockDiv({ lock }: LockDivProps) {
     }
 
     return (
-        <div className={cn(`absolute-center overflow-hidden select-none bg-background-darkest opacity-90`,
+        <div className={cn(`absolute-center overflow-hidden select-none bg-background-darker opacity-90`,
             `animate-fade animate-once animate-ease-out animate-alternate animate-fill-backwards`, stateStyle)}>
             <div className="relative flex justify-center items-center text-[#153C2E]/60 text-[416px]">
                 <div className={cn('flex flex-row', animateStyle.base, animateStyle.horizontal)}>
