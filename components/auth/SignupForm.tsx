@@ -60,50 +60,47 @@ export default function SignupForm({ formId }: FormProps) {
     }
 
     return (
-        <>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <Input placeholder="Email" {...field} disabled={isSubmitted} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <Input type="password" placeholder="Password" {...field} disabled={isSubmitted} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="confirm"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <Input type="password" placeholder="Confirm Password" {...field} disabled={isSubmitted} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <Button type="submit" disabled={isSubmitted}>Sign Up</Button>
-                </form>
-            </Form>
-            <LockDiv lock={isSubmitted} />
-        </>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Input placeholder="Email" {...field} disabled={isSubmitted} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Input type="password" placeholder="Password" {...field} disabled={isSubmitted} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="confirm"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Input type="password" placeholder="Confirm Password" {...field} disabled={isSubmitted} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit" disabled={isSubmitted}>Sign Up</Button>
+            </form>
+        </Form>
     )
 
 }
