@@ -1,15 +1,17 @@
 import { useFormContext } from "@/components/context/FormProvider"
 import CircularRunes from "../CircularRunes"
 import NextIndicator from "../NextIndicator"
+import { AnimatePresence, motion } from "motion/react"
+import { cn } from "@/lib/utils"
 import Logo from "../Logo"
 import clsx from "clsx"
-import { cn } from "@/lib/utils"
 
 type EndpaperProps = {
     parentHeight: number,
     centerImg: "logo" | "next"
     children?: React.ReactElement
     isActive?: boolean
+    formRef?: string    // formId for reference
 }
 
 type CoverRunesProps = {
@@ -19,13 +21,12 @@ type CoverRunesProps = {
 export function Endpaper({
     parentHeight,
     centerImg,
+    formRef = "",
     isActive = false
 }: EndpaperProps) {
     try { // when prop is not used for forms
-        isActive = useFormContext().isSubmitted
-    } catch (error) {
-        console.log(error)
-    }
+        isActive = useFormContext(formRef).isSubmitted
+    } catch (error) { }
 
     const CoverRunes = (
         { children }: CoverRunesProps
@@ -52,22 +53,30 @@ export function Endpaper({
 
     const indicatorStateStyles = clsx({
         "fill-background-darkest drop-shadow-lg": !isActive,
-        "fill-primary-light drop-shadow-glow animate-fade duration-3000 animate-once": isActive,
+        "fill-primary-light drop-shadow-glow": isActive,
     })
 
     const centerElement: React.ReactElement = centerImg === "logo" ? (
-        <div className="translate-y-[-45%] absolute-center ">
+        <div className="translate-y-[-45%] absolute-center">
             <Logo width={parentHeight / 1.4} height={parentHeight / 1.4} />
         </div>
     ) : (
-        <div className="absolute-center ">
+        <motion.div
+            className="absolute-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+            transition={{ duration: 0.5 }} key={"last"}
+        >
             <NextIndicator size={parentHeight / 4.5} className={indicatorStateStyles} />
-        </div>
+        </motion.div>
     )
 
     return (
         <CoverRunes>
-            {centerElement}
+            <AnimatePresence>
+                {centerElement}
+            </AnimatePresence>
         </CoverRunes>
     )
 }
