@@ -29,7 +29,7 @@ export default function Login() {
             <div className="hidden lg:container-center">
                 <Book>
                     <BookHalf side="left" />
-                    <BookHalf side="right">
+                    <BookHalf side="right" className="drop-shadow-2xl">
                         <Content />
                     </BookHalf>
                 </Book>
