@@ -68,7 +68,7 @@ export default {
 				roboto: ['var(--font-roboto)', 'sans-serif']
 			},
 			dropShadow: {
-				glow: "0px 0px 12px var(--primary-light)"
+				glow: "0px 0px 24px #66FFC7"
 			},
 			textShadow: { // defaults to {}
 				'default': '0 2px 5px rgba(0, 0, 0, 0.5)',
@@ -117,7 +117,7 @@ export default {
 						opacity: '0',
 					},
 					'100%': {
-						opacity: '0.9',
+						opacity: '1',
 					}
 				}
 			},
