@@ -56,26 +56,31 @@ export function Endpaper({
         "fill-primary-light drop-shadow-glow": isActive,
     })
 
+    const logoStateStyles = clsx({
+        "drop-shadow-glow": isActive
+    })
+
     const centerElement: React.ReactElement = centerImg === "logo" ? (
-        <div className="translate-y-[-45%] absolute-center">
-            <Logo width={parentHeight / 1.4} height={parentHeight / 1.4} />
+        <div className="absolute-center translate-y-[-45%]">
+            <Logo width={parentHeight / 1.4} height={parentHeight / 1.4} className={logoStateStyles}/>
         </div>
     ) : (
-        <motion.div
-            className="absolute-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.5 } }}
-            transition={{ duration: 0.5 }} key={"last"}
-        >
+        <div className="absolute-center">
             <NextIndicator size={parentHeight / 4.5} className={indicatorStateStyles} />
-        </motion.div>
+        </div>
     )
 
     return (
         <CoverRunes>
             <AnimatePresence>
-                {centerElement}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, transition: { duration: 0.5 } }}
+                    transition={{ duration: 0.5 }} key={"last"}
+                >
+                    {centerElement}
+                </motion.div>
             </AnimatePresence>
         </CoverRunes>
     )

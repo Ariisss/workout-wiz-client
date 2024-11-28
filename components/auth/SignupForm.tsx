@@ -33,9 +33,13 @@ const formSchema = z.object({
 
 type FormProps = {
     formId: string
+    nextForm?: () => void
 }
 
-export default function SignupForm({ formId }: FormProps) {
+export default function SignupForm({
+    formId,
+    nextForm = () => null
+}: FormProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -47,15 +51,20 @@ export default function SignupForm({ formId }: FormProps) {
 
 
     const { isSubmitted, lockForm, unlockForm, submitForm } = useFormContext(formId);
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        submitForm()
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        lockForm()
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
 
         // ON SUCCESS
-        lockForm()
-        // ON FAILURE
-        // unlockForm()
+        submitForm()
+        function timeout(delay: number) {
+            return new Promise(res => setTimeout(res, delay));
+        }
+    
+        await timeout(2000)     // TESTING PURPOSES
+        unlockForm()
+        nextForm()
         console.log(values)
     }
 
