@@ -2,15 +2,16 @@ import * as React from "react";
 
 type LogoProps = {
     width: number,
-    height: number
+    height: number,
+    className?: string
 }
-export default function Logo({ width, height }: LogoProps) {
+export default function Logo({ width, height, className }: LogoProps) {
     return (
         <svg
             width={width}
             height={height}
             viewBox={`0 0 ${width} ${height}`}
-            fill="none"
+            className={className}
             xmlns="http://www.w3.org/2000/svg"
             xmlnsXlink="http://www.w3.org/1999/xlink"
         >
