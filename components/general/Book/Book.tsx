@@ -4,6 +4,7 @@ import { useMeasure } from "react-use"
 import { Endpaper } from "./Endpaper"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
+import { motion, MotionProps } from "motion/react"
 
 export type BookHalfProps = {
     id?: string
@@ -11,12 +12,17 @@ export type BookHalfProps = {
     side: "left" | "right"
     centerImg?: "logo" | "next"
     isActive?: boolean
+    formRef?: string,
+    className?: string
 }
 
 export function BookHalf({
     children,
     side,
-    centerImg = "logo"
+    centerImg = "logo",
+    formRef = "",
+    className,
+    ...MotionProps
 }: BookHalfProps) {
     const [ref, { height }] = useMeasure<HTMLDivElement>();
     const childExists = Children.count(children) !== 0
@@ -44,7 +50,14 @@ export function BookHalf({
     }
 
     return (
-        <div className={cn(tw.cover, borderRadius)} style={padding("cover")}>
+        <motion.div
+            className={cn(tw.cover, borderRadius, className)}
+            style={padding("cover")}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { delay: 1.5, duration: 0.5 } }}
+            transition={{ duration: 0.25 }}
+        >
             <div className={cn('bg-[#25262A]', tw.page, childExists ?? tw.front, 'relative')}
                 style={padding("page")} ref={ref}
             >
@@ -56,21 +69,25 @@ export function BookHalf({
                             </div>
                         </div>
                     ) : (
-                        <Endpaper parentHeight={height} centerImg={centerImg}/>
+                        <Endpaper formRef={formRef} parentHeight={height} centerImg={centerImg} />
                     )}
             </div>
-        </div>
+        </motion.div>
     )
 }
 
 type BookProps = {
     children: ReactNode
+    className?: string
 }
 
-export function Book({ children }: BookProps) {
+export function Book({ children, className }: BookProps) {
 
     return (
-        <div className="aspect-[5/3] max-h-[768px] h-[90%] md:min-h-[560px] flex flex-row rounded-[27px]">
+        <div className={cn(
+            "aspect-[5/3] max-h-[768px] h-[90%] md:min-h-[560px] flex flex-row rounded-[27px]",
+            className
+        )}>
             {children}
         </div>
     )
