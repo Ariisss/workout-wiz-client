@@ -1,12 +1,12 @@
 import clsx from "clsx"
 import { cn } from "@/lib/utils"
 
-type LockWrapperProps = {
+type LockDivProps = {
     lock: boolean
 }
 
 
-export function LockWrapper({ lock }: LockWrapperProps) {
+export function LockDiv({ lock }: LockDivProps) {
     const stateStyle = clsx({ 'hidden': !lock })
 
     const animateStyle = {
