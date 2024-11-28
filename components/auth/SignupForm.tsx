@@ -1,10 +1,7 @@
 "use client"
-
 import { useFormContext } from "../context/FormProvider"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-
+import { LockDiv } from "../general/LockDiv"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -13,7 +10,9 @@ import {
     FormItem,
     FormMessage,
 } from "@/components/ui/form"
+import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input"
+import { z } from "zod"
 
 
 const formSchema = z.object({
@@ -32,7 +31,11 @@ const formSchema = z.object({
     path: ["confirm"]
 })
 
-export default function SignupForm() {
+type FormProps = {
+    formId: string
+}
+
+export default function SignupForm({ formId }: FormProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -43,56 +46,64 @@ export default function SignupForm() {
     })
 
 
-    const { isSubmitted, setIsSubmitted } = useFormContext()
+    const { isSubmitted, lockForm, unlockForm, submitForm } = useFormContext(formId);
     function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsSubmitted(true)
+        submitForm()
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
+
+        // ON SUCCESS
+        lockForm()
+        // ON FAILURE
+        // unlockForm()
         console.log(values)
     }
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <Input placeholder="Email" {...field} disabled={isSubmitted} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <Input type="password" placeholder="Password" {...field} disabled={isSubmitted} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="confirm"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <Input type="password" placeholder="Confirm Password" {...field} disabled={isSubmitted} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button type="submit" disabled={isSubmitted}>Sign Up</Button>
-            </form>
-        </Form>
+        <>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Input placeholder="Email" {...field} disabled={isSubmitted} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Input type="password" placeholder="Password" {...field} disabled={isSubmitted} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="confirm"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Input type="password" placeholder="Confirm Password" {...field} disabled={isSubmitted} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit" disabled={isSubmitted}>Sign Up</Button>
+                </form>
+            </Form>
+            <LockDiv lock={isSubmitted} />
+        </>
     )
 
 }
