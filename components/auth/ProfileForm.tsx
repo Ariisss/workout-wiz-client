@@ -19,6 +19,8 @@ import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { Calendar } from "../ui/calendar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import clsx from "clsx"
+import { useWindowSize } from "react-use"
 
 
 const formSchema = z.object({
@@ -39,11 +41,11 @@ const formSchema = z.object({
         .transform((value) => value === "true"),
 
     height: z.coerce
-        .number()
-        .min(1, { message: "Height is required." }),
+        .number({ invalid_type_error: "Height is required" })
+        .positive("Invalid height"),
     weight: z.coerce
-        .number()
-        .min(1, { message: "Weight is required." }),
+        .number({ invalid_type_error: "Weight is required" })
+        .positive("Invalid weight"),
 })
 
 type FormProps = {
@@ -51,10 +53,11 @@ type FormProps = {
     nextForm?: () => void
 }
 
-export default function UserProfileForm({ 
+export default function UserProfileForm({
     formId,
     nextForm = () => null
 }: FormProps) {
+    const { width } = useWindowSize()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -105,46 +108,52 @@ export default function UserProfileForm({
                         </FormItem>
                     )}
                 />
-                <div className="flex flex-col">
+                <div className="flex flex-row space-x-4 w-full font-sans">
                     <FormField
                         control={form.control}
                         name="dob"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    disabled={isSubmitted}
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-[240px] pl-3 text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value ? (
-                                                        format(field.value, "PPP")
-                                                    ) : (
-                                                        <span>Pick a date</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                disabled={(date) =>
-                                                    date > new Date() || date < new Date("1900-01-01")
-                                                }
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                </FormControl>
+                            <FormItem className="w-full">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <FormControl>
+                                            <Button
+                                                disabled={isSubmitted}
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "w-full pl-3 text-left text-sm font-normal bg-white text-black",
+                                                    "hover:bg-[#B8FCE3] hover:text-gray-600",
+                                                    !field.value && "text-muted-foreground"
+                                                )}
+                                            >
+                                                {field.value ? (
+                                                    <span className="text-sm">{format(field.value, "P")}</span>
+                                                ) : (
+                                                    <span className="text-sm">Date of Birth</span>
+                                                )}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            </Button>
+                                        </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                        className="p-0 bg-background-darker"
+                                        align="center"
+                                        side={width <= 640 ? "top" : "right"}>
+                                        <Calendar
+                                            className="font-sans"
+                                            mode="single"
+                                            captionLayout="dropdown"
+                                            fromYear={new Date().getFullYear() - 100}
+                                            toYear={new Date().getFullYear() - 5}
+                                            selected={field.value}
+                                            onSelect={field.onChange}
+                                            disabled={(date) =>
+                                                date > new Date() || date < new Date("1900-01-01")
+                                            }
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -153,15 +162,20 @@ export default function UserProfileForm({
                         control={form.control}
                         name="sex"
                         render={({ field }) => (
-                            <FormItem>
-                                <Select onValueChange={field.onChange} defaultValue={field.value?.toString()} disabled={isSubmitted}>
-                                    <FormControl>
+                            <FormItem className="w-full">
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value?.toString()}
+                                    disabled={isSubmitted}
+                                >
+                                    <FormControl className={clsx(
+                                        "h-[3rem] bg-white text-black transition-colors hover:bg-[#B8FCE3]")}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select sex" />
+                                            <SelectValue placeholder={<p className="text-muted-foreground hover:text-gray-800">Select Sex</p>} />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="false">Male</SelectItem>
+                                    <SelectContent className="bg-background-darker font-sans">
+                                        <SelectItem value="false" className="hover:bg-primary">Male</SelectItem>
                                         <SelectItem value="true">Female</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -170,12 +184,12 @@ export default function UserProfileForm({
                         )}
                     />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-row space-x-4 w-full">
                     <FormField
                         control={form.control}
                         name="height"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="w-full">
                                 <FormLabel>Height</FormLabel>
                                 <FormControl>
                                     <Input type="number" placeholder="cm" {...field} disabled={isSubmitted} />
@@ -188,7 +202,7 @@ export default function UserProfileForm({
                         control={form.control}
                         name="weight"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="w-full">
                                 <FormLabel>Weight</FormLabel>
                                 <FormControl>
                                     <Input type="number" placeholder="kg" {...field} disabled={isSubmitted} />

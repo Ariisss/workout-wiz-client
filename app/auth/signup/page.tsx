@@ -33,10 +33,10 @@ export default function Signup() {
             description: "Create an account to be a scholar of fitness magic!",
             formComponent: <SignupForm formId="signup" nextForm={nextForm} />,
             footer: (
-                <>
+                <span className="flex flex-col lg:flex-row lg:space-x-2 text-sm">
                     <p className="text-gray-400">Already have an account?</p>
                     <Link className="highlight" href={"login"}>Login here.</Link>
-                </>
+                </span>
             ),
         },
         'profile': {
@@ -57,13 +57,13 @@ export default function Signup() {
 
 
     const Content = (): React.ReactNode => (
-        <div className={clsx("flex flex-col space-y-4", { "select-none": isSubmitted })}>
+        <div className={clsx("flex flex-col space-y-4 w-full p-[15%]", { "select-none": isSubmitted })}>
             <div className="flex flex-col space-y-2">
                 <p className="title-primary">{title}</p>
                 <p className="text-gray-400 text-sm">{description}</p>
             </div>
             {formComponent}
-            <span className="flex flex-row space-x-2 text-sm">{footer}</span>
+            {footer}
         </div>
     );
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function Login() {
 
     const Content = (): React.ReactNode => (
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4 w-full p-[15%]">
             <div className="flex flex-col space-y-2">
                 <p className="title-primary">Welcome Back</p>
                 <p className="text-gray-400 text-sm">
