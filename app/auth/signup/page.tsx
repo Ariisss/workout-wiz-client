@@ -24,7 +24,7 @@ type FormConfig = {
 
 export default function Signup() {
     const formList: FormKey[] = ['signup', 'profile', 'fitgoals', 'workoutprefs']
-    const [formIdx, setFormIdx] = useState<number>(3);
+    const [formIdx, setFormIdx] = useState<number>(0);
     const { isSubmitted, isLocked } = useFormContext(formList[formIdx])
 
     const nextForm = () => setFormIdx((prev) => prev + 1)
