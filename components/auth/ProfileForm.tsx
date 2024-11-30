@@ -1,8 +1,21 @@
 "use client"
 import { useFormContext } from "../context/FormProvider"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { useWindowSize } from "react-use"
 import { CalendarIcon } from "lucide-react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Calendar } from "../ui/calendar"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { z } from "zod"
+import clsx from "clsx"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger
+} from "../ui/popover"
 import {
     Form,
     FormControl,
@@ -11,34 +24,29 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { useForm } from "react-hook-form"
-import { Input } from "@/components/ui/input"
-import { z } from "zod"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { Calendar } from "../ui/calendar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import clsx from "clsx"
-import { useWindowSize } from "react-use"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "../ui/select"
 
 
 const formSchema = z.object({
-    fname: z
+    first_name: z
         .string()
         .min(1, { message: "First Name is required." }),
-    lname: z
+    last_name: z
         .string()
         .min(1, { message: "Last Name is required." }),
 
     dob: z
         .date(),
-    sex: z   // WILL CONVERT 
-        .string()
-        .refine((value: string) => value === "true" || value === "false", {
-            message: "Value must be a boolean",
-        })
-        .transform((value) => value === "true"),
+    sex: z
+        .preprocess(
+            (value) => value === "true" || value === true,
+            z.boolean()),
 
     height: z.coerce
         .number({ invalid_type_error: "Height is required" })
@@ -61,13 +69,12 @@ export default function UserProfileForm({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            fname: "",
-            lname: "",
+            first_name: "",
+            last_name: "",
         },
     })
 
-
-    const { isSubmitted, lockForm, unlockForm, submitForm } = useFormContext(formId);
+    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
         // Do something with the form values.
@@ -89,11 +96,11 @@ export default function UserProfileForm({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
-                    name="fname"
+                    name="first_name"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input placeholder="First Name" {...field} disabled={isSubmitted} />
+                                <Input placeholder="First Name" {...field} disabled={isLocked} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -101,11 +108,11 @@ export default function UserProfileForm({
                 />
                 <FormField
                     control={form.control}
-                    name="lname"
+                    name="last_name"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input placeholder="Last Name" {...field} disabled={isSubmitted} />
+                                <Input placeholder="Last Name" {...field} disabled={isLocked} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -121,7 +128,7 @@ export default function UserProfileForm({
                                     <PopoverTrigger asChild>
                                         <FormControl>
                                             <Button
-                                                disabled={isSubmitted}
+                                                disabled={isLocked}
                                                 variant={"outline"}
                                                 className={cn(
                                                     "w-full pl-3 text-left text-sm font-normal bg-white text-black",
@@ -169,7 +176,7 @@ export default function UserProfileForm({
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value?.toString()}
-                                    disabled={isSubmitted}
+                                    disabled={isLocked}
                                 >
                                     <FormControl className={clsx(
                                         "h-[3rem] bg-white text-black transition-colors hover:bg-[#B8FCE3]")}>
@@ -195,7 +202,7 @@ export default function UserProfileForm({
                             <FormItem className="w-full">
                                 <FormLabel>Height</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="cm" {...field} disabled={isSubmitted} />
+                                    <Input type="number" placeholder="cm" {...field} disabled={isLocked} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -208,14 +215,14 @@ export default function UserProfileForm({
                             <FormItem className="w-full">
                                 <FormLabel>Weight</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="kg" {...field} disabled={isSubmitted} />
+                                    <Input type="number" placeholder="kg" {...field} disabled={isLocked} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isSubmitted}>Next</Button>
+                <Button type="submit" disabled={isLocked}>Next</Button>
             </form>
         </Form>
     )

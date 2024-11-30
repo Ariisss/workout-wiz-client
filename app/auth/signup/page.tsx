@@ -10,6 +10,7 @@ import { useState } from "react";
 import UserProfileForm from "@/components/auth/ProfileForm";
 import FitnessGoalsForm from "@/components/auth/FitGoalsForm";
 import WorkoutPreferencesForm from "@/components/auth/WorkoutPrefForm";
+import { useRouter } from "next/navigation";
 
 type FormKey = "signup" | "profile" | "fitgoals" | "workoutprefs";
 type FormConfig = {
@@ -26,8 +27,12 @@ export default function Signup() {
     const formList: FormKey[] = ['signup', 'profile', 'fitgoals', 'workoutprefs']
     const [formIdx, setFormIdx] = useState<number>(0);
     const { isSubmitted, isLocked } = useFormContext(formList[formIdx])
-
+    const router = useRouter();
     const nextForm = () => setFormIdx((prev) => prev + 1)
+    const handleRedirect = () => {
+        // clear formprovider
+        router.push("../auth/login"); // Redirects to ../auth/login
+    };
 
     const formConfig: FormConfig = {
         'signup': {
@@ -56,7 +61,7 @@ export default function Signup() {
         'workoutprefs': {
             title: "Workout Preferences",
             description: "Tailor your fitness journey by sharing your preferences!",
-            formComponent: <WorkoutPreferencesForm formId="workoutprefs" nextForm={nextForm} />,
+            formComponent: <WorkoutPreferencesForm formId="workoutprefs" nextForm={handleRedirect} />,
             footer: null,
         },
     }
@@ -65,7 +70,7 @@ export default function Signup() {
 
 
     const Content = (): React.ReactNode => (
-        <div className={clsx("flex flex-col space-y-4 w-full p-[10%]", { "select-none": isSubmitted })}>
+        <div className={clsx("flex flex-col space-y-4 w-full p-[10%] lg:p-[15%]", { "select-none": isSubmitted })}>
             <div className="flex flex-col space-y-2">
                 <p className={clsx("title-primary", {"text-2xl": title.length > 15})}>{title}</p>
                 <p className="text-gray-400 text-sm">{description}</p>

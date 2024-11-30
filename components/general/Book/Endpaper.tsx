@@ -25,7 +25,7 @@ export function Endpaper({
     isActive = false
 }: EndpaperProps) {
     try { // when prop is not used for forms
-        isActive = useFormContext(formRef).isSubmitted
+        isActive = useFormContext(formRef).isLocked
     } catch (error) { }
 
     const CoverRunes = (
@@ -74,10 +74,10 @@ export function Endpaper({
         <CoverRunes>
             <AnimatePresence>
                 <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: [0,1] }}
                     exit={{ opacity: 0, transition: { duration: 0.5 } }}
-                    transition={{ duration: 0.5 }} key={"last"}
+                    transition={{ duration: 0.1 }} key={"last"}
                 >
                     {centerElement}
                 </motion.div>

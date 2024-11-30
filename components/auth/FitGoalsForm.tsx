@@ -1,8 +1,11 @@
 "use client"
 import { useFormContext } from "../context/FormProvider"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { LockDiv } from "../general/LockDiv"
+import { Checkbox } from "../ui/checkbox"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
+import { z } from "zod"
+import clsx from "clsx"
 import {
     Form,
     FormControl,
@@ -11,12 +14,6 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { useForm } from "react-hook-form"
-import { Input } from "@/components/ui/input"
-import { z } from "zod"
-import { Checkbox } from "../ui/checkbox"
-import { cn } from "@/lib/utils"
-import clsx from "clsx"
 
 const goals = [
     "Muscle Gain",
@@ -49,7 +46,7 @@ export default function FitnessGoalsForm({
     })
 
 
-    const { isSubmitted, lockForm, unlockForm, submitForm } = useFormContext(formId);
+    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
         // Do something with the form values.
@@ -106,7 +103,7 @@ export default function FitnessGoalsForm({
                                                                     )
                                                                 )
                                                         }}
-                                                        disabled={isSubmitted}
+                                                        disabled={isLocked}
                                                     />
                                                 </FormControl>
                                                 <FormLabel className="text-sm font-medium w-full h-full flex items-center">
@@ -121,7 +118,7 @@ export default function FitnessGoalsForm({
                         </FormItem>
                     )}
                 />
-                <Button type="submit" disabled={isSubmitted}>Next</Button>
+                <Button type="submit" disabled={isLocked}>Next</Button>
             </form>
         </Form>
     )

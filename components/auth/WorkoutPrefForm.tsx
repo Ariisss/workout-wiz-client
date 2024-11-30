@@ -1,8 +1,15 @@
 "use client"
 import { useFormContext } from "../context/FormProvider"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { LockDiv } from "../general/LockDiv"
+import { Checkbox } from "../ui/checkbox"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
+import { z } from "zod"
+import clsx from "clsx"
+import {
+    RadioGroup,
+    RadioGroupItem
+} from "../ui/radio-group"
 import {
     Form,
     FormControl,
@@ -11,13 +18,6 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { useForm } from "react-hook-form"
-import { Input } from "@/components/ui/input"
-import { z } from "zod"
-import { Checkbox } from "../ui/checkbox"
-import { cn } from "@/lib/utils"
-import clsx from "clsx"
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 
 const days_of_week = [
     { id: "monday", label: "Mon" },
@@ -35,9 +35,11 @@ const formSchema = z.object({
     with_gym: z.preprocess(
         (value) => value === "true" || value === true,
         z.boolean()),
+
     workout_days: z.array(z.string()).refine((value) => value.some((day) => day), {
         message: "You have to select at least one day.",
     }),
+    
     intensity: z.enum(intensity_levels, {
         required_error: "You need to set your experience level."
     })
@@ -62,9 +64,9 @@ export default function WorkoutPreferencesForm({
     })
 
 
-    const { isSubmitted, lockForm, unlockForm, submitForm } = useFormContext(formId);
+    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        // lockForm()
+        lockForm()
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
 
@@ -94,6 +96,7 @@ export default function WorkoutPreferencesForm({
                                 </FormLabel>
                                 <FormControl>
                                     <RadioGroup
+                                        disabled={isLocked}
                                         onValueChange={field.onChange}
                                         defaultValue={field.value.toString()}
                                         className="flex flex-row gap-0 bg-white h-[3rem] rounded-[16px] items-center space-y-0"
@@ -161,7 +164,7 @@ export default function WorkoutPreferencesForm({
                                                                             )
                                                                         )
                                                                 }}
-                                                                disabled={isSubmitted}
+                                                                disabled={isLocked}
                                                             />
                                                         </FormControl>
                                                         <FormLabel className="cursor-pointer text-xs lg:text-sm justify-center p-0 font-medium w-full h-full flex items-center">
@@ -213,7 +216,7 @@ export default function WorkoutPreferencesForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isSubmitted}>Submit</Button>
+                <Button type="submit" disabled={isLocked}>Submit</Button>
             </form>
         </Form>
     )

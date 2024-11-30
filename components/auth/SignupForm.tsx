@@ -1,7 +1,6 @@
 "use client"
 import { useFormContext } from "../context/FormProvider"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { LockDiv } from "../general/LockDiv"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -21,11 +20,13 @@ const formSchema = z.object({
         .min(1, { message: "Email is required." })
         .email("This is not a valid email."),
     // . refine(async (e) => { }) // search database for "email not found"
+
     password: z
         .string()
         .min(1, { message: "Password is required." }),
     confirm: z
         .string()
+        
 }).refine((data) => data.password === data.confirm, {
     message: "Passwords do not match",
     path: ["confirm"]
@@ -50,9 +51,10 @@ export default function SignupForm({
     })
 
 
-    const { isSubmitted, lockForm, unlockForm, submitForm } = useFormContext(formId);
+    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
+        const { confirm, ...filteredValues } = values
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
 
@@ -61,7 +63,7 @@ export default function SignupForm({
         function timeout(delay: number) {
             return new Promise(res => setTimeout(res, delay));
         }
-    
+
         await timeout(2000)     // TESTING PURPOSES
         unlockForm()
         nextForm()
@@ -77,7 +79,7 @@ export default function SignupForm({
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input placeholder="Email" {...field} disabled={isSubmitted} />
+                                <Input placeholder="Email" {...field} disabled={isLocked} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -89,7 +91,7 @@ export default function SignupForm({
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input type="password" placeholder="Password" {...field} disabled={isSubmitted} />
+                                <Input type="password" placeholder="Password" {...field} disabled={isLocked} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -101,13 +103,13 @@ export default function SignupForm({
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input type="password" placeholder="Confirm Password" {...field} disabled={isSubmitted} />
+                                <Input type="password" placeholder="Confirm Password" {...field} disabled={isLocked} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit" disabled={isSubmitted}>Sign Up</Button>
+                <Button type="submit" disabled={isLocked}>Sign Up</Button>
             </form>
         </Form>
     )
