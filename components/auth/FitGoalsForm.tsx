@@ -19,30 +19,15 @@ import { cn } from "@/lib/utils"
 import clsx from "clsx"
 
 const goals = [
-    {
-        id: "muscle_gain",
-        label: "Muscle Gain",
-    },
-    {
-        id: "weight_loss",
-        label: "Weight Loss",
-    },
-    {
-        id: "endurance",
-        label: "Endurance",
-    },
-    {
-        id: "gen_fitness",
-        label: "General Fitness",
-    },
-    {
-        id: "aesthetic",
-        label: "Aesthetic",
-    },
+    "Muscle Gain",
+    "Weight Loss",
+    "Endurance",
+    "General Fitness",
+    "Aesthetic"
 ] as const
 
 const formSchema = z.object({
-    goals: z.array(z.string()).refine((value) => value.some((goal) => goal), {
+    goal_type: z.array(z.string()).refine((value) => value.some((goal) => goal), {
         message: "You have to select at least one goal.",
     }),
 })
@@ -52,21 +37,21 @@ type FormProps = {
     nextForm?: () => void
 }
 
-export default function SignupForm({
+export default function FitnessGoalsForm({
     formId,
     nextForm = () => null
 }: FormProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            goals: [],
+            goal_type: [],
         },
     })
 
 
     const { isSubmitted, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        // lockForm()
+        lockForm()
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
 
@@ -78,7 +63,7 @@ export default function SignupForm({
 
         await timeout(2000)     // TESTING PURPOSES
         unlockForm()
-        // nextForm()
+        nextForm()
         console.log(values)
     }
 
@@ -87,19 +72,19 @@ export default function SignupForm({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
-                    name="goals"
+                    name="goal_type"
                     render={() => (
                         <FormItem>
                             {goals.map((goal) => (
                                 <FormField
-                                    key={goal.id}
+                                    key={goal}
                                     control={form.control}
-                                    name="goals"
+                                    name="goal_type"
                                     render={({ field }) => {
-                                        const checkState = field.value?.includes(goal.id)
+                                        const checkState = field.value?.includes(goal)
                                         return (
                                             <FormItem
-                                                key={goal.id}
+                                                key={goal}
                                                 className={clsx(
                                                     "flex flex-row items-center space-x-3 space-y-0",
                                                     "bg-white border-primary-light h-[3rem] rounded-[16px] text-black font-sans font-medium",
@@ -111,13 +96,13 @@ export default function SignupForm({
                                                 <FormControl>
                                                     <Checkbox
                                                         className="border-0 shadow-none ml-[5%] h-[1.5rem] w-[1.5rem]"
-                                                        checked={field.value?.includes(goal.id)}
+                                                        checked={field.value?.includes(goal)}
                                                         onCheckedChange={(checked) => {
                                                             return checked
-                                                                ? field.onChange([...field.value, goal.id])
+                                                                ? field.onChange([...field.value, goal])
                                                                 : field.onChange(
                                                                     field.value?.filter(
-                                                                        (value) => value !== goal.id
+                                                                        (value) => value !== goal
                                                                     )
                                                                 )
                                                         }}
@@ -125,7 +110,7 @@ export default function SignupForm({
                                                     />
                                                 </FormControl>
                                                 <FormLabel className="text-sm font-medium w-full h-full flex items-center">
-                                                    {goal.label}
+                                                    {goal}
                                                 </FormLabel>
                                             </FormItem>
                                         )
@@ -136,7 +121,7 @@ export default function SignupForm({
                         </FormItem>
                     )}
                 />
-                <Button type="submit" disabled={isSubmitted}>Submit</Button>
+                <Button type="submit" disabled={isSubmitted}>Next</Button>
             </form>
         </Form>
     )

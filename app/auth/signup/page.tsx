@@ -8,9 +8,10 @@ import Link from "next/link";
 import clsx from "clsx";
 import { useState } from "react";
 import UserProfileForm from "@/components/auth/ProfileForm";
-import FitGoalsForm from "@/components/auth/FitGoalsForm";
+import FitnessGoalsForm from "@/components/auth/FitGoalsForm";
+import WorkoutPreferencesForm from "@/components/auth/WorkoutPrefForm";
 
-type FormKey = "signup" | "profile" | "fitgoals";
+type FormKey = "signup" | "profile" | "fitgoals" | "workoutprefs";
 type FormConfig = {
     [key in FormKey]: {
         title: string
@@ -22,8 +23,8 @@ type FormConfig = {
 }
 
 export default function Signup() {
-    const formList: FormKey[] = ['signup', 'profile', 'fitgoals']
-    const [formIdx, setFormIdx] = useState<number>(2);
+    const formList: FormKey[] = ['signup', 'profile', 'fitgoals', 'workoutprefs']
+    const [formIdx, setFormIdx] = useState<number>(3);
     const { isSubmitted, isLocked } = useFormContext(formList[formIdx])
 
     const nextForm = () => setFormIdx((prev) => prev + 1)
@@ -49,7 +50,13 @@ export default function Signup() {
         'fitgoals': {
             title: "Fitness Goals",
             description: "Choose at least one.",
-            formComponent: <FitGoalsForm formId="fitgoals" nextForm={nextForm} />,
+            formComponent: <FitnessGoalsForm formId="fitgoals" nextForm={nextForm} />,
+            footer: null,
+        },
+        'workoutprefs': {
+            title: "Workout Preferences",
+            description: "Tailor your fitness journey by sharing your preferences!",
+            formComponent: <WorkoutPreferencesForm formId="workoutprefs" nextForm={nextForm} />,
             footer: null,
         },
     }
@@ -58,9 +65,9 @@ export default function Signup() {
 
 
     const Content = (): React.ReactNode => (
-        <div className={clsx("flex flex-col space-y-4 w-full p-[15%]", { "select-none": isSubmitted })}>
+        <div className={clsx("flex flex-col space-y-4 w-full p-[10%]", { "select-none": isSubmitted })}>
             <div className="flex flex-col space-y-2">
-                <p className="title-primary">{title}</p>
+                <p className={clsx("title-primary", {"text-2xl": title.length > 15})}>{title}</p>
                 <p className="text-gray-400 text-sm">{description}</p>
             </div>
             {formComponent}
