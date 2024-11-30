@@ -1,7 +1,8 @@
+import { AnimatePresence, motion } from "motion/react"
 import { useFormContext } from "@/components/context/FormProvider"
 import CircularRunes from "../CircularRunes"
 import NextIndicator from "../NextIndicator"
-import { AnimatePresence, motion } from "motion/react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import Logo from "../Logo"
 import clsx from "clsx"
@@ -22,10 +23,10 @@ export function Endpaper({
     parentHeight,
     centerImg,
     formRef = "",
-    isActive = false
 }: EndpaperProps) {
+    let isActive = false
     try { // when prop is not used for forms
-        isActive = useFormContext(formRef).isLocked
+        isActive = (useFormContext(formRef).isLocked)
     } catch (error) { }
 
     const CoverRunes = (
@@ -61,9 +62,17 @@ export function Endpaper({
     })
 
     const centerElement: React.ReactElement = centerImg === "logo" ? (
-        <div className="absolute-center translate-y-[-45%]">
-            <Logo width={parentHeight / 1.4} height={parentHeight / 1.4} className={logoStateStyles}/>
-        </div>
+        <motion.div
+            initial={{ filter: "drop-shadow(0px 0px 12px #00000)" }}
+            animate={{
+                filter: isActive
+                    ? "drop-shadow(0px 0px 12px #66FFC7)"
+                    : "drop-shadow(0px 0px 0px rgba(0, 0, 0, 0))",
+                transition: { duration: 0.5 }
+            }}
+            className="absolute-center translate-y-[-45%] drop-shadow-glow">
+            <Logo width={parentHeight / 1.4} height={parentHeight / 1.4} />
+        </motion.div>
     ) : (
         <div className="absolute-center">
             <NextIndicator size={parentHeight / 4.5} className={indicatorStateStyles} />
@@ -72,16 +81,7 @@ export function Endpaper({
 
     return (
         <CoverRunes>
-            <AnimatePresence>
-                <motion.div
-                    initial={{ opacity: 1 }}
-                    animate={{ opacity: [0,1] }}
-                    exit={{ opacity: 0, transition: { duration: 0.5 } }}
-                    transition={{ duration: 0.1 }} key={"last"}
-                >
-                    {centerElement}
-                </motion.div>
-            </AnimatePresence>
+            {centerElement}
         </CoverRunes>
     )
 }
