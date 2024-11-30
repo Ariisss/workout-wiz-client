@@ -88,7 +88,7 @@ export default function Signup() {
                         side="left"
                         centerImg="logo"
                         key={"first"}
-                        formRef="signup"
+                        formRef={formList[formIdx]}
                         className="z-10"
                     />
                     <BookHalf side="right" className="drop-shadow-2xl z-20">
