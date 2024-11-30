@@ -213,7 +213,7 @@ export default function WorkoutPreferencesForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isSubmitted}>Next</Button>
+                <Button type="submit" disabled={isSubmitted}>Submit</Button>
             </form>
         </Form>
     )
