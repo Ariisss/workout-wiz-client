@@ -23,7 +23,7 @@ type FormConfig = {
 
 export default function Signup() {
     const formList: FormKey[] = ['signup', 'profile', 'fitgoals']
-    const [formIdx, setFormIdx] = useState<number>(0);
+    const [formIdx, setFormIdx] = useState<number>(2);
     const { isSubmitted, isLocked } = useFormContext(formList[formIdx])
 
     const nextForm = () => setFormIdx((prev) => prev + 1)
@@ -47,9 +47,9 @@ export default function Signup() {
             footer: null,
         },
         'fitgoals': {
-            title: "Sign Up",
-            description: "Create an account to be a scholar of fitness magic!",
-            formComponent: <FitGoalsForm formId="signup" nextForm={nextForm} />,
+            title: "Fitness Goals",
+            description: "Choose at least one.",
+            formComponent: <FitGoalsForm formId="fitgoals" nextForm={nextForm} />,
             footer: null,
         },
     }

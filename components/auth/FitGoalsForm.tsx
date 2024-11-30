@@ -15,6 +15,8 @@ import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { z } from "zod"
 import { Checkbox } from "../ui/checkbox"
+import { cn } from "@/lib/utils"
+import clsx from "clsx"
 
 const goals = [
     {
@@ -64,7 +66,7 @@ export default function SignupForm({
 
     const { isSubmitted, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        lockForm()
+        // lockForm()
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
 
@@ -76,7 +78,7 @@ export default function SignupForm({
 
         await timeout(2000)     // TESTING PURPOSES
         unlockForm()
-        nextForm()
+        // nextForm()
         console.log(values)
     }
 
@@ -94,13 +96,21 @@ export default function SignupForm({
                                     control={form.control}
                                     name="goals"
                                     render={({ field }) => {
+                                        const checkState = field.value?.includes(goal.id)
                                         return (
                                             <FormItem
                                                 key={goal.id}
-                                                className="flex flex-row items-start space-x-3 space-y-0"
+                                                className={clsx(
+                                                    "flex flex-row items-center space-x-3 space-y-0",
+                                                    "bg-white border-primary-light h-[3rem] rounded-[16px] text-black font-sans font-medium",
+                                                    {
+                                                        "bg-background-darkest text-white border-2": checkState
+                                                    }
+                                                )}
                                             >
                                                 <FormControl>
                                                     <Checkbox
+                                                        className="border-0 shadow-none ml-[5%] h-[1.5rem] w-[1.5rem]"
                                                         checked={field.value?.includes(goal.id)}
                                                         onCheckedChange={(checked) => {
                                                             return checked
@@ -111,9 +121,10 @@ export default function SignupForm({
                                                                     )
                                                                 )
                                                         }}
+                                                        disabled={isSubmitted}
                                                     />
                                                 </FormControl>
-                                                <FormLabel className="text-sm font-normal">
+                                                <FormLabel className="text-sm font-medium w-full h-full flex items-center">
                                                     {goal.label}
                                                 </FormLabel>
                                             </FormItem>
@@ -125,7 +136,7 @@ export default function SignupForm({
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button type="submit" disabled={isSubmitted}>Submit</Button>
             </form>
         </Form>
     )
