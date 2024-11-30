@@ -1,10 +1,11 @@
 "use client"
 
+import { useFormContext } from "../context/FormProvider"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
-
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { z } from "zod"
 import {
     Form,
     FormControl,
@@ -12,7 +13,6 @@ import {
     FormItem,
     FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 
 
 const formSchema = z.object({
@@ -26,7 +26,12 @@ const formSchema = z.object({
         .min(1, { message: "Password is required." })
 })
 
-export default function LoginForm() {
+type LoginFormProps = {
+    formId: string
+}
+
+export default function LoginForm({ formId }: LoginFormProps) {
+    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -35,9 +40,19 @@ export default function LoginForm() {
         },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        lockForm()
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
+
+        // ON SUCCESS
+        submitForm()
+        function timeout(delay: number) {
+            return new Promise(res => setTimeout(res, delay));
+        }
+
+        await timeout(2000)     // TESTING PURPOSES
+        unlockForm()
         console.log(values)
     }
 
@@ -50,7 +65,7 @@ export default function LoginForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input placeholder="Email" {...field} />
+                                <Input placeholder="Email" {...field} disabled={isLocked} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -62,13 +77,13 @@ export default function LoginForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input type="password" placeholder="Password" {...field} />
+                                <Input type="password" placeholder="Password" {...field} disabled={isLocked} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Login</Button>
+                <Button type="submit" disabled={isLocked}>Login</Button>
             </form>
         </Form>
     )
