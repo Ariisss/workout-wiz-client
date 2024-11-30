@@ -8,27 +8,41 @@ import {
     FormControl,
     FormField,
     FormItem,
+    FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { z } from "zod"
+import { Checkbox } from "../ui/checkbox"
 
+const goals = [
+    {
+        id: "muscle_gain",
+        label: "Muscle Gain",
+    },
+    {
+        id: "weight_loss",
+        label: "Weight Loss",
+    },
+    {
+        id: "endurance",
+        label: "Endurance",
+    },
+    {
+        id: "gen_fitness",
+        label: "General Fitness",
+    },
+    {
+        id: "aesthetic",
+        label: "Aesthetic",
+    },
+] as const
 
 const formSchema = z.object({
-    email: z
-        .string()
-        .min(1, { message: "Email is required." })
-        .email("This is not a valid email."),
-    // . refine(async (e) => { }) // search database for "email not found"
-    password: z
-        .string()
-        .min(1, { message: "Password is required." }),
-    confirm: z
-        .string()
-}).refine((data) => data.password === data.confirm, {
-    message: "Passwords do not match",
-    path: ["confirm"]
+    goals: z.array(z.string()).refine((value) => value.some((goal) => goal), {
+        message: "You have to select at least one goal.",
+    }),
 })
 
 type FormProps = {
@@ -43,9 +57,7 @@ export default function SignupForm({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            email: "",
-            password: "",
-            confirm: "",
+            goals: [],
         },
     })
 
@@ -70,46 +82,51 @@ export default function SignupForm({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
-                    name="email"
-                    render={({ field }) => (
+                    name="goals"
+                    render={() => (
                         <FormItem>
-                            <FormControl>
-                                <Input placeholder="Email" {...field} disabled={isSubmitted} />
-                            </FormControl>
+                            {goals.map((goal) => (
+                                <FormField
+                                    key={goal.id}
+                                    control={form.control}
+                                    name="goals"
+                                    render={({ field }) => {
+                                        return (
+                                            <FormItem
+                                                key={goal.id}
+                                                className="flex flex-row items-start space-x-3 space-y-0"
+                                            >
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value?.includes(goal.id)}
+                                                        onCheckedChange={(checked) => {
+                                                            return checked
+                                                                ? field.onChange([...field.value, goal.id])
+                                                                : field.onChange(
+                                                                    field.value?.filter(
+                                                                        (value) => value !== goal.id
+                                                                    )
+                                                                )
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                                <FormLabel className="text-sm font-normal">
+                                                    {goal.label}
+                                                </FormLabel>
+                                            </FormItem>
+                                        )
+                                    }}
+                                />
+                            ))}
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <Input type="password" placeholder="Password" {...field} disabled={isSubmitted} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="confirm"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <Input type="password" placeholder="Confirm Password" {...field} disabled={isSubmitted} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button type="submit" disabled={isSubmitted}>Sign Up</Button>
+                <Button type="submit">Submit</Button>
             </form>
         </Form>
     )
-
 }

@@ -8,6 +8,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import { useState } from "react";
 import UserProfileForm from "@/components/auth/ProfileForm";
+import FitGoalsForm from "@/components/auth/FitGoalsForm";
 
 type FormKey = "signup" | "profile" | "fitgoals";
 type FormConfig = {
@@ -48,7 +49,7 @@ export default function Signup() {
         'fitgoals': {
             title: "Sign Up",
             description: "Create an account to be a scholar of fitness magic!",
-            formComponent: <SignupForm formId="signup" nextForm={nextForm} />,
+            formComponent: <FitGoalsForm formId="signup" nextForm={nextForm} />,
             footer: null,
         },
     }

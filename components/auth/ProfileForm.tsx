@@ -68,19 +68,22 @@ export default function UserProfileForm({
 
 
     const { isSubmitted, lockForm, unlockForm, submitForm } = useFormContext(formId);
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
 
         // ON SUCCESS
         submitForm()
+        function timeout(delay: number) {
+            return new Promise(res => setTimeout(res, delay));
+        }
+
+        await timeout(2000)     // TESTING PURPOSES
+        unlockForm()
         nextForm()
-        // ON FAILURE
-        // unlockForm()
         console.log(values)
     }
-
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -212,7 +215,7 @@ export default function UserProfileForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isSubmitted}>Submit Profile</Button>
+                <Button type="submit" disabled={isSubmitted}>Next</Button>
             </form>
         </Form>
     )
