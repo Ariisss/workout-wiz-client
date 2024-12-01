@@ -50,7 +50,7 @@ export default function RootLayout({
             <body
                 className={`
           ${bramhamSerif.variable} ${poppins.variable} ${sora.variable} ${roboto.variable}
-          antialiased h-screen
+          antialiased h-screen bg-gradient-to-r from-[#131313] to-[#031900]
         `}
             >
                 <AuthProvider>
