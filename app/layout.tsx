@@ -2,6 +2,7 @@ import localFont from 'next/font/local'
 import { Poppins, Roboto, Sora } from 'next/font/google'
 import type { Metadata } from "next";
 import "./globals.css";
+import AuthProvider from '@/components/context/AuthProvider';
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -51,7 +52,9 @@ export default function RootLayout({
           antialiased h-screen
         `}
       >
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
