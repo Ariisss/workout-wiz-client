@@ -1,45 +1,29 @@
 "use client"
-import CircularRunes from "./CircularRunes"
 import { ReactNode, Children } from "react"
 import { useMeasure } from "react-use"
+import { Endpaper } from "./Endpaper"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
-import Logo from "./Logo"
+import { motion, MotionProps } from "motion/react"
 
-type CoverRunesProp = {
-    parentHeight: number,
-    children?: React.ReactElement
-}
-
-export function CoverRunes({ parentHeight, children }: CoverRunesProp) {
-
-    return (
-        <>
-            <CircularRunes
-                parentHeight={parentHeight}
-                fontSize={128}
-                letterSpacing={0}
-                glow="intense"
-            />
-            <CircularRunes
-                parentHeight={parentHeight / 1.8}
-                fontSize={64}
-                letterSpacing={0}
-                glow="off"
-            />
-
-            {children}
-        </>
-    )
-}
-
-type BookHalfProps = {
+export type BookHalfProps = {
     id?: string
     children?: ReactNode
     side: "left" | "right"
+    centerImg?: "logo" | "next"
+    isActive?: boolean
+    formRef?: string,
+    className?: string
 }
 
-export function BookHalf({ children, side }: BookHalfProps) {
+export function BookHalf({
+    children,
+    side,
+    centerImg = "logo",
+    formRef = "",
+    className,
+    ...MotionProps
+}: BookHalfProps) {
     const [ref, { height }] = useMeasure<HTMLDivElement>();
     const childExists = Children.count(children) !== 0
 
@@ -66,39 +50,43 @@ export function BookHalf({ children, side }: BookHalfProps) {
     }
 
     return (
-        <div className={cn(tw.cover, borderRadius)} style={padding("cover")}>
+        <motion.div
+            className={cn(tw.cover, borderRadius, className)}
+            style={padding("cover")}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { delay: 1.5, duration: 0.5 } }}
+        >
             <div className={cn('bg-[#25262A]', tw.page, childExists ?? tw.front, 'relative')}
                 style={padding("page")} ref={ref}
             >
                 {childExists
                     ? (
-                        <div className={cn('bg-[#2A2B33]', tw.page)} style={padding("page")}>
+                        <div className={cn('bg-[#2A2B33] relative', tw.page)} style={padding("page")}>
                             <div className={cn('bg-[#343541] drop-shadow-2xl', tw.front, tw.page)}>
                                 {children}
                             </div>
                         </div>
                     ) : (
-                        <CoverRunes parentHeight={height}>
-                            <div className={cn('absolute-center',`translate-y-[-45%]`)}>
-                                <Logo height={height/1.4} width={height/1.4}/>
-                            </div>
-                        </CoverRunes>
+                        <Endpaper formRef={formRef} parentHeight={height} centerImg={centerImg} />
                     )}
             </div>
-        </div>
+        </motion.div>
     )
 }
 
-
-
 type BookProps = {
     children: ReactNode
+    className?: string
 }
 
-export function Book({ children }: BookProps) {
+export function Book({ children, className }: BookProps) {
 
     return (
-        <div className="aspect-[5/3] h-[90%] max-h-[768px] flex flex-row rounded-[27px]">
+        <div className={cn(
+            "aspect-[5/3] max-h-[768px] h-[90%] md:min-h-[560px] flex flex-row rounded-[27px]",
+            className
+        )}>
             {children}
         </div>
     )

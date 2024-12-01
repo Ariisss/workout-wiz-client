@@ -1,20 +1,30 @@
 "use client"
+import { cn } from '@/lib/utils';
 import ReactCurvedText from 'react-curved-text';
 
 export type CircularRunesProp = {
     parentHeight: number,
     fontSize: number,
     letterSpacing: number,
-    glow: 'off' | 'mild' | 'intense'
+    glow: 'off' | 'mild' | 'intense',
+    className?: string
 }
 
-export default function CircularRunes({ parentHeight, letterSpacing, glow }: CircularRunesProp) {
+export default function CircularRunes({
+    parentHeight,
+    letterSpacing,
+    glow,
+    className
+}: CircularRunesProp) {
     // scaling factor based on figma
     const scaleFactor = 1.4;
+    const fontRatio = 1 / 0.75
     const maxFont = 128
     const minFont = 100
+    const minHeight = 640
+    const maxHeight = 896
 
-    const actualFont = minFont + (maxFont - minFont) * 100*(parentHeight - 640)/(75*256) 
+    const actualFont = minFont + (maxFont - minFont) * fontRatio * (parentHeight - minHeight) / (maxHeight - minHeight)
     const targetSize = parentHeight * scaleFactor;
     const fill = {
         off: 'var(--primary-dark)',
@@ -23,7 +33,7 @@ export default function CircularRunes({ parentHeight, letterSpacing, glow }: Cir
     }
 
     return (
-        <div className="absolute absolute-center">
+        <div className={cn("absolute absolute-center", className)}>
             <ReactCurvedText
                 width={targetSize}
                 height={targetSize}

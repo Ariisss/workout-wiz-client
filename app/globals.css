@@ -110,4 +110,14 @@ body {
   .absolute-center {
     @apply absolute top-[50%] left-[50%] translate-x-[-50%]  translate-y-[-50%]
   }
+  .rdp [aria-hidden="true"] {
+    @apply hidden;
+  }
+  .rdp-vhidden {
+    @apply hidden;
+  }
+  
+  select::-webkit-scrollbar {
+    display: none;
+  }
 }

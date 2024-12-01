@@ -66,8 +66,65 @@ export default {
 				sans: ['var(--font-poppins)', 'sans-serif'],
 				sora: ['var(--font-sora)', 'sans-serif'],
 				roboto: ['var(--font-roboto)', 'sans-serif']
-			}
+			},
+			dropShadow: {
+				glow: "0px 0px 24px #66FFC7"
+			},
+			textShadow: { // defaults to {}
+				'default': '0 2px 5px rgba(0, 0, 0, 0.5)',
+				'lg': '0 2px 10px rgba(0, 0, 0, 0.5)',
+			},
+			animation: {
+				'fade-left-lock': 'fade-left 1s cubic-bezier(0.4, 1, 1, 0.2)',
+				'fade-up-lock': 'fade-up 1s cubic-bezier(0.42, 0, 0.58, 1)',
+				'fade-lock': 'fade 1s ease-out'
+			},
+			keyframes: {
+				'fade-left': {
+					'0%': {
+						transform: 'translateX(200px)',
+						opacity: '0',
+					},
+					'20%': {
+						transform: 'translateX(0)',
+					},
+					'80%': {
+						transform: 'translateX(-50px)',
+					},
+					'100%': {
+						transform: 'translateX(0)',
+						opacity: '1',
+					},
+				},
+				'fade-up': {
+					'0%': {
+						transform: 'translateY(200px)',
+						opacity: '0',
+					},
+					'20%': {
+						transform: 'translateY(0)',
+					},
+					'80%': {
+						transform: 'translateY(-50px)',
+					},
+					'90%': {
+						transform: 'translateY(0)',
+						opacity: '1',
+					},
+				},
+				'fade': {
+					'0%': {
+						opacity: '0',
+					},
+					'100%': {
+						opacity: '1',
+					}
+				}
+			},
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animated"),
+		require("@tailwindcss/typography")
+	],
 } satisfies Config;

@@ -1,11 +1,7 @@
 "use client"
-
 import { useFormContext } from "../context/FormProvider"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { z } from "zod"
 import {
     Form,
     FormControl,
@@ -13,6 +9,9 @@ import {
     FormItem,
     FormMessage,
 } from "@/components/ui/form"
+import { useForm } from "react-hook-form"
+import { Input } from "@/components/ui/input"
+import { z } from "zod"
 
 
 const formSchema = z.object({
@@ -21,27 +20,41 @@ const formSchema = z.object({
         .min(1, { message: "Email is required." })
         .email("This is not a valid email."),
     // . refine(async (e) => { }) // search database for "email not found"
+
     password: z
         .string()
-        .min(1, { message: "Password is required." })
+        .min(1, { message: "Password is required." }),
+    confirm: z
+        .string()
+        
+}).refine((data) => data.password === data.confirm, {
+    message: "Passwords do not match",
+    path: ["confirm"]
 })
 
-type LoginFormProps = {
+type FormProps = {
     formId: string
+    nextForm?: () => void
 }
 
-export default function LoginForm({ formId }: LoginFormProps) {
-    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
+export default function SignupForm({
+    formId,
+    nextForm = () => null
+}: FormProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: "",
-            password: ""
+            password: "",
+            confirm: "",
         },
     })
 
+
+    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
+        const { confirm, ...filteredValues } = values
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
 
@@ -53,6 +66,7 @@ export default function LoginForm({ formId }: LoginFormProps) {
 
         await timeout(2000)     // TESTING PURPOSES
         unlockForm()
+        nextForm()
         console.log(values)
     }
 
@@ -83,7 +97,19 @@ export default function LoginForm({ formId }: LoginFormProps) {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" disabled={isLocked}>Login</Button>
+                <FormField
+                    control={form.control}
+                    name="confirm"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Input type="password" placeholder="Confirm Password" {...field} disabled={isLocked} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit" disabled={isLocked}>Sign Up</Button>
             </form>
         </Form>
     )
