@@ -12,13 +12,13 @@ type AuthContextProps = {
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined)
+export const publicRoutes = ['/auth/login', '/auth/signup']
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<AuthContextProps['user']>(null)
     const [loading, setLoading] = useState(true)
     const router = useRouter()
     const pathname = usePathname()
-    const publicRoutes = ['/auth/login', '/auth/signup']
 
     // loading handler
     useEffect(() => {
