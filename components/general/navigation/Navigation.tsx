@@ -13,18 +13,18 @@ type Props = {
 export default function NavLayout({ children }: Props) {
     const pathname = usePathname()
     return (
-        <div className='flex flex-col lg:flex-row h-full'>
+        <div className='flex flex-col md:flex-row h-full font-sans'>
             <div className='h-full'>
                 {children}
             </div>
             <div className={clsx(
-                "w-fit bg-black flex justify-end",
+                "w-screen md:w-fit h-fit",
                 { "hidden": (publicRoutes.includes(pathname)) }
             )}>
-                <div className='lg:hidden'>
+                <div className='md:hidden p-0 m-0'>
                     <MobileNavbar />
                 </div>
-                <div className='hidden lg:flex'>
+                <div className='hidden md:flex'>
                     <DesktopSidebar />
                 </div>
             </div>

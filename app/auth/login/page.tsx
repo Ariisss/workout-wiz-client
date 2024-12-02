@@ -11,17 +11,17 @@ export default function Login() {
     const { isLocked } = useFormContext(formId)
 
     const Content = (): React.ReactNode => (
-        <div className="flex flex-col space-y-4 w-full p-[15%]">
+        <div className="flex flex-col space-y-8 lg:space-y-4 w-full p-[15%]">
             <div className="flex flex-col space-y-2">
-                <p className="title-primary">Welcome Back</p>
+                <p className="title-primary text-3xl md:text-4xl lg:text-4xl">Welcome Back</p>
                 <p className="text-gray-400 text-sm">
                     Your physical enhancement spells need working!
                 </p>
             </div>
             <LoginForm formId={formId} />
-            <div className="text-sm space-y-2">
+            <div className="text-xs md:text-sm lg:text-sm space-y-2">
                 <Link href={'forgotPassword'} className="highlight">Forgot Password?</Link>
-                <span className="flex flex-row space-x-2">
+                <span className="flex flex-col lg:flex-row lg:space-x-2">
                     <p className="text-gray-400">Don't have an account?</p>
                     <Link href={'signup'} className="highlight">Sign up here.</Link>
                 </span>

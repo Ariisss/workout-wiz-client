@@ -116,6 +116,20 @@ body {
   .rdp-vhidden {
     @apply hidden;
   }
+  .masked-element {
+    mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
+    mask-position: center;
+    mask-size: 150px 150px;
+    mask-repeat: no-repeat;
+    mask-composite: subtract;
+  
+    /* Safari compatibility */
+    -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-position: center;
+    -webkit-mask-size: 150px 150px;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-composite: subtract;
+  }
   
   select::-webkit-scrollbar {
     display: none;

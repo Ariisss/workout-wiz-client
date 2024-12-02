@@ -1,26 +1,52 @@
 import Link from 'next/link';
 import React from 'react'
+import {
+    LayoutDashboard,
+    ChartNoAxesColumn,
+    Dumbbell,
+    ScrollText,
+    Settings,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
+import clsx from 'clsx';
 
 type MobileNavbarProps = {}
 
 export default function MobileNavbar({ }: MobileNavbarProps) {
+    const pathname = usePathname()
     const navItems = [
-        { label: 'Home', link: '/dashboard' },
-        { label: 'Progress', link: '/progress' },
-        { label: <>Bruh</>, link: '/logs' }, // GO SUBTRACT COMPOSIT ON THE MIDDLE
-        { label: 'Plans', link: '/plans' },
-        { label: 'Settings', link: '/settings' },
+        { label: <LayoutDashboard id="icon" />, link: '/dashboard' },
+        { label: <ChartNoAxesColumn id="icon" />, link: '/progress' },
+        {
+            label:
+                <div className='bg-background-darkest w-[90px] h-[90px] rounded-full translate-y-[-20%] flex items-center justify-center'>
+                    <div id="cont" className=' rounded-full w-2/3 h-2/3 border-2 border-primary-light' style={{ boxShadow: '0px 0px 8px #3CFBB5' }}>
+                        <p className='flex justify-center items-center h-full -rotate-45 text-white'><Dumbbell /></p>
+                    </div>
+                </div>, link: '/logs'
+        },
+        { label: <ScrollText id="icon" />, link: '/plans' },
+        { label: <Settings id="icon"  />, link: '/settings' },
     ]
 
     return (
-        <div className='w-screen h-[74px] flex items-end'>
-            <div className='bg-background rounded-t-[16px] h-[64px] w-full flex flex-row'>
-                <div className='w-full flex flex-row justify-between px-[24px]'>
+        <div className='w-screen h-[60px] relative'>
+            <div className='bg-background-darkest rounded-t-[16px] h-full w-full flex flex-row z-5'>
+                <div className='w-full flex flex-row justify-between px-[6px]'>
                     {navItems.map((item, idx) => (
                         <Link
                             href={item.link}
-                            className='flex justify-center items-center'
-                            key={idx + "1"}>
+                            className={clsx(
+                                'flex justify-center items-center w-full',
+                                'text-muted-foreground',
+                                '[&_#cont]:bg-[#0B291E]',
+                                {
+                                    'text-primary-light [&_#icon]:fill-primary-light [&_#cont]:bg-[#031900]': pathname == item.link,
+                                }
+                            )}
+                            key={idx + "1"}
+                        >
                             {item.label}
                         </Link>
                     ))}
