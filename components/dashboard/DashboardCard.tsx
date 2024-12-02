@@ -6,19 +6,27 @@ import React from "react";
 
 type DashboardCardProps = {
     title: string;
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
     children?: React.ReactNode
     glow?: boolean
+    subHeader?: boolean
     className?: string
 };
 
-export function DashboardCard({ title, icon, children, glow = false, className }: DashboardCardProps) {
+export function DashboardCard({ title, icon = undefined, children, glow = false, subHeader = false, className }: DashboardCardProps) {
     const CardElement = () => (
         <Card className={cn("w-full h-full p-0 space-y-2 bg-background-darkest border-2 border-background", className)}>
-            <CardHeader className="flex flex-row justify-between items-center p-6 pb-0">
-                <h3 className="text-white font-medium mt-[2px]">{title}</h3>
-                {icon}
-            </CardHeader>
+            {subHeader ?
+                <CardHeader className="flex flex-row justify-between items-center p-6 pb-0">
+                    <h3 className="text-white font-medium mt-[2px]">{title}</h3>
+                    {icon}
+                </CardHeader>
+                :
+                <CardHeader className="flex flex-row justify-between items-center p-6 pb-0">
+                    <h3 className="title-primary text-3xl font-bold mt-[2px]">{title}</h3>
+                    {icon}
+                </CardHeader>
+            }
             <CardContent>
                 {children}
             </CardContent>
