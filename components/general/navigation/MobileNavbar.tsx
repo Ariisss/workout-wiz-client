@@ -20,7 +20,7 @@ export default function MobileNavbar({ }: MobileNavbarProps) {
         { label: <ChartNoAxesColumn id="icon" />, link: '/progress' },
         {
             label:
-                <div className='bg-background-darkest w-[85px] h-[85px] rounded-full translate-y-[-20%] flex items-center justify-center'>
+                <div className='bg-background-darkest w-[80px] h-[80px] rounded-full translate-y-[-20%] flex items-center justify-center'>
                     <div id="cont" className=' rounded-full w-[70%] h-[70%] border-2 border-primary-light' style={{ boxShadow: '0px 0px 8px #3CFBB5' }}>
                         <p className='flex justify-center items-center h-full -rotate-45 text-white'><Dumbbell /></p>
                     </div>
