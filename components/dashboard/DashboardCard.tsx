@@ -1,33 +1,47 @@
 "use client"
 import { BackgroundGradient } from "../ui/background-gradient";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { ArrowBigRightDash, ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { motion } from "motion/react";
+import clsx from "clsx";
 
 type DashboardCardProps = {
-    title: string;
-    icon?: React.ReactNode;
+    title: string
+    desc?: string
+    icon?: React.ReactNode
     children?: React.ReactNode
     glow?: boolean
     subHeader?: boolean
     className?: string
 };
 
-export function DashboardCard({ title, icon = undefined, children, glow = false, subHeader = false, className }: DashboardCardProps) {
+export function DashboardCard({
+    title,
+    children,
+    desc = "",
+    icon = undefined,
+    glow = false,
+    subHeader = false,
+    className }: DashboardCardProps) {
     const CardElement = () => (
-        <Card className={cn("w-full h-full p-0 space-y-2 bg-background-darkest border-2 border-background", className)}>
+        <Card className={cn("w-full h-full p-0 flex flex-col gap-2 bg-background-darkest border-2 border-background", className)}>
             {subHeader ?
-                <CardHeader className="flex flex-row justify-between items-center p-6 pb-0">
+                <CardHeader className="flex flex-row justify-between items-center p-6 pb-0 h-full">
                     <h3 className="text-white font-medium mt-[2px]">{title}</h3>
                     {icon}
                 </CardHeader>
                 :
                 <CardHeader className="flex flex-row justify-between items-center p-6 pb-0">
-                    <h3 className="title-primary text-3xl font-bold mt-[2px]">{title}</h3>
+                    <div className="p-0">
+                        <h3 className="title-primary text-2xl font-bold mt-[2px]">{title}</h3>
+                        <p className='text-muted-foreground font-roboto'>{desc}</p>
+                    </div>
                     {icon}
                 </CardHeader>
             }
-            <CardContent>
+            <CardContent className="h-full">
                 {children}
             </CardContent>
         </Card>
@@ -55,3 +69,111 @@ export function ValueContent({ main, sub }: ValueContentProps) {
         </div>
     )
 }
+
+type WorkoutContentProps = {
+    workoutName: string;
+    date: string;
+    hasWorkoutToday: boolean;
+    upcomingExercise?: {
+        name: string;
+        sets: number;
+        reps: number;
+    }
+}
+
+export function WorkoutContent({
+    workoutName,
+    date,
+    hasWorkoutToday,
+    upcomingExercise
+}: WorkoutContentProps) {
+    return (
+        <div className="flex flex-col gap-4 mt-2 md:-mt-2 h-full pb-8 lg:pb-0">
+            {!hasWorkoutToday ? (
+                <div className="flex flex-row gap-2 h-full justify-center">
+                    <div className="flex w-[60%] h-full justify-end items-center ">
+                        <p className="text-xl text-gray-400 animate-pulse">Upcoming workout</p>
+                    </div>
+                    <div className="w-fit pl-5 pr-2 h-full hidden md:flex justify-center items-center">
+                        <ChevronsRight className="h-14 w-14 text-gray-600 stroke-[1.25]  animate-pulse" />
+                    </div>
+                    <div className="w-full h-full items-center">
+                        {/* Alt component if no workout today */}
+                        <div className="w-full h-full flex flex-col justify-center gap-0">
+                            <p className="text-xl font-medium">{workoutName}</p>
+                            <p className="text-muted-foreground font-roboto">{date}</p>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="flex flex-col md:flex-row justify-center gap-2 h-full">
+                    {/* Component for today's workout */}
+                    <div className="flex w-full justify-between items-end ">
+                        <div className="w-full h-full flex flex-col justify-center gap-0">
+                            <p className="text-lg font-medium">{workoutName}</p>
+                            <p className="text-muted-foreground font-roboto">{date}</p>
+                        </div>
+                        <motion.div
+                            className="w-full pl-5 h-full hidden md:flex items-center"
+                            initial={{ x: 0 }}
+                            animate={{ x: 40 }}
+                            transition={{
+                                repeat: Infinity,
+                                repeatType: 'reverse',
+                                // mass: 1,
+                                // stiffness: 90,
+                                // damping: 8,
+                                duration: '0.5'
+                            }}
+                        >
+                            <ChevronsRight className="h-16 w-16 text-primary-light stroke-[1.5]  animate-pulse" />
+                        </motion.div>
+                    </div>
+                    {upcomingExercise && (
+                        <div className="flex flex-col gap-0 justify-center w-full h-full">
+                            {/* Next exercise */}
+                            <p className="text-lg font-medium">Upcoming Exercise</p>
+                            <p className="text-muted-foreground font-roboto">
+                                {upcomingExercise.name} | {upcomingExercise.sets} sets, {upcomingExercise.reps} reps
+                            </p>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    )
+}
+
+type ActivityContentProps = {
+    title: string;
+    date: string;
+    calories: string;
+    duration: string;
+    last?: boolean
+}
+
+export function ActivityContent({
+    title,
+    date,
+    calories,
+    duration,
+    last = false
+}: ActivityContentProps) {
+    return (
+        <div className="flex flex-col h-full w-full">
+            <div className={clsx(
+                `flex flex-row justify-between items-center border-background mt-2 p-4`,
+                { 'border-b-2': !last }
+            )}>
+                <div className="flex flex-col justify-end w-full">
+                    <h3 className="text-white text-xl font-medium">{title}</h3>
+                    <p className="text-lg text-muted-foreground font-roboto">{date}</p>
+                </div>
+                <div className="flex flex-col justify-end w-full">
+                    <h3 className="text-primary-light text-xl font-medium text-right">{calories}</h3>
+                    <p className="text-lg text-muted-foreground font-roboto text-right">{duration}</p>
+                </div>
+            </div>
+        </div>
+    );
+};
