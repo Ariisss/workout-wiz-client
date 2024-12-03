@@ -63,7 +63,7 @@ export function Endpaper({
 
     const centerElement: React.ReactElement = centerImg === "logo" ? (
         <motion.div
-            initial={{ filter: "drop-shadow(0px 0px 12px #00000)" }}
+            initial={{ filter: "drop-shadow(0px 0px 12px black)" }}
             animate={{
                 filter: isActive
                     ? "drop-shadow(0px 0px 12px #66FFC7)"
