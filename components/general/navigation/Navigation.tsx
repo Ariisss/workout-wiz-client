@@ -17,7 +17,7 @@ export default function NavLayout({ children }: Props) {
             <div className='flex-1 h-fit order-1 md:order-2'>
                 {children}
             </div>
-            {publicRoutes.includes(pathname) ??
+            {!(publicRoutes.includes(pathname)) &&
                 <div className={clsx(
                     "flex flex-col md:flex-row z-50",
                     "md:w-fit w-full",

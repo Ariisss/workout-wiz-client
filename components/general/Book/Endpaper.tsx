@@ -1,3 +1,4 @@
+"use client"
 import { AnimatePresence, motion } from "motion/react"
 import { useFormContext } from "@/components/context/FormProvider"
 import CircularRunes from "../CircularRunes"

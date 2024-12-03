@@ -1,3 +1,4 @@
+"use client"
 import localFont from 'next/font/local'
 import { Poppins, Roboto, Sora } from 'next/font/google'
 import type { Metadata } from "next";
