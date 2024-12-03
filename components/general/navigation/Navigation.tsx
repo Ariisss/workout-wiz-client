@@ -14,7 +14,7 @@ export default function NavLayout({ children }: Props) {
     const pathname = usePathname()
     return (
         <div className='flex flex-col md:flex-row h-full font-sans gap-8 relative'>
-            <div className='flex-1 h-fit order-1 md:order-2'>
+            <div className='flex-1 h-fit order-1 md:order-2 pb-20 lg:pb-0'>
                 {children}
             </div>
             {!(publicRoutes.includes(pathname)) &&
