@@ -4,7 +4,8 @@ import {
     Dumbbell,
     Flame,
     Zap,
-    ChartNoAxesColumn
+    ChartNoAxesColumn,
+    ScrollText
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -14,6 +15,20 @@ type Props = {}
 export default function Dashboard({ }: Props) {
     // get info thingies
     const data = {
+        credentials: {
+            name: 'Ced69'
+        },
+        statSum: {
+            totalWorkouts: { val: '24', last: 2 },
+            caloriesBurned: { val: '2,736', last: 168 },
+            weekStreak: 7
+        },
+        workoutData: {
+            workoutName: 'Epic Leg Day',
+            date: 'Today',
+            hasWorkoutToday: true,
+            upcomingExercise: { name: 'Squats', sets: 3, reps: 12 }
+        },
         activities: [
             {
                 title: 'Lower Body',
@@ -39,7 +54,7 @@ export default function Dashboard({ }: Props) {
     return (
         <div className='h-fit w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8'>
             <div>
-                <ValueContent main={`Welcome back, ${"Ced69"}`} sub={"Here's your fitness overview for today"} />
+                <ValueContent main={`Welcome back, ${data.credentials.name}`} sub={"Here's your fitness overview for today"} />
             </div>
             <div className='min-h-[144px] flex flex-col lg:flex-row gap-6'>
                 <DashboardCard
@@ -47,36 +62,38 @@ export default function Dashboard({ }: Props) {
                     title='Total Workouts'
                     icon={<Dumbbell className='-rotate-45 text-primary-light h-6 w-6 my-[-5px]' />}
                 >
-                    <ValueContent main={'24'} sub={`+${2} from last week`} />
+                    <ValueContent main={data.statSum.totalWorkouts.val} sub={`+${data.statSum.totalWorkouts.last} from last week`} />
                 </DashboardCard>
                 <DashboardCard
                     subHeader
                     title='Calories Burned'
                     icon={<Flame className='text-primary-light h-6 w-6' />}
                 >
-                    <ValueContent main={'2,769'} sub={`+${168} from last week`} />
+                    <ValueContent main={data.statSum.caloriesBurned.val} sub={`+${data.statSum.caloriesBurned.last} from last week`} />
                 </DashboardCard>
                 <DashboardCard
                     subHeader
                     title='Weekly Streak'
                     icon={<Zap className='text-primary-light h-6 w-6' />}
                 >
-                    <ValueContent main={'7'} sub="Fuelling the progress machine!" />
+                    <ValueContent main={data.statSum.weekStreak.toString()} sub="Fuelling the progress machine!" />
                 </DashboardCard>
             </div>
             <div className='lg:h-[350px] flex flex-col lg:flex-row gap-6'>
                 <DashboardCard
                     title='Current Workout Plan'
                     desc='Your next scheduled workout.'
+                    glow={data.workoutData.hasWorkoutToday}
                 >
                     <div className='flex flex-col h-full justify-between'>
                         <WorkoutContent
-                            workoutName={'Epic Leg Day'}
-                            date={'Today'}
-                            hasWorkoutToday={false}
-                            upcomingExercise={{ name: 'Squats', sets: 3, reps: 12 }}
+                            workoutName={data.workoutData.workoutName}
+                            date={data.workoutData.date}
+                            hasWorkoutToday={data.workoutData.hasWorkoutToday}
+                            upcomingExercise={data.workoutData.upcomingExercise}
                         />
                         <Button className='min-h-[3rem]'>
+                            <ScrollText />
                             Log Exercise
                         </Button>
                     </div>
@@ -85,7 +102,7 @@ export default function Dashboard({ }: Props) {
                     title='Weekly Progress'
                     desc={`${4} out of ${5} workouts completed`}
                 >
-                    <div className='flex flex-col h-full justify-between px-2 pt-2 pb-[5px]'>
+                    <div className='flex flex-col h-full justify-between'>
                         <div className='mt-4 flex w-full h-full'>
                             <Progress value={80} className='h-[16px] bg-black/50' />
                         </div>
