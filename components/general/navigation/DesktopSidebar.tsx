@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
@@ -7,7 +8,6 @@ import {
     ScrollText,
     Settings,
     LogOut,
-    Toilet //CHANGE THIS TO ACTUAL ICON LATER PLS
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -91,7 +91,7 @@ export default function DesktopSidebar({ }: Props) {
                             link={{
                                 label: "Logout",
                                 href: "#",
-                                icon: <LogoutIcon />
+                                icon: <LogOut id="logo" className="text-neutral-200 h-5 w-5" />
                             }}
                         />
                     </div>
@@ -126,17 +126,6 @@ const LogoIcon = () => {
             className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
         >
             <div className="h-7 w-7 bg-black dark:bg-white rounded-full flex-shrink-0" />
-        </Link>
-    )
-}
-
-const LogoutIcon = () => {
-    return (
-        <Link
-            href="#"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <LogOut id="logo" className="text-neutral-200 h-5 w-5" />
         </Link>
     )
 }
