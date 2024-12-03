@@ -5,12 +5,12 @@ export const metadata: Metadata = {
     title: "WW | Dashboard",
 };
 
-type AuthLayoutType = {
+type DashboardLayoutProps = {
     children: React.ReactNode
 }
 
 // AVOID TOO MUCH PROP DRILLING REUSE FORMPROVIDER AS CONTEXT FOR EVERYTHING ELSE TO NOT MAKE IT MESSY
-export default function AuthLayout({ children }: AuthLayoutType) {
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return (
         <>
             {children}
