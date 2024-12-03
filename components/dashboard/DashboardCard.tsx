@@ -42,7 +42,9 @@ export function DashboardCard({
                 </CardHeader>
             }
             <CardContent className="h-full">
-                {children}
+                <div className={clsx("h-full w-full", { 'px-2 pt-2 pb-[5px]': !glow })}>
+                    {children}
+                </div>
             </CardContent>
         </Card>
     )
