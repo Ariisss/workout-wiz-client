@@ -86,16 +86,16 @@ const ExerciseCard = ({
                 </div>
             </CardHeader>
             <CardContent className="h-full">
-                <div className="h-full w-full flex flex-row">
-                    <div className="w-full">
+                <div className="h-full w-full flex flex-row justify-between">
+                    <div className="w-fit">
                         <p className="text-primary-light">Sets</p>
                         <p className="text-muted-foreground">{sets}</p>
                     </div>
-                    <div className="w-full">
+                    <div className="w-fit">
                         <p className="text-primary-light">Reps</p>
                         <p className="text-muted-foreground">{reps}</p>
                     </div>
-                    <div className="w-full">
+                    <div className="w-fit">
                         <p className="text-primary-light">Len</p>
                         <p className="text-muted-foreground">{duration_mins} min</p>
                     </div>
@@ -129,7 +129,7 @@ export const WorkoutPlanContent = ({ plans }: WorkoutPlanProps) => {
                         <TitleCard title={plan["Plan Name"]} duration={plan.Duration_Weeks} />
                         <div className="flex flex-col md:flex-row gap-8">
                             {plan.Workout_Days.split(', ').map((day, didx) => (
-                                <DashboardCard title={day} key={[idx, didx].join('')}>
+                                <DashboardCard title={day} key={[idx, didx].join('')} className="w-full">
                                     <div className="flex flex-col gap-4">
                                         {plan.Exercises.map((exercise, eidx) =>
                                             <ExerciseCard key={[idx, didx, eidx].join('')} {...exercise} />
