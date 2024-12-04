@@ -1,4 +1,4 @@
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, Save } from "lucide-react";
 import { DashboardCard } from "../dashboard/DashboardCard";
 import Logo from "../general/Logo";
 import { Button } from "../ui/button";
@@ -15,18 +15,29 @@ export const TitleCard = ({ title, duration }: TitleCardProps) => (
         title={title}
         desc={`Duration: ${duration} weeks`}
         icon={
-            <div>
-                <Button className='w-full lg:w-[50%]'>
+            <div className="hidden lg:flex flex-row gap-2">
+                <Button className='w-full lg:w-[50%] bg-black/50 hover:bg-black'>
                     <RefreshCcw />
                     Generate Workout
                 </Button>
                 <Button className='w-full lg:w-[50%]'>
-                    <RefreshCcw />
-                    Generate Workout
+                    <Save />
+                    Save Workout
                 </Button>
             </div>
         }
-    />
+    >
+        <div className="flex flex-col gap-2 lg:hidden">
+            <Button className='w-full lg:w-[50%] bg-black/50 hover:bg-black'>
+                <RefreshCcw />
+                Generate Workout
+            </Button>
+            <Button className='w-full lg:w-[50%]'>
+                <Save />
+                Save Workout
+            </Button>
+        </div>
+    </DashboardCard>
 )
 
 export const GenWorkoutCard = () => (
