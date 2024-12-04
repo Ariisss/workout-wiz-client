@@ -32,7 +32,7 @@ export default function Dashboard({ }: Props) {
                         "sets": 3,
                         "reps": 12,
                         "duration_mins": 40,
-                        "workout_day": "Monday",
+                        "workout_day": "Wednesday",
                         "met_value": 123.23
                     },
                     {
@@ -41,12 +41,13 @@ export default function Dashboard({ }: Props) {
                         "sets": 3,
                         "reps": 12,
                         "duration_mins": 40,
-                        "workout_day": "Monday",
+                        "workout_day": "Friday",
                         "met_value": 123.23
                     }
                 ]
-            }
-        ]
+            },
+        ],
+        dummy: []
     }
 
     return (
@@ -56,7 +57,7 @@ export default function Dashboard({ }: Props) {
             </div>
             <div className='h-fit flex flex-col'>
                 {data.workoutPlans.length == 0 ? <GenWorkoutCard /> : 
-                    <WorkoutPlanContent plans={data.workoutPlans} />
+                    <WorkoutPlanContent plan={data.workoutPlans[0]} />
                 }
             </div>
             <div className={clsx(

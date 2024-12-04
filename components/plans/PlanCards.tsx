@@ -1,44 +1,35 @@
-import { RefreshCcw, Save } from "lucide-react";
+import { RefreshCcw, Trash2 } from "lucide-react";
 import { DashboardCard } from "../dashboard/DashboardCard";
 import Logo from "../general/Logo";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardContent } from "../ui/card";
+import { WorkoutOptions, WorkoutSelect } from "./WorkoutOptions";
 
 type TitleCardProps = {
     title: string
     duration: number
+    data: string[]
+    selected: string
 }
 
-export const TitleCard = ({ title, duration }: TitleCardProps) => (
-    <DashboardCard
-        title={title}
-        desc={`Duration: ${duration} weeks`}
-        icon={
-            <div className="hidden lg:flex flex-row gap-2">
-                <Button className='w-full lg:w-[50%] bg-black/50 hover:bg-black'>
-                    <RefreshCcw />
-                    Generate Workout
-                </Button>
-                <Button className='w-full lg:w-[50%]'>
-                    <Save />
-                    Save Workout
-                </Button>
+export const TitleCard = ({ title, duration, data, selected }: TitleCardProps) => {
+    return (
+        <DashboardCard
+            title={title}
+            desc={`Duration: ${duration} weeks`}
+            icon={
+                <div className="hidden lg:flex flex-row gap-2">
+                    <WorkoutOptions selected={selected} data={data} />
+                </div>
+            }
+        >
+            <div className="flex flex-col gap-2 lg:hidden">
+                <WorkoutOptions selected={selected} data={data} />
             </div>
-        }
-    >
-        <div className="flex flex-col gap-2 lg:hidden">
-            <Button className='w-full lg:w-[50%] bg-black/50 hover:bg-black'>
-                <RefreshCcw />
-                Generate Workout
-            </Button>
-            <Button className='w-full lg:w-[50%]'>
-                <Save />
-                Save Workout
-            </Button>
-        </div>
-    </DashboardCard>
-)
+        </DashboardCard>
+    )
+}
 
 export const GenWorkoutCard = () => (
     <DashboardCard
@@ -116,31 +107,30 @@ export type WorkoutPlan = {
 }
 
 export type WorkoutPlanProps = {
-    plans: WorkoutPlan[]; // Array of workout plans
+    plan: WorkoutPlan
 }
 
 
-export const WorkoutPlanContent = ({ plans }: WorkoutPlanProps) => {
+export const WorkoutPlanContent = ({ plan }: WorkoutPlanProps) => {
     return (
-        <>
-            {plans.map((plan, idx) => {
-                return (
-                    <div key={idx} className="flex flex-col gap-8">
-                        <TitleCard title={plan["Plan Name"]} duration={plan.Duration_Weeks} />
-                        <div className="flex flex-col md:flex-row gap-8">
-                            {plan.Workout_Days.split(', ').map((day, didx) => (
-                                <DashboardCard title={day} key={[idx, didx].join('')} className="w-full">
-                                    <div className="flex flex-col gap-4">
-                                        {plan.Exercises.map((exercise, eidx) =>
-                                            <ExerciseCard key={[idx, didx, eidx].join('')} {...exercise} />
-                                        )}
-                                    </div>
-                                </DashboardCard>
-                            ))}
+        <div className="flex flex-col gap-8">
+            <TitleCard
+                title={plan["Plan Name"]}
+                duration={plan.Duration_Weeks}
+                selected={plan["Plan Name"]}
+                data={[plan["Plan Name"]]}
+            />
+            <div className="flex flex-col md:flex-row gap-8">
+                {plan.Workout_Days.split(', ').map((day, didx) => (
+                    <DashboardCard title={day} key={didx} className="w-full">
+                        <div className="flex flex-col gap-4 pt-2">
+                            {plan.Exercises.filter((ex) => ex.workout_day == day).map((exercise, eidx) =>
+                                <ExerciseCard key={[didx, eidx].join('')} {...exercise} />
+                            )}
                         </div>
-                    </div>
-                )
-            })}
-        </>
+                    </DashboardCard>
+                ))}
+            </div>
+        </div>
     )
 }
