@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import { motion } from "motion/react";
 import clsx from "clsx";
+import BackgroundWrapper from "../general/BackgroundWrapper";
 
 type DashboardCardProps = {
     title: string
@@ -15,6 +16,8 @@ type DashboardCardProps = {
     glow?: boolean
     subHeader?: boolean
     className?: string
+    contentClassName?: string
+    backgroundOptions?: React.FC<{ children: React.ReactNode }>[];
 };
 
 export function DashboardCard({
@@ -24,7 +27,15 @@ export function DashboardCard({
     icon = undefined,
     glow = false,
     subHeader = false,
-    className }: DashboardCardProps) {
+    className,
+    contentClassName,
+    backgroundOptions = []
+}: DashboardCardProps) {
+    const defaultBackgrounds = glow
+        ? [BackgroundGradient]
+        : []
+
+
     const CardElement = () => (
         <Card className={cn("w-full h-full p-0 flex flex-col gap-2 bg-background-darkest border-2 border-background", className)}>
             {subHeader ?
@@ -42,20 +53,21 @@ export function DashboardCard({
                 </CardHeader>
             }
             <CardContent className="h-full">
-                <div className={clsx("h-full w-full", { 'px-2 pt-2 pb-[5px]': !glow })}>
+                <div className={clsx("h-full w-full", contentClassName)}>
                     {children}
                 </div>
             </CardContent>
         </Card>
     )
+    
+    
+    const backgrounds = [...defaultBackgrounds, ...backgroundOptions]; // Combine default and custom backgrounds
     return (
-        glow ?
-            (
-                <BackgroundGradient containerClassName="rounded-[12px] w-full rounded-none" >
-                    < CardElement />
-                </BackgroundGradient >
-            )
-            : <CardElement />
+        <div className="rounded-[12px] h-full w-full">
+            <BackgroundWrapper backgrounds={backgrounds}>
+                <CardElement />
+            </BackgroundWrapper>
+        </div>
     );
 }
 
