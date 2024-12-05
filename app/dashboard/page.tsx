@@ -9,6 +9,8 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { CalorieChart } from '@/components/dashboard/CalorieChart'
+import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
 
 type Props = {}
 
@@ -47,8 +49,38 @@ export default function Dashboard({ }: Props) {
                 date: '2 days ago',
                 calories: '410',
                 duration: '50'
+            },
+            {
+                title: 'Upper Body',
+                date: '2 days ago',
+                calories: '410',
+                duration: '50'
+            },
+            {
+                title: 'Upper Body',
+                date: '2 days ago',
+                calories: '410',
+                duration: '50'
             }
-        ]
+        ],
+        chartData: {
+            calories: [
+                { day: "Monday", calories: 186 },
+                { day: "Tuesday", calories: 305 },
+                { day: "Wednesday", calories: 237 },
+                { day: "Thursday", calories: 73 },
+                { day: "Friday", calories: 209 },
+                { day: "Saturday", calories: 214 },
+                { day: "Sundary", calories: 10 },
+            ],
+            progressEx: [
+                { day: "Monday", progress: 70 },
+                { day: "Tuesday", progress: 100 },
+                { day: "Wednesday", progress: 0 },
+                { day: "Thursday", progress: 10 },
+                { day: "Friday", progress: 80 },
+            ]
+        }
     }
 
     return (
@@ -101,11 +133,13 @@ export default function Dashboard({ }: Props) {
                 <DashboardCard
                     title='Weekly Progress'
                     desc={`${4} out of ${5} workouts completed`}
+                    className='px-2 pt-2 pb-[5px]'
                 >
                     <div className='flex flex-col h-full justify-between'>
-                        <div className='mt-4 flex w-full h-full'>
+                        <div className='flex w-full'>
                             <Progress value={80} className='h-[16px] bg-black/50' />
                         </div>
+                        <WeeklyProgress data={data.chartData.progressEx} />
                         <Button className='min-h-[3rem]'>
                             <ChartNoAxesColumn />
                             View Progress
@@ -116,21 +150,28 @@ export default function Dashboard({ }: Props) {
             <div className='h-max flex flex-col lg:flex-row gap-4'>
                 <DashboardCard
                     title='Recent Activity'
-                    desc='Your last 3 workouts'
+                    desc='Your last 5 workouts'
                     className=''
                 >
-                    {
-                        data.activities.map((activity, idx) => (
-                            <ActivityContent
-                                key={idx}
-                                last={idx == data.activities.length - 1}
-                                title={activity.title}
-                                date={activity.date}
-                                calories={activity.calories + " cal"}
-                                duration={activity.duration + " min"}
-                            />
-                        ))
-                    }
+                    <div className='flex flex-col lg:flex-row gap-6'>
+                        <div className='w-full'>
+                            <CalorieChart data={data.chartData.calories} />
+                        </div>
+                        <div className='w-full flex flex-col justify-center'>
+                            {
+                                data.activities.map((activity, idx) => (
+                                    <ActivityContent
+                                        key={idx}
+                                        last={idx == data.activities.length - 1}
+                                        title={activity.title}
+                                        date={activity.date}
+                                        calories={activity.calories + " cal"}
+                                        duration={activity.duration + " min"}
+                                    />
+                                ))
+                            }
+                        </div>
+                    </div>
                 </DashboardCard>
             </div>
         </div>
