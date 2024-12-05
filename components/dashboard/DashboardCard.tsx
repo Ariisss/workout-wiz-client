@@ -180,12 +180,12 @@ export function ActivityContent({
                 { 'border-b-2': !last }
             )}>
                 <div className="flex flex-col justify-end w-full">
-                    <h3 className="text-white text-xl font-medium">{title}</h3>
-                    <p className="text-lg text-muted-foreground font-roboto">{date}</p>
+                    <h3 className="text-white font-medium">{title}</h3>
+                    <p className="text-sm text-muted-foreground font-roboto">{date}</p>
                 </div>
                 <div className="flex flex-col justify-end w-full">
-                    <h3 className="text-primary-light text-xl font-medium text-right">{calories}</h3>
-                    <p className="text-lg text-muted-foreground font-roboto text-right">{duration}</p>
+                    <h3 className="text-primary-light font-medium text-right">{calories}</h3>
+                    <p className="text-sm text-muted-foreground font-roboto text-right">{duration}</p>
                 </div>
             </div>
         </div>
