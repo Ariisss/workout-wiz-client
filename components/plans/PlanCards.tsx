@@ -1,3 +1,4 @@
+"use client"
 import { RefreshCcw, Trash2 } from "lucide-react";
 import { DashboardCard } from "../dashboard/DashboardCard";
 import Logo from "../general/Logo";
@@ -52,7 +53,7 @@ export const GenWorkoutCard = () => (
     </DashboardCard>
 )
 
-type ExerciseProps = {
+export type ExerciseProps = {
     exercise_name: string;
     description: string;
     sets: number;
@@ -60,20 +61,25 @@ type ExerciseProps = {
     duration_mins: number;
     workout_day: string;
     met_value: number;
+    icon?: React.ReactElement
+    className?: string
 }
 
-const ExerciseCard = ({
+export const ExerciseCard = ({
     exercise_name,
     sets,
     reps,
-    duration_mins
+    duration_mins,
+    icon,
+    className
 }: ExerciseProps) => {
 
     return (
-        <Card className={cn("w-full h-full p-0 flex flex-col gap-2 bg-background-darker border-2 border-primary font-sans")}>
+        <Card className={cn("w-full h-full p-0 flex flex-col gap-2 bg-background-darker border-2 border-primary font-sans", className)}>
             <CardHeader className="flex flex-row justify-between items-center p-6 pb-0">
-                <div className="p-0">
-                    <h3 className="text-white font-medium text-xl mt-[2px]">{exercise_name}</h3>
+                <div className="p-0 flex flex-row h-[2.5rem] w-full items-center justify-between">
+                    <h3 id="title" className="text-white font-medium text-xl mt-[2px]">{exercise_name}</h3>
+                    {icon}
                 </div>
             </CardHeader>
             <CardContent className="h-full">
