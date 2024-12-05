@@ -2,6 +2,7 @@
 
 import { useFormContext } from "../context/FormProvider"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useAuth } from "../context/AuthProvider"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,6 +33,7 @@ type LoginFormProps = {
 
 export default function LoginForm({ formId }: LoginFormProps) {
     const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
+    const { login } = useAuth()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -53,6 +55,7 @@ export default function LoginForm({ formId }: LoginFormProps) {
 
         await timeout(2000)     // TESTING PURPOSES
         unlockForm()
+        login("Ced420")
         console.log(values)
     }
 

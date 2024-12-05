@@ -1,3 +1,4 @@
+"use client"
 import clsx from "clsx"
 import { cn } from "@/lib/utils"
 import CircularRunes from "./CircularRunes"
