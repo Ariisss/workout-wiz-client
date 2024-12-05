@@ -103,7 +103,7 @@ export const ExerciseCheckbox = ({ data }: ExerciseCheckboxProps) => {
     };
 
     return (
-        <div className="flex flex-col gap-4 pt-2">
+        <div className="flex flex-col gap-2 pt-2">
             {data.map((exercise, eidx) => {
                 const isChecked = checkedStates[exercise.exercise_name] || false;
 
