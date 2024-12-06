@@ -68,12 +68,17 @@ export default function DesktopSidebar({ }: Props) {
             <Sidebar open={open} setOpen={setOpen}>
                 <SidebarBody className="justify-between gap-12">
                     <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-                        {open ? <Logo /> : <LogoIcon />}
+                        <SidebarLink
+                            link={{
+                                label: "Workout Wizard",
+                                href: "#",
+                                icon: <div className="bg-white rounded-full h-7 w-7 flex-shrink-0" />
+                            }}
+                        />
                         <div className="mt-10 flex flex-col gap-[16px] px-1">
                             {links.map((link, idx) => {
                                 const iconClass = cn(
-                                    '[&_#label]:text-primary-light [&_#icon]:text-primary-light',
-                                    '[&_#icon]:fill-primary-light')
+                                    '[&_#label]:text-primary-light [&_#icon]:text-primary-light')
                                 return (
                                     <SidebarLink
                                         key={idx}
@@ -86,12 +91,12 @@ export default function DesktopSidebar({ }: Props) {
                             })}
                         </div>
                     </div>
-                    <div className="px-1">
+                    <div className="px-1 overflow-y-auto overflow-x-hidden">
                         <SidebarLink
                             link={{
                                 label: "Logout",
                                 href: "#",
-                                icon: <LogoutIcon />
+                                icon: <LogOut className="text-white h-5 w-5 flex-shrink-0" />
                             }}
                         />
                     </div>
@@ -99,44 +104,4 @@ export default function DesktopSidebar({ }: Props) {
             </Sidebar>
         </div>
     );
-}
-
-const Logo = () => {
-    return (
-        <Link
-            href="#"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <div className="h-7 w-7 bg-black dark:bg-white rounded-full flex-shrink-0" />
-            <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-medium text-black dark:text-white whitespace-pre"
-            >
-                Workout Wizard
-            </motion.span>
-        </Link>
-    )
-}
-
-const LogoIcon = () => {
-    return (
-        <Link
-            href="#"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <div className="h-7 w-7 bg-black dark:bg-white rounded-full flex-shrink-0" />
-        </Link>
-    )
-}
-
-const LogoutIcon = () => {
-    return (
-        <Link
-            href="#"
-            className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-        >
-            <LogOut id="logo" className="text-neutral-200 h-5 w-5" />
-        </Link>
-    )
 }

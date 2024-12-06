@@ -1,57 +1,178 @@
-"use client"
 import React from 'react'
-import { DashboardCard, ValueContent } from '@/components/dashboard/DashboardCard'
+import { ActivityContent, DashboardCard, ValueContent, WorkoutContent } from '@/components/dashboard/DashboardCard'
 import {
     Dumbbell,
     Flame,
-    Zap
+    Zap,
+    ChartNoAxesColumn,
+    ScrollText
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { CalorieChart } from '@/components/dashboard/CalorieChart'
+import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
 
 type Props = {}
 
 export default function Dashboard({ }: Props) {
+    // get info thingies
+    const data = {
+        credentials: {
+            name: 'Ced69'
+        },
+        statSum: {
+            totalWorkouts: { val: '24', last: 2 },
+            caloriesBurned: { val: '2,736', last: 168 },
+            weekStreak: 7
+        },
+        workoutData: {
+            workoutName: 'Epic Leg Day',
+            date: 'Today',
+            hasWorkoutToday: true,
+            upcomingExercise: { name: 'Squats', sets: 3, reps: 12 }
+        },
+        activities: [
+            {
+                title: 'Lower Body',
+                date: 'Today',
+                calories: '320',
+                duration: '45'
+            },
+            {
+                title: 'Cardio',
+                date: 'Yesterday',
+                calories: '270',
+                duration: '30'
+            },
+            {
+                title: 'Upper Body',
+                date: '2 days ago',
+                calories: '410',
+                duration: '50'
+            },
+            {
+                title: 'Upper Body',
+                date: '2 days ago',
+                calories: '410',
+                duration: '50'
+            },
+            {
+                title: 'Upper Body',
+                date: '2 days ago',
+                calories: '410',
+                duration: '50'
+            }
+        ],
+        chartData: {
+            calories: [
+                { day: "Monday", calories: 186 },
+                { day: "Tuesday", calories: 305 },
+                { day: "Wednesday", calories: 237 },
+                { day: "Thursday", calories: 73 },
+                { day: "Friday", calories: 209 },
+                { day: "Saturday", calories: 214 },
+                { day: "Sundary", calories: 10 },
+            ],
+            progressEx: [
+                { day: "Monday", progress: 70 },
+                { day: "Tuesday", progress: 100 },
+                { day: "Wednesday", progress: 0 },
+                { day: "Thursday", progress: 10 },
+                { day: "Friday", progress: 80 },
+            ]
+        }
+    }
+
     return (
-        <div className='h-full w-full space-y-8 py-8 pl-8 md:pl-16 pr-8'>
+        <div className='h-fit w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8'>
             <div>
-                <ValueContent main={`Welcome back, ${"Ced69"}`} sub={"Here's your fitness overview for today"} />
+                <ValueContent main={`Welcome back, ${data.credentials.name}`} sub={"Here's your fitness overview for today"} />
             </div>
             <div className='min-h-[144px] flex flex-col lg:flex-row gap-6'>
                 <DashboardCard
+                    subHeader
                     title='Total Workouts'
                     icon={<Dumbbell className='-rotate-45 text-primary-light h-6 w-6 my-[-5px]' />}
                 >
-                    <ValueContent main={'24'} sub={`+${2} from last week`} />
+                    <ValueContent main={data.statSum.totalWorkouts.val} sub={`+${data.statSum.totalWorkouts.last} from last week`} />
                 </DashboardCard>
                 <DashboardCard
+                    subHeader
                     title='Calories Burned'
                     icon={<Flame className='text-primary-light h-6 w-6' />}
                 >
-                    <ValueContent main={'2,769'} sub={`+${168} from last week`} />
+                    <ValueContent main={data.statSum.caloriesBurned.val} sub={`+${data.statSum.caloriesBurned.last} from last week`} />
                 </DashboardCard>
                 <DashboardCard
+                    subHeader
                     title='Weekly Streak'
                     icon={<Zap className='text-primary-light h-6 w-6' />}
                 >
-                    <ValueContent main={'7'} sub="Fuelling the progress machine!" />
+                    <ValueContent main={data.statSum.weekStreak.toString() + " weeks"} sub="Fuelling the progress machine!" />
                 </DashboardCard>
             </div>
-            <div className='h-[350px] flex flex-col lg:flex-row gap-6'>
+            <div className='lg:h-[350px] flex flex-col lg:flex-row gap-6'>
                 <DashboardCard
-                    title='Bruh'
-                    icon={<Dumbbell className='-rotate-45' />}
-                    glow
-                />
+                    title='Current Workout Plan'
+                    desc='Your next scheduled workout.'
+                    glow={data.workoutData.hasWorkoutToday}
+                >
+                    <div className='flex flex-col h-full justify-between'>
+                        <WorkoutContent
+                            workoutName={data.workoutData.workoutName}
+                            date={data.workoutData.date}
+                            hasWorkoutToday={data.workoutData.hasWorkoutToday}
+                            upcomingExercise={data.workoutData.upcomingExercise}
+                        />
+                        <Button className='min-h-[3rem]'>
+                            <ScrollText />
+                            Log Exercise
+                        </Button>
+                    </div>
+                </DashboardCard>
                 <DashboardCard
-                    title='Bruh'
-                    icon={<Dumbbell className='-rotate-45' />}
-                    className='p-2'
-                />
+                    title='Weekly Progress'
+                    desc={`${4} out of ${5} workouts completed`}
+                    className='px-2 pt-2 pb-[5px]'
+                >
+                    <div className='flex flex-col h-full justify-between'>
+                        <div className='flex w-full'>
+                            <Progress value={80} className='h-[16px] bg-black/50' />
+                        </div>
+                        <WeeklyProgress data={data.chartData.progressEx} />
+                        <Button className='min-h-[3rem]'>
+                            <ChartNoAxesColumn />
+                            View Progress
+                        </Button>
+                    </div>
+                </DashboardCard>
             </div>
-            <div className='h-[350px] flex flex-col lg:flex-row gap-4'>
+            <div className='h-max flex flex-col lg:flex-row gap-4'>
                 <DashboardCard
-                    title='Bruh'
-                    icon={<Dumbbell className='-rotate-45' />}
-                />
+                    title='Recent Activity'
+                    desc='Your last 5 workouts'
+                    className=''
+                >
+                    <div className='flex flex-col lg:flex-row gap-6'>
+                        <div className='w-full'>
+                            <CalorieChart data={data.chartData.calories} />
+                        </div>
+                        <div className='w-full flex flex-col justify-center'>
+                            {
+                                data.activities.map((activity, idx) => (
+                                    <ActivityContent
+                                        key={idx}
+                                        last={idx == data.activities.length - 1}
+                                        title={activity.title}
+                                        date={activity.date}
+                                        calories={activity.calories + " cal"}
+                                        duration={activity.duration + " min"}
+                                    />
+                                ))
+                            }
+                        </div>
+                    </div>
+                </DashboardCard>
             </div>
         </div>
     )

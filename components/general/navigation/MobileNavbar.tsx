@@ -1,3 +1,4 @@
+"use client"
 import Link from 'next/link';
 import React from 'react'
 import {
@@ -48,7 +49,7 @@ export default function MobileNavbar({ }: MobileNavbarProps) {
                                 'text-muted-foreground',
                                 '[&_#cont]:bg-[#0B291E]',
                                 {
-                                    'text-primary-light [&_#icon]:fill-primary-light [&_#cont]:bg-[#031900]': pathname == item.link,
+                                    'text-primary-light [&_#cont]:bg-[#031900]': pathname == item.link,
                                 }
                             )}
                             key={idx + "1"}

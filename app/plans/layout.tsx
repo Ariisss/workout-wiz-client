@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-    title: "WW | Dashboard",
+    title: "Workout Plans",
 };
 
-type DashboardLayoutProps = {
+type PlansLayoutProps = {
     children: React.ReactNode
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function PlansLayout({ children }: PlansLayoutProps) {
     return (
         <>
             {children}
