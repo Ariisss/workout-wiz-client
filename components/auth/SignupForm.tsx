@@ -69,9 +69,12 @@ export default function SignupForm({
                 body: JSON.stringify(filteredValues)
             })
 
+            // console.log(response.status)
+
             if(!response.ok){
                 throw new Error('Registration Failed')
-            }
+            }  
+
 
             // ON SUCCESS
             submitForm()
@@ -83,16 +86,6 @@ export default function SignupForm({
             unlockForm()
         }
 
-
-        // submitForm()
-        // function timeout(delay: number) {
-        //     return new Promise(res => setTimeout(res, delay));
-        // }
-
-        // await timeout(2000)     // TESTING PURPOSES
-        // unlockForm()
-        // nextForm()
-        // console.log(values)
     }
 
     return (
