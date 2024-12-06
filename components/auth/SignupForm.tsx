@@ -58,16 +58,41 @@ export default function SignupForm({
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
 
-        // ON SUCCESS
-        submitForm()
-        function timeout(delay: number) {
-            return new Promise(res => setTimeout(res, delay));
+        console.log(filteredValues)
+
+        try {
+            const response = await fetch('http://localhost:3001/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(filteredValues)
+            })
+
+            if(!response.ok){
+                throw new Error('Registration Failed')
+            }
+
+            // ON SUCCESS
+            submitForm()
+            nextForm()
+            
+        } catch (error) {
+            console.error(error)
+        } finally {
+            unlockForm()
         }
 
-        await timeout(2000)     // TESTING PURPOSES
-        unlockForm()
-        nextForm()
-        console.log(values)
+
+        // submitForm()
+        // function timeout(delay: number) {
+        //     return new Promise(res => setTimeout(res, delay));
+        // }
+
+        // await timeout(2000)     // TESTING PURPOSES
+        // unlockForm()
+        // nextForm()
+        // console.log(values)
     }
 
     return (
