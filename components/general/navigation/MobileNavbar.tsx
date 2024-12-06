@@ -34,7 +34,7 @@ export default function MobileNavbar({ }: MobileNavbarProps) {
     ]
 
     return (
-        <div className='w-screen h-[60px] relative'
+        <div className='w-screen h-[60px] relative translate-y-[2px]'
             style={{ boxShadow: '0px 0px 24px rgba(0,0,0,0.5)' }}>
             <div className='absolute-center w-[80px] h-[80px] rounded-full bg-black translate-y-[-70%] z-[-2]'
                 style={{ boxShadow: '0px 0px 8px rgba(0,0,0,0.5)' }}>
