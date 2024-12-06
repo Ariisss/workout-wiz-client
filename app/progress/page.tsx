@@ -47,7 +47,7 @@ export default function Progress({ }: Props) {
             <div>
                 <ValueContent main={`Progress statistics`} sub={"Monitor your fitness improvements"} />
             </div>
-            <div className='flex h-full w-full flex-col gap-4'>
+            <div className='flex h-full w-full flex-col gap-6'>
                 <div className='min-h-[144px] flex flex-col lg:flex-row gap-6'>
                     <DashboardCard
                         subHeader
@@ -84,7 +84,7 @@ export default function Progress({ }: Props) {
                         </TabsContent>
                     </LogChartTabs>
                 </DashboardCard>
-                <div className='flex flex-col lg:flex-row gap-4 h-full lg:h-[360px]'>
+                <div className='flex flex-col lg:flex-row gap-6 h-full lg:h-[360px]'>
                     <DashboardCard
                         title="Progress Highlights"
                         desc="Key achievements in your fitness journey"
