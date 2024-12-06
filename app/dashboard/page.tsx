@@ -108,7 +108,7 @@ export default function Dashboard({ }: Props) {
                     title='Weekly Streak'
                     icon={<Zap className='text-primary-light h-6 w-6' />}
                 >
-                    <ValueContent main={data.statSum.weekStreak.toString()} sub="Fuelling the progress machine!" />
+                    <ValueContent main={data.statSum.weekStreak.toString() + " weeks"} sub="Fuelling the progress machine!" />
                 </DashboardCard>
             </div>
             <div className='lg:h-[350px] flex flex-col lg:flex-row gap-6'>

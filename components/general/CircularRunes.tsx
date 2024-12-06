@@ -33,7 +33,7 @@ export default function CircularRunes({
     }
 
     return (
-        <div className={cn("absolute absolute-center", className)}>
+        <div className={cn("absolute absolute-center font-bramham", className)}>
             <ReactCurvedText
                 width={targetSize}
                 height={targetSize}
@@ -49,6 +49,7 @@ export default function CircularRunes({
                         letterSpacing: letterSpacing,
                         fill: fill[glow],
                         fontSize: actualFont,
+                        fontFamily: 'var(--primary-font)'
                     }
                 }}
             />

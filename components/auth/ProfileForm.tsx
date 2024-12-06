@@ -34,12 +34,9 @@ import {
 
 
 const formSchema = z.object({
-    first_name: z
+    username: z
         .string()
-        .min(1, { message: "First Name is required." }),
-    last_name: z
-        .string()
-        .min(1, { message: "Last Name is required." }),
+        .min(1, { message: "Username is required." }),
 
     dob: z
         .date(),
@@ -69,8 +66,7 @@ export default function UserProfileForm({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            first_name: "",
-            last_name: "",
+            username: "",
         },
     })
 
@@ -96,23 +92,11 @@ export default function UserProfileForm({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
-                    name="first_name"
+                    name="username"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input placeholder="First Name" {...field} disabled={isLocked} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="last_name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <Input placeholder="Last Name" {...field} disabled={isLocked} />
+                                <Input placeholder="Username" {...field} disabled={isLocked} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

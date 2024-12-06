@@ -9,26 +9,28 @@ import NavLayout from '@/components/general/navigation/Navigation';
 const roboto = Roboto({
     subsets: ['latin'],
     weight: ['400', '500', '700'],
-    variable: '--font-roboto'
+    variable: '--font-roboto',
+    display: "swap",
 })
 
 
 const sora = Sora({
     subsets: ['latin'],
     weight: ['400', '500', '700'],
-    variable: '--font-sora'
+    variable: '--font-sora',
+    display: "swap",
 })
 
 const poppins = Poppins({
     subsets: ['latin'],
     weight: ['400', '500', '700'],
-    variable: '--font-poppins'
+    variable: '--font-poppins',
+    display: "swap",
 })
 
 const bramhamSerif = localFont({
     src: "./fonts/BramhamSerif.otf",
     variable: "--font-bramham-serif",
-
 })
 
 

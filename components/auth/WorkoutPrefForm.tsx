@@ -39,7 +39,7 @@ const formSchema = z.object({
     workout_days: z.array(z.string()).refine((value) => value.some((day) => day), {
         message: "You have to select at least one day.",
     }),
-    
+
     intensity: z.enum(intensity_levels, {
         required_error: "You need to set your experience level."
     })
@@ -129,8 +129,9 @@ export default function WorkoutPreferencesForm({
                         name="workout_days"
                         render={() => (
                             <FormItem>
-                                <FormLabel className="">
+                                <FormLabel className="flex flexr-row gap-2">
                                     Schedule
+                                    <p className="text-muted-foreground flex flex-row">(Choose up to 5)</p>
                                 </FormLabel>
                                 <div className="flex flex-row bg-white rounded-[16px]">
                                     {days_of_week.map((day) => (
@@ -164,7 +165,7 @@ export default function WorkoutPreferencesForm({
                                                                             )
                                                                         )
                                                                 }}
-                                                                disabled={isLocked}
+                                                                disabled={isLocked || (field.value.length == 5 && !checkState)}
                                                             />
                                                         </FormControl>
                                                         <FormLabel className="cursor-pointer text-xs lg:text-sm justify-center p-0 font-medium w-full h-full flex items-center">
