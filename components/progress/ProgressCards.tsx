@@ -46,8 +46,8 @@ export function WeeklyCompRow({ title, data }: WeeklyCompRow) {
             <div className='flex flex-row justify-between'>
                 <p className='text-[#C0D0E6] w-[40%] lg:w-full'>{title}</p>
                 <div className='flex flex-row items-center gap-2 w-full justify-end'>
-                    <p className='text-white'>{data.val}</p>
-                    <p className='text-xs text-primary-light flex flex-row w-[20%] justify-end'>
+                    <p className='text-white text-right'>{data.val}</p>
+                    <p className='text-xs text-primary-light flex flex-row w-[40%] lg:w-[30%] justify-end'>
                         <ArrowUp className='h-[1rem] w-[1rem]' />
                         {data.inc.toFixed(1).toString()} %
                     </p>

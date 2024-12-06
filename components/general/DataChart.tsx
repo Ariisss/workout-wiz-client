@@ -63,7 +63,7 @@ export function WeeklyDuration({ data, className }: GenericChartWrapperProps) {
             timePeriod="weekly"
             yAxisKey="value"
             lineColor="#17B978"
-            tooltipFormatter={(value) => `${value} cal`}
+            tooltipFormatter={(value) => `${value} mins`}
             className={className}
         />
     )
