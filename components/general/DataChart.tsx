@@ -18,45 +18,53 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 
+type GenericChartWrapperProps = {
+    data: ChartDataProps[]
+    className?: string
+}
 
-export function CalorieChart({ data }: { data: ChartDataProps[] }) {
+
+export function CalorieChart({ data, className }: GenericChartWrapperProps) {
     return (
         <GenericChart
             title="Daily Calories Burned Chart"
-            description="This Week"
+            description="Data from the recent activities"
             data={data}
             timePeriod="daily"
             yAxisKey="value"
             lineColor="#17B978"
             tooltipFormatter={(value) => `${value} cal`}
+            className={className}
         />
     )
 }
 
-export function WeeklyCalories({ data }: { data: ChartDataProps[] }) {
+export function WeeklyCalories({ data, className }: GenericChartWrapperProps) {
     return (
         <GenericChart
             title="Weekly Calories Burned Chart"
-            description="This Week"
+            description="Data from the past month"
             data={data}
             timePeriod="weekly"
             yAxisKey="value"
             lineColor="#17B978"
             tooltipFormatter={(value) => `${value} cal`}
+            className={className}
         />
     )
 }
 
-export function WeeklyDuration({ data }: { data: ChartDataProps[] }) {
+export function WeeklyDuration({ data, className }: GenericChartWrapperProps) {
     return (
         <GenericChart
             title="Weekly Workout Duration Chart"
-            description="This Week"
+            description="Data from the past month"
             data={data}
             timePeriod="weekly"
             yAxisKey="value"
             lineColor="#17B978"
             tooltipFormatter={(value) => `${value} cal`}
+            className={className}
         />
     )
 }
@@ -79,6 +87,7 @@ type GenericChartProps = {
     chartConfig?: ChartConfig; // Chart configuration
     lineColor?: string; // Color of the line
     tooltipFormatter?: (value: any) => string; // Formatter for tooltips
+    className?: string
 };
 
 export function GenericChart({
@@ -90,12 +99,13 @@ export function GenericChart({
     chartConfig = {},
     lineColor = "hsl(var(--chart-1))",
     tooltipFormatter,
+    className
 }: GenericChartProps) {
     // Dynamic formatter for X-axis based on timePeriod
     const xAxisFormatter = (value: string) => {
         switch (timePeriod) {
             case "weekly":
-                return `Week ${value}`; // e.g., "Week 1"
+                return `W ${value}`; // e.g., "Week 1"
             case "monthly":
                 return value.slice(0, 3); // First 3 letters of the month
             case "daily":
@@ -111,7 +121,7 @@ export function GenericChart({
                 <CardDescription>{description}</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig}>
+                <ChartContainer config={chartConfig} className={className}>
                     <LineChart
                         accessibilityLayer
                         data={data}
@@ -123,8 +133,8 @@ export function GenericChart({
                         <CartesianGrid vertical={false} />
                         <XAxis
                             dataKey="period"
-                            tickLine={false}
-                            axisLine={false}
+                            tickLine={true}
+                            axisLine={true}
                             tickMargin={8}
                             tickFormatter={xAxisFormatter}
                         />
@@ -147,11 +157,6 @@ export function GenericChart({
                     </LineChart>
                 </ChartContainer>
             </CardContent>
-            <CardFooter className="flex-col items-start gap-2 text-sm">
-                <div className="leading-none text-muted-foreground">
-                    Showing total {yAxisKey} for the selected period
-                </div>
-            </CardFooter>
         </Card>
     );
 }
