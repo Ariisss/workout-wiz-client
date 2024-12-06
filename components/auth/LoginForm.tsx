@@ -54,7 +54,7 @@ export default function LoginForm({ formId }: LoginFormProps) {
         }
 
         await timeout(2000)     // TESTING PURPOSES
-        unlockForm()
+        //unlockForm()
         login("Ced420")
         console.log(values)
     }
