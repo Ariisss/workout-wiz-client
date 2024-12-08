@@ -9,10 +9,11 @@ type FormState = {
 }
 
 interface SignupData {
+    id?: number
     email?: string
     password?: string
     username?: string
-    dob?: string
+    dob?: Date
     sex?: boolean
     height?: number
     weight?: number
