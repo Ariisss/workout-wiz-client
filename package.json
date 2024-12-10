@@ -32,6 +32,7 @@
     "react-curved-text": "^3.0.1",
     "react-day-picker": "^8.10.1",
     "react-hook-form": "^7.53.2",
+    "react-toastify": "^10.0.6",
     "react-use": "^17.5.1",
     "recharts": "^2.14.1",
     "simplex-noise": "^4.0.3",

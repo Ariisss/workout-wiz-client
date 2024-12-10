@@ -5,6 +5,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AuthProvider from '@/components/context/AuthProvider';
 import NavLayout from '@/components/general/navigation/Navigation';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const roboto = Roboto({
     subsets: ['latin'],
@@ -56,6 +58,18 @@ export default function RootLayout({
           antialiased h-screen bg-gradient-to-r from-[#131313] to-[#031900]
         `}
             >
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                />
                 <AuthProvider>
                     <NavLayout>
                         {children}
