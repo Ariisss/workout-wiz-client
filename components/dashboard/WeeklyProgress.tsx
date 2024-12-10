@@ -19,14 +19,14 @@ const WeeklyProgress = ({ data, className }: WeeklyProgressProps) => {
     const column2 = data.slice(middleIndex);
 
     return (
-        <div className={cn("flex flex-row w-full gap-24 justify-between", className)}>
+        <div className={cn("flex flex-col lg:flex-row w-full gap-2 lg:gap-24 justify-between my-4", className)}>
             {[column1, column2].map((column, colIndex) => (
                 <div key={colIndex} className="flex flex-col gap-2 h-full w-full">
                     {column.map((item, index) => (
                         <div key={index} className="flex flex-row w-full items-center">
                             <div className='w-full font-normal flex flex-row gap-4'>
-                                <p className='w-fit'>{item.day.slice(0, 3)}</p>
-                                <p className='w-full text-muted-foreground'>
+                                <p className='w-[50%]'>{item.day.slice(0, 3)}</p>
+                                <p className='w-full text-left text-muted-foreground'>
                                     ({item.progress / dummyDivider}/{100 / dummyDivider})
                                 </p>
                             </div>

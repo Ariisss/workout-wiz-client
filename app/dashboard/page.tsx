@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { CalorieChart } from '@/components/dashboard/CalorieChart'
+import { CalorieChart } from '@/components/general/DataChart'
 import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
 
 type Props = {}
@@ -65,13 +65,13 @@ export default function Dashboard({ }: Props) {
         ],
         chartData: {
             calories: [
-                { day: "Monday", calories: 186 },
-                { day: "Tuesday", calories: 305 },
-                { day: "Wednesday", calories: 237 },
-                { day: "Thursday", calories: 73 },
-                { day: "Friday", calories: 209 },
-                { day: "Saturday", calories: 214 },
-                { day: "Sundary", calories: 10 },
+                { period: "Monday", value: 186 },
+                { period: "Tuesday", value: 305 },
+                { period: "Wednesday", value: 237 },
+                { period: "Thursday", value: 73 },
+                { period: "Friday", value: 209 },
+                { period: "Saturday", value: 214 },
+                { period: "Sundary", value: 10 },
             ],
             progressEx: [
                 { day: "Monday", progress: 70 },

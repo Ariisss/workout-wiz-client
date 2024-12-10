@@ -64,16 +64,20 @@ export function Endpaper({
 
     const centerElement: React.ReactElement = centerImg === "logo" ? (
         <motion.div
-            initial={{ filter: "drop-shadow(0px 0px 12px black)" }}
+            initial={{
+                filter: isActive
+                    ? "drop-shadow(0px 0px 12px black)"
+                    : "drop-shadow(0px 0px 12px #66FFC7)"
+            }}
             animate={{
                 filter: isActive
                     ? "drop-shadow(0px 0px 12px #66FFC7)"
-                    : "drop-shadow(0px 0px 0px rgba(0, 0, 0, 0))",
-                transition: { duration: 0.5 }
+                    : "drop-shadow(0px 0px 12px black)",
+                transition: { duration: 0.25 }
             }}
-            className="absolute-center translate-y-[-45%] drop-shadow-glow">
+            className="absolute-center translate-y-[-45%] drop-shadow-glow" >
             <Logo width={parentHeight / 1.4} height={parentHeight / 1.4} />
-        </motion.div>
+        </motion.div >
     ) : (
         <div className="absolute-center">
             <NextIndicator size={parentHeight / 4.5} className={indicatorStateStyles} />
