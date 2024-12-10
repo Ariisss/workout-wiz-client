@@ -159,16 +159,19 @@ export const MobileSidebar = ({
 export const SidebarLink = ({
     link,
     className,
+    onClick,
     ...props
 }: {
     link: Links;
     className?: string;
+    onClick?: () => Promise<void>
     props?: LinkProps;
 }) => {
     const { open, animate } = useSidebar();
     return (
         <Link
             href={link.href}
+            onClick={onClick}
             className={cn(
                 "flex items-center justify-start gap-2  group/sidebar py-2",
                 className

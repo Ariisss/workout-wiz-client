@@ -9,8 +9,7 @@ import {
     LogOut,
     Toilet //CHANGE THIS TO ACTUAL ICON LATER PLS
 } from "lucide-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { useAuth } from "@/components/context/AuthProvider";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -56,6 +55,7 @@ export default function DesktopSidebar({ }: Props) {
         }
     ];
     const [open, setOpen] = useState(false);
+    const { logout } = useAuth()
     const pathname = usePathname()
 
     return (
@@ -98,6 +98,7 @@ export default function DesktopSidebar({ }: Props) {
                                 href: "#",
                                 icon: <LogOut className="text-white h-5 w-5 flex-shrink-0" />
                             }}
+                            onClick={logout}
                         />
                     </div>
                 </SidebarBody>
