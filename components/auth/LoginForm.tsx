@@ -46,17 +46,46 @@ export default function LoginForm({ formId }: LoginFormProps) {
         lockForm()
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
+        const { email, password } = values
 
-        // ON SUCCESS
-        submitForm()
-        function timeout(delay: number) {
-            return new Promise(res => setTimeout(res, delay));
+        try {
+            const response = await fetch('http://localhost:3001/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(values)
+            })
+
+            console.log(response.status)
+
+            if(!response.ok){
+                throw new Error('Login Failed')
+            }  
+
+            const data = await response.json()
+            console.log(data)
+
+
+            submitForm()
+            // nextForm()
+            
+        } catch (error) {
+            console.error(error)
+        } finally {
+            unlockForm()
         }
 
-        await timeout(2000)     // TESTING PURPOSES
-        unlockForm()
-        login("Ced420")
-        console.log(values)
+        // ON SUCCESS
+        // submitForm()
+        // function timeout(delay: number) {
+        //     return new Promise(res => setTimeout(res, delay));
+        // }
+
+        // await timeout(2000)     // TESTING PURPOSES
+        // unlockForm()
+        // login("Ced420")
+        // console.log(values)
     }
 
     return (
