@@ -45,8 +45,9 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --primary-font: 'BramhamSerif'
-  }
+    --primary-font: 'BramhamSerif';
+    --toastify-color-success: var(--primary-light);
+}
   .dark {
     --background: #343541;
     --background-darker: #2A2B33;
@@ -134,4 +135,7 @@ body {
   select::-webkit-scrollbar {
     display: none;
   }
+  .Toastify__toast--success {
+    background: var(--primary-light);
+ }
 }

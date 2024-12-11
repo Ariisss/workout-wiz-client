@@ -61,7 +61,7 @@ export default function PasswordForm({
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full flex flex-col justify-between">
-                <div className="space-y-8 mt-4">
+                <div className="space-y-4 mt-8">
                     <FormField
                         control={form.control}
                         name="current_password"
