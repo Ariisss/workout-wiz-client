@@ -46,7 +46,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     // loading handler
     useEffect(() => {
-        fetchUserData()
+        if (Cookies.get('token') !== undefined) fetchUserData()
     }, []);
 
     // unauthenticated handler
@@ -57,9 +57,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }, [userData, loading, pathname]);
 
 
-    // login handler
+    ///////////////////////
+    //   AUTH HANDLING   //
+    ///////////////////////
     const login = async (values: LoginCredentials) => {
         try {
+            router.prefetch('/dashboard')
             const response = await fetch("http://localhost:3001/auth/login", {
                 method: "POST",
                 credentials: 'include',
@@ -77,7 +80,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             console.log(document.cookie)
 
             await fetchUserData()
-            router.push("/dashboard");
+            await router.push("/dashboard");
         } catch (error) {
             console.error(error);
             throw error;
@@ -124,7 +127,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
             const data: userType = await response.json();
             setUserData(data); // Update the user data when it's loaded
-            setLoading(false);
         } catch (error) {
             throw error
         } finally {
