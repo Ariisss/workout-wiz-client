@@ -2,11 +2,11 @@
 import localFont from 'next/font/local'
 import { Poppins, Roboto, Sora } from 'next/font/google'
 import type { Metadata } from "next";
-import "./globals.css";
 import AuthProvider from '@/components/context/AuthProvider';
 import NavLayout from '@/components/general/navigation/Navigation';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import "./globals.css";
 
 const roboto = Roboto({
     subsets: ['latin'],
@@ -69,6 +69,7 @@ export default function RootLayout({
                     draggable
                     pauseOnHover
                     theme="dark"
+                    toastClassName={"bg-background-darkest"}
                 />
                 <AuthProvider>
                     <NavLayout>
