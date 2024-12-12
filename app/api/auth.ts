@@ -3,7 +3,7 @@ import { SignUpCredentials } from '@/components/auth/SignupForm';
 
 const API_LINK = "http://localhost"
 const PORT = 3001
-const API = `${API_LINK}:${PORT}`
+export const API = `${API_LINK}:${PORT}`
 
 export const loginUser = async (values: LoginCredentials) => {
     const response = await fetch(`${API}/auth/login`, {

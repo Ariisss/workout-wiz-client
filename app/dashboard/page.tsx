@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import { ActivityContent, DashboardCard, ValueContent, WorkoutContent } from '@/components/dashboard/DashboardCard'
 import {
@@ -11,11 +12,38 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { CalorieChart } from '@/components/general/DataChart'
 import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
+import { getWorkouts } from '../api/workouts'
+import { useEffect, useState } from 'react'
 
 type Props = {}
 
+
+
 export default function Dashboard({ }: Props) {
     // get info thingies
+
+    const [workouts, setWorkouts] = useState<any>(null)
+    const [loading, setLoading] = useState<any>(null)
+
+    useEffect(() => {
+        const fetchWorkouts = async () => {
+            try {
+                const data = await getWorkouts()
+                setWorkouts(data)
+                console.log(data)
+            } catch (error) {
+                console.error('Failed to fetch workouts:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        
+        fetchWorkouts()
+        // console.log(workouts)
+    }, [])
+
+    // if (loading) return <div>Loading...</div>
+
     const data = {
         credentials: {
             name: 'Ced69'
