@@ -14,6 +14,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import { toast } from "react-toastify"
+import ToastError from "../general/ToastError"
 
 const goals = [
     "Muscle Gain",
@@ -49,19 +51,14 @@ export default function FitnessGoalsForm({
     const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-
-        // ON SUCCESS
-        submitForm()
-        function timeout(delay: number) {
-            return new Promise(res => setTimeout(res, delay));
+        try {
+            //submitForm(values)
+            nextForm()
+        } catch (error) {
+            toast.error(<ToastError title="Signup Failed" desc={error} />)
+        } finally {
+            unlockForm()
         }
-
-        await timeout(2000)     // TESTING PURPOSES
-        unlockForm()
-        nextForm()
-        console.log(values)
     }
 
     return (

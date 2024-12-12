@@ -13,6 +13,10 @@ interface SignupData {
     password?: string
 }
 
+interface WorkoutPrefsData {
+    
+}
+
 type SubmitFormProps = {
     values: SignupData, 
     formId: string

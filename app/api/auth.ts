@@ -50,6 +50,8 @@ export const fetchUser = async () => {
     return response.json()
 }
 
+
+
 export const signupUser = async (values: SignUpCredentials) => {
     const response = await fetch(`${API}/auth/register`, {
         method: 'POST',
@@ -69,6 +71,24 @@ export const signupUser = async (values: SignUpCredentials) => {
 }
 
 export const updateUserProfile = async (values: ProfileData) => {
+    const response = await fetch(`${API}/user`, {
+        method: 'PUT',
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+    })
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message)
+    }
+
+    return response.json()
+}
+
+export const updateWorkoutPrefs = async (values: ProfileData) => {
     const response = await fetch(`${API}/user`, {
         method: 'PUT',
         credentials: "include",
