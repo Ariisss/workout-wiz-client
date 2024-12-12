@@ -18,7 +18,7 @@ import { toast } from "react-toastify"
 import ToastError from "../general/ToastError"
 
 
-export const formSchema = z.object({
+const formSchema = z.object({
     email: z
         .string()
         .min(1, { message: "Email is required." })
@@ -89,3 +89,5 @@ export default function LoginForm({ formId }: LoginFormProps) {
     )
 
 }
+
+export type LoginCredentials = z.infer<typeof formSchema>
