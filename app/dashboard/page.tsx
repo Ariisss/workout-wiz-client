@@ -28,9 +28,10 @@ export default function Dashboard({ }: Props) {
     useEffect(() => {
         const fetchWorkouts = async () => {
             try {
-                const data = await getWorkouts()
-                setWorkouts(data)
-                console.log(data)
+                const response = await getWorkouts();
+                setWorkouts(response.data);
+                // console.log(response.data);
+                // console.log(response.data.length);
             } catch (error) {
                 console.error('Failed to fetch workouts:', error)
             } finally {
