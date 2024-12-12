@@ -6,12 +6,14 @@ import { AnimatePresence } from "motion/react";
 import SignupForm from "@/components/auth/SignupForm";
 import Link from "next/link";
 import clsx from "clsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import UserProfileForm from "@/components/auth/ProfileForm";
 import FitnessGoalsForm from "@/components/auth/FitGoalsForm";
 import WorkoutPreferencesForm from "@/components/auth/WorkoutPrefForm";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/context/AuthProvider";
+import { toast } from "react-toastify";
+import ToastProgress from "@/components/general/ToastProgress";
 
 type FormKey = "signup" | "profile" | "fitgoals" | "workoutprefs";
 type FormConfig = {
@@ -27,11 +29,32 @@ type FormConfig = {
 export default function Signup() {
     const formList: FormKey[] = ['signup', 'profile', 'fitgoals', 'workoutprefs']
     const [formIdx, setFormIdx] = useState<number>(0);
-    const { loading } = useAuth()
+    const toastId = useRef<string | number | null>(null)
     const { isSubmitted, isLocked } = useFormContext(formList[formIdx])
     const router = useRouter();
-    const nextForm = () => setFormIdx((prev) => prev + 1)
+    const nextForm = () => setFormIdx((prev) => {
+        const nextIdx = prev + 1
+        const progress = nextIdx / (formList.length)
+        const toastContent = <ToastProgress
+            title="Completing Signup"
+            desc={`Steps ${nextIdx} out of ${formList.length} completed`}
+        />
+
+        if (toastId.current === null) {
+            toastId.current = toast.loading(toastContent, {
+                progress: progress, progressClassName: 'bg-[#66FFC7]'
+            })
+        } else {
+            toast.update(toastId.current, {
+                render: toastContent,
+                progress: progress, progressClassName: 'bg-[#66FFC7]'
+            })
+        }
+
+        return nextIdx
+    })
     const handleRedirect = () => {
+        if (toastId.current !== null) toast.done(toastId.current)
         router.push("../auth/login")
     };
 
