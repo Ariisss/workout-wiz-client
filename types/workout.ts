@@ -21,6 +21,8 @@ export interface ExerciseLog {
     updatedAt?: string;
 }
 
+// export interface LogTypes extends Omit<ExerciseLog, 'log_id' | ''>
+
 export interface PlanExercise {
     plan_exercise_id: number;
     plan_id: number;
@@ -34,6 +36,8 @@ export interface PlanExercise {
     createdAt?: string;
     updatedAt?: string;
 }
+
+// export interface WorkoutType extends Omit<PlanExercise, 'plan_exercise_id' | 'createdAt' | 'updatedAt'> {}
 
 export interface User {
     user_id: number;
