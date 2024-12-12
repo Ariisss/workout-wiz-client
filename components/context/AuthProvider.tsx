@@ -1,8 +1,10 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { LoginCredentials, fetchUser, loginUser, logoutUser } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser } from '@/app/api/auth';
+import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
+import { SignUpCredentials } from '../auth/SignupForm';
 
 type userType = {
     user_id: number;
@@ -17,17 +19,12 @@ type userType = {
     updatedAt: Date;
 } | null
 
-type payloadType = {
-    id: number,
-    email: string,
-}
-
-
 type AuthContextProps = {
     userData: userType
     loading: boolean
     login: (values: LoginCredentials) => Promise<void>
     logout: () => Promise<void>
+    signup: (values: SignUpCredentials) => Promise<void>
 }
 
 
@@ -81,7 +78,16 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         } catch (error) {
             console.error('Error logging out:', error)
         }
-    };
+    }
+
+    const signup = async (values: SignUpCredentials) => {
+        try {
+            await signupUser(values)
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 
     ////////////////////////
     //   DATA RETRIEVAL   //
@@ -99,7 +105,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     };
 
     return (
-        <AuthContext.Provider value={{ userData: userData, login, logout, loading }}>
+        <AuthContext.Provider value={{
+            userData: userData,
+            login,
+            logout,
+            signup,
+            loading
+        }}>
             {children}
         </AuthContext.Provider>
     );

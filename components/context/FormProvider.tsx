@@ -9,7 +9,6 @@ type FormState = {
 }
 
 interface SignupData {
-    id?: number
     email?: string
     password?: string
     username?: string
@@ -19,15 +18,20 @@ interface SignupData {
     weight?: number
     goal_type?: string[]
     with_gym?: boolean
-    workout_days?: string[]
+    workout_days?: string
     intensity?: string
+}
+
+type SubmitFormProps = {
+    values: SignupData, 
+    formId: string
 }
 
 type FormContextProps = {
     forms: FormState
     lockForm: (formId: string) => void
     unlockForm: (formId: string) => void
-    submitForm: (formId: string) => void
+    submitForm: ({values, formId}: SubmitFormProps) => void
     signupData: SignupData
     updateSignupData: (data: Partial<SignupData>) => void
 }
@@ -57,12 +61,13 @@ export const FormProvider = ({ children }: React.PropsWithChildren) => {
         }));
     };
 
-    const submitForm = (formId: string) => {
+    const submitForm = ({values, formId}: SubmitFormProps) => {
         setForms((prev) => ({
-          ...prev,
-          [formId]: { ...prev[formId], isSubmitted: true },
-        }));
-      };
+            ...prev,
+            [formId]: { ...prev[formId], isSubmitted: true },
+        }))
+        updateSignupData(values)
+    };
 
 
     return (
@@ -85,7 +90,7 @@ export const useFormContext = (formId: string) => {
         ...formState,
         lockForm: () => lockForm(formId),
         unlockForm: () => unlockForm(formId),
-        submitForm: () => submitForm(formId),
+        submitForm: (values: SignupData) => submitForm({values, formId}),
         signupData,
         updateSignupData
     }
