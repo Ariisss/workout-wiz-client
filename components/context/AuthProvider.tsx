@@ -1,8 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { formSchema as loginSchema } from '../auth/LoginForm';
-import z from 'zod'
+import { LoginCredentials, fetchUser, loginUser, logoutUser } from '@/app/api/auth';
 import Cookies from 'js-cookie';
 
 type userType = {
@@ -23,7 +22,6 @@ type payloadType = {
     email: string,
 }
 
-type LoginCredentials = z.infer<typeof loginSchema>
 
 type AuthContextProps = {
     userData: userType
@@ -63,24 +61,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const login = async (values: LoginCredentials) => {
         try {
             router.prefetch('/dashboard')
-            const response = await fetch("http://localhost:3001/auth/login", {
-                method: "POST",
-                credentials: 'include',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(values),
-            });
-
-            if (!response.ok) {
-                const error = await response.json()
-                throw new Error(error.message);
-            }
-
-            const data: payloadType = (await response.json()).data.user;
-            console.log(data)
-            console.log(document.cookie)
+            await loginUser(values)
 
             await fetchUserData()
-            await router.push("/dashboard");
+            router.push("/dashboard");
         } catch (error) {
             console.error(error);
             throw error;
@@ -89,16 +73,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     const logout = async () => {
         try {
-            const response = await fetch('http://localhost:3001/auth/logout', {
-                method: 'POST',
-                credentials: 'include',
-            });
-
-            if (!response.ok) {
-                const error = await response.json()
-                throw new Error(error.message)
-            }
-
+            await logoutUser()
             Cookies.remove('token')
             setUserData(null)
             router.push('/auth/login')
@@ -114,23 +89,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const fetchUserData = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:3001/user/`, {
-                method: 'GET',
-                credentials: 'include',  // include cookies with the request
-            })
-
-            if (!response.ok) {
-                const error = await response.json()
-                console.error(error.message)
-                throw new Error(error.message);
-            }
-
-            const data: userType = await response.json();
-            setUserData(data); // Update the user data when it's loaded
+            const data: userType = await fetchUser()
+            setUserData(data)
         } catch (error) {
             throw error
         } finally {
-            setLoading(false); // Stop the loading indicator when done
+            setLoading(false)
         }
     };
 
