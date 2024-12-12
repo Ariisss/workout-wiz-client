@@ -14,6 +14,7 @@ import { CalorieChart } from '@/components/general/DataChart'
 import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
 import { getWorkouts } from '../api/workouts'
 import { useEffect, useState } from 'react'
+import { ExerciseLog, PlanExercise, WorkoutPlan, GoalTypes, IntensityLevels } from '@/types/workout'
 
 type Props = {}
 
@@ -28,9 +29,10 @@ export default function Dashboard({ }: Props) {
     useEffect(() => {
         const fetchWorkouts = async () => {
             try {
-                const data = await getWorkouts()
-                setWorkouts(data)
-                console.log(data)
+                const response = await getWorkouts();
+                setWorkouts(response.data);
+                // console.log(response.data);
+                // console.log(response.data.length);
             } catch (error) {
                 console.error('Failed to fetch workouts:', error)
             } finally {
@@ -111,6 +113,24 @@ export default function Dashboard({ }: Props) {
         }
     }
 
+    // use this when integrated with backend already:
+
+    // const [workouts, setWorkouts] = useState<{
+    //     activities: ExerciseLog[];
+    //     workoutPlan: WorkoutPlan | null;
+    //     statSum: {
+    //         totalWorkouts: { val: string, last: number };
+    //         caloriesBurned: { val: string, last: number };
+    //         weekStreak: number;
+    //     };
+    //     chartData: {
+    //         calories: { period: string; value: number }[];
+    //         progressEx: { day: string; progress: number }[];
+    //     };
+    // } | null>(null)
+
+    // const [loading, setLoading] = useState<boolean>(true)
+
     return (
         <div className='h-fit w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8'>
             <div>
@@ -146,12 +166,16 @@ export default function Dashboard({ }: Props) {
                     glow={data.workoutData.hasWorkoutToday}
                 >
                     <div className='flex flex-col h-full justify-between'>
-                        <WorkoutContent
-                            workoutName={data.workoutData.workoutName}
-                            date={data.workoutData.date}
-                            hasWorkoutToday={data.workoutData.hasWorkoutToday}
-                            upcomingExercise={data.workoutData.upcomingExercise}
-                        />
+                        {workoutPlan ? (
+                            <WorkoutContent
+                                workoutName={workoutPlan.plan_name}
+                                date="Today"
+                                hasWorkoutToday={true}
+                                upcomingExercise={workoutPlan.exercises[0]}  // Assuming the first exercise is next
+                            />
+                        ) : (
+                            <p>No active workout plan</p>
+                        )}
                         <Button className='min-h-[3rem]'>
                             <ScrollText />
                             Log Exercise
