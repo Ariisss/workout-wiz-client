@@ -1,5 +1,41 @@
 import { ExerciseLog, WorkoutPlan } from "@/types/workout"
 
+// get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
+// get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
+
+export const getWorkoutToday = (plan: WorkoutPlan, logs?: ExerciseLog[]) => {
+    const today = new Date();
+    const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
+
+    const todaysExercises = plan.exercises.filter(exercise => 
+        exercise.workout_day === dayOfWeek
+    );
+
+    if (todaysExercises.length === 0) {
+        return null;
+    }
+
+    if (!logs) {
+        return todaysExercises[0];
+    }
+
+    // Filter today's logs
+    const todaysLogs = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return logDate.toDateString() === today.toDateString();
+    });
+
+    // Find first exercise that hasn't been logged today
+    const nextExercise = todaysExercises.find(exercise => 
+        !todaysLogs.some(log => 
+            log.plan_exercise_id === exercise.plan_exercise_id
+        )
+    );
+
+    return nextExercise || null;
+}
+
+
 export const countTotalWorkouts = (data: ExerciseLog[]) => {
     const today = new Date()
     const lastWeekStart = new Date(today)
@@ -13,11 +49,12 @@ export const countTotalWorkouts = (data: ExerciseLog[]) => {
         }).length
     }
 
+    // Usage:
+    // const workoutCounts = countTotalWorkouts(exerciseLogs)
+    // console.log(workoutCounts.total) 
+    // console.log(workoutCounts.lastWeek) 
+    
 }
-// Usage:
-// const workoutCounts = countTotalWorkouts(exerciseLogs)
-// console.log(workoutCounts.total) 
-// console.log(workoutCounts.lastWeek) 
 
 
 export const calculateCaloriesBurned = (data: ExerciseLog[]) => {
@@ -34,11 +71,13 @@ export const calculateCaloriesBurned = (data: ExerciseLog[]) => {
             })
             .reduce((sum, log) => sum + log.calories_burned, 0)
     }
+
+    // Usage:
+    // const caloriesStats = calculateCaloriesBurned(exerciseLogs)
+    // console.log(caloriesStats.total)
+    // console.log(caloriesStats.lastWeek) 
+
 }
-// Usage:
-// const caloriesStats = calculateCaloriesBurned(exerciseLogs)
-// console.log(caloriesStats.total)
-// console.log(caloriesStats.lastWeek) 
 
 export const calculateWeeklyStreak = (data: ExerciseLog[], plans: WorkoutPlan[]) => {
     // sorts desc order
