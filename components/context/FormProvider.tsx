@@ -11,15 +11,6 @@ type FormState = {
 interface SignupData {
     email?: string
     password?: string
-    username?: string
-    dob?: Date
-    sex?: boolean
-    height?: number
-    weight?: number
-    goal_type?: string[]
-    with_gym?: boolean
-    workout_days?: string
-    intensity?: string
 }
 
 type SubmitFormProps = {

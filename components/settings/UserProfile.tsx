@@ -35,7 +35,7 @@ const formSchema = z.object({
         .min(1, { message: "Email is required." })
         .email("This is not a valid email."),
 
-    dob: z
+    date_of_birth: z
         .date(),
 
 
@@ -62,7 +62,7 @@ export default function UserProfileForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             username: "Ced69",
-            dob: new Date("03/19/2003"),
+            date_of_birth: new Date("03/19/2003"),
             height: 69,
             weight: 42
         },
@@ -93,7 +93,7 @@ export default function UserProfileForm({
                     />
                     <FormField
                         control={form.control}
-                        name="dob"
+                        name="date_of_birth"
                         render={({ field }) => (
                             <FormItem className="w-full">
                                 <Popover>
