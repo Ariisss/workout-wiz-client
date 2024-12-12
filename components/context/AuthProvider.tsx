@@ -1,10 +1,11 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { fetchUser, loginUser, logoutUser, signupUser } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile } from '@/app/api/auth';
 import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
+import { ProfileData } from '../auth/ProfileForm';
 
 type userType = {
     user_id: number;
@@ -12,7 +13,7 @@ type userType = {
     email: string;
     password: string;
     sex: Boolean;
-    dob: Date,
+    date_of_birth: Date,
     height: number;
     weight: number;
     createdAt: Date;
@@ -25,6 +26,8 @@ type AuthContextProps = {
     login: (values: LoginCredentials) => Promise<void>
     logout: () => Promise<void>
     signup: (values: SignUpCredentials) => Promise<void>
+    setProfile: (values: ProfileData) => Promise<void>
+
 }
 
 
@@ -89,6 +92,15 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const setProfile = async (values: ProfileData) => {
+        try {
+            await updateUserProfile(values)
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     ////////////////////////
     //   DATA RETRIEVAL   //
     ////////////////////////
@@ -110,6 +122,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             login,
             logout,
             signup,
+            setProfile,
             loading
         }}>
             {children}
