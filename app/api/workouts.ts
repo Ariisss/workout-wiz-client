@@ -18,3 +18,18 @@ export const getWorkouts = async () => {
     return response.json()
 }
 
+export const getLogs = async () => {
+
+    const response = await fetch(`${API}/exercise-logs`, {
+        method: 'GET',
+        credentials: 'include'
+    })
+
+    if(!response.ok){
+        const error = await response.json()
+        throw new Error(error.message)
+    }
+
+    return response.json()
+
+}
