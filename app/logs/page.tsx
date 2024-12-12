@@ -1,10 +1,24 @@
 import { ActivityContent, DashboardCard, ValueContent } from '@/components/dashboard/DashboardCard'
 import { ActiveWorkoutsTabs } from '@/components/logs/LogCards'
+import { ExerciseLog, PlanExercise, WorkoutPlan } from '@/types/workout'
 import React from 'react'
 
 type Props = {}
 
 export default function Logs({ }: Props) {
+
+    // use this when backend is added:
+    
+    // const [data, setData] = useState<{
+    //     past: ExerciseLog[];
+    //     current: PlanExercise[];
+    //     missing: PlanExercise[];
+    // }>({
+    //     past: [],
+    //     current: [],
+    //     missing: [],
+    // });
+
     const data = {
         past: [
             {
@@ -76,25 +90,29 @@ export default function Logs({ }: Props) {
                 <ValueContent main="Workout Logs" sub="Track your exercises" />
             </div>
             <div className='flex flex-col lg:flex-row w-full h-full gap-4'>
-                <ActiveWorkoutsTabs missed={data.missing} current={data.current} />
+                {data.current.length > 0 || data.missing.length > 0 ? (
+                    <ActiveWorkoutsTabs missed={data.missing} current={data.current} />
+                ) : null}
                 <DashboardCard
                     title='Past exercises'
                     className=''
                 >
                     <div className='flex flex-col lg:flex-row gap-6'>
                         <div className='w-full flex flex-col justify-center'>
-                            {
+                            {data.past.length > 0 ? (
                                 data.past.map((activity, idx) => (
                                     <ActivityContent
                                         key={idx}
-                                        last={idx == data.past.length - 1}
+                                        last={idx === data.past.length - 1}
                                         title={activity.title}
                                         date={activity.date}
                                         calories={activity.calories + " cal"}
                                         duration={activity.duration + " min"}
                                     />
                                 ))
-                            }
+                            ) : (
+                                <p>No past exercises logged.</p> 
+                            )}
                         </div>
                     </div>
                 </DashboardCard>
