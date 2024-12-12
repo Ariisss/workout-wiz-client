@@ -3,7 +3,7 @@ import z from 'zod'
 
 const API_LINK = "http://localhost"
 const PORT = 3001
-const API = `${API_LINK}:${PORT}`
+export const API = `${API_LINK}:${PORT}`
 
 export type LoginCredentials = z.infer<typeof loginSchema>
 
