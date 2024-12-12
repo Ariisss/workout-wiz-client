@@ -1,7 +1,9 @@
 export enum GoalTypes {
-    MUSCLE_BUILDING = "muscle_building",
-    WEIGHT_LOSS = "weight_loss",
-    MAINTENANCE = "maintenance"
+    WEIGHT_LOSS = 'Weight Loss',
+    MUSCLE_GAIN = 'Muscle Gain',
+    ENDURANCE = 'Endurance',
+    FLEXIBILITY = 'Flexibility',
+    BALANCE = 'Balance'
 }
 
 export enum IntensityLevels {
@@ -21,6 +23,8 @@ export interface ExerciseLog {
     updatedAt?: string;
 }
 
+// export interface LogTypes extends Omit<ExerciseLog, 'log_id' | ''>
+
 export interface PlanExercise {
     plan_exercise_id: number;
     plan_id: number;
@@ -34,6 +38,8 @@ export interface PlanExercise {
     createdAt?: string;
     updatedAt?: string;
 }
+
+// export interface WorkoutType extends Omit<PlanExercise, 'plan_exercise_id' | 'createdAt' | 'updatedAt'> {}
 
 export interface User {
     user_id: number;

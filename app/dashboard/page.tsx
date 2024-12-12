@@ -166,12 +166,12 @@ export default function Dashboard({ }: Props) {
                     glow={data.workoutData.hasWorkoutToday}
                 >
                     <div className='flex flex-col h-full justify-between'>
-                        {workoutPlan ? (
+                        {data.workoutData ? (
                             <WorkoutContent
-                                workoutName={workoutPlan.plan_name}
+                                workoutName={data.workoutData.workoutName}
                                 date="Today"
                                 hasWorkoutToday={true}
-                                upcomingExercise={workoutPlan.exercises[0]}  // Assuming the first exercise is next
+                                upcomingExercise={data.workoutData.upcomingExercise}  // Assuming the first exercise is next
                             />
                         ) : (
                             <p>No active workout plan</p>
