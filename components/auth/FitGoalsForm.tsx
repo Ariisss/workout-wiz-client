@@ -21,14 +21,16 @@ const goals = [
     "Muscle Gain",
     "Weight Loss",
     "Endurance",
-    "General Fitness",
-    "Aesthetic"
+    "Flexibility",
+    "Balance"
 ] as const
 
 const formSchema = z.object({
-    goal_type: z.array(z.string()).refine((value) => value.some((goal) => goal), {
-        message: "You have to select at least one goal.",
-    }),
+    goal_type: z
+        .array(z.enum(goals))
+        .refine((value) => value.length > 0, {
+            message: "You have to select at least one goal.",
+        }),
 })
 
 type FormProps = {
@@ -52,10 +54,10 @@ export default function FitnessGoalsForm({
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
         try {
-            //submitForm(values)
+            submitForm({ goal_type: values.goal_type.join(",") })
             nextForm()
         } catch (error) {
-            toast.error(<ToastError title="Signup Failed" desc={error} />)
+            toast.error(<ToastError title="Submission Failed" desc={error} />)
         } finally {
             unlockForm()
         }
@@ -78,7 +80,7 @@ export default function FitnessGoalsForm({
                                         const checkState = field.value?.includes(goal)
                                         return (
                                             <FormItem
-                                                key={goal}
+                                                key={goal+"item"}
                                                 className={clsx(
                                                     "flex flex-row items-center space-x-3 space-y-0",
                                                     "bg-white border-primary-light h-[3rem] rounded-[16px] text-black font-sans font-medium",

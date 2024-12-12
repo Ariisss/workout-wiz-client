@@ -1,5 +1,6 @@
 "use client"
 import React, { createContext, useState, useContext } from 'react'
+import { GoalTypes } from '@/types/workout'
 
 type FormState = {
     [formId: string]: {
@@ -11,9 +12,7 @@ type FormState = {
 interface SignupData {
     email?: string
     password?: string
-}
-
-interface WorkoutPrefsData {
+    goal_type: string
     
 }
 
@@ -36,7 +35,7 @@ const FormContext = createContext<FormContextProps | null>(null);
 
 export const FormProvider = ({ children }: React.PropsWithChildren) => {
     const [forms, setForms] = useState<FormState>({});
-    const [signupData, setSignupData] = useState<SignupData>({});
+    const [signupData, setSignupData] = useState<SignupData>({goal_type: ""});
 
     const updateSignupData = (data: Partial<SignupData>) => {
         setSignupData((prev) => ({ ...prev, ...data }));

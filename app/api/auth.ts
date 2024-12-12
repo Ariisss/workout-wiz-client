@@ -1,6 +1,7 @@
 import { LoginCredentials } from '@/components/auth/LoginForm';
 import { ProfileData } from '@/components/auth/ProfileForm';
 import { SignUpCredentials } from '@/components/auth/SignupForm';
+import { Preferences } from '@/types/workout';
 
 const API_LINK = "http://localhost"
 const PORT = 3001
@@ -88,9 +89,9 @@ export const updateUserProfile = async (values: ProfileData) => {
     return response.json()
 }
 
-export const updateWorkoutPrefs = async (values: ProfileData) => {
-    const response = await fetch(`${API}/user`, {
-        method: 'PUT',
+export const setWorkoutPreferences = async (values: Preferences) => {
+    const response = await fetch(`${API}/work-preference`, {
+        method: 'POST',
         credentials: "include",
         headers: {
             'Content-Type': 'application/json'

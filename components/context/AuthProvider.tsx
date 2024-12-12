@@ -1,11 +1,12 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences } from '@/app/api/auth';
 import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
 import { ProfileData } from '../auth/ProfileForm';
+import { Preferences as WorkoutPrefsData } from '@/types/workout';
 
 type userType = {
     user_id: number;
@@ -27,6 +28,7 @@ type AuthContextProps = {
     logout: () => Promise<void>
     signup: (values: SignUpCredentials) => Promise<void>
     setProfile: (values: ProfileData) => Promise<void>
+    setWorkoutPrefs: (values: WorkoutPrefsData) => Promise<void>
 
 }
 
@@ -101,6 +103,16 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const setWorkoutPrefs = async (values: WorkoutPrefsData) => {
+        try {
+            await setWorkoutPreferences(values)
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+
     ////////////////////////
     //   DATA RETRIEVAL   //
     ////////////////////////
@@ -123,6 +135,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             logout,
             signup,
             setProfile,
+            setWorkoutPrefs,
             loading
         }}>
             {children}

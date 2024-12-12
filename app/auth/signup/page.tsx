@@ -11,6 +11,7 @@ import UserProfileForm from "@/components/auth/ProfileForm";
 import FitnessGoalsForm from "@/components/auth/FitGoalsForm";
 import WorkoutPreferencesForm from "@/components/auth/WorkoutPrefForm";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/context/AuthProvider";
 
 type FormKey = "signup" | "profile" | "fitgoals" | "workoutprefs";
 type FormConfig = {
@@ -26,12 +27,12 @@ type FormConfig = {
 export default function Signup() {
     const formList: FormKey[] = ['signup', 'profile', 'fitgoals', 'workoutprefs']
     const [formIdx, setFormIdx] = useState<number>(0);
+    const { loading } = useAuth()
     const { isSubmitted, isLocked } = useFormContext(formList[formIdx])
     const router = useRouter();
     const nextForm = () => setFormIdx((prev) => prev + 1)
     const handleRedirect = () => {
-        // clear formprovider
-        router.push("../auth/login"); // Redirects to ../auth/login
+        router.push("../dashboard"); // Redirects to ../auth/login
     };
 
     const formConfig: FormConfig = {
@@ -72,7 +73,7 @@ export default function Signup() {
     const Content = (): React.ReactNode => (
         <div className={clsx("flex flex-col space-y-4 w-full p-[10%] lg:p-[15%]", { "select-none": isSubmitted })}>
             <div className="flex flex-col space-y-2">
-                <p className={clsx("title-primary", {"text-2xl": title.length > 15})}>{title}</p>
+                <p className={clsx("title-primary", { "text-2xl": title.length > 15 })}>{title}</p>
                 <p className="text-gray-400 text-sm">{description}</p>
             </div>
             {formComponent}
