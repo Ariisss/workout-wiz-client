@@ -1,7 +1,9 @@
 export enum GoalTypes {
-    MUSCLE_BUILDING = "muscle_building",
-    WEIGHT_LOSS = "weight_loss",
-    MAINTENANCE = "maintenance"
+    WEIGHT_LOSS = 'Weight Loss',
+    MUSCLE_GAIN = 'Muscle Gain',
+    ENDURANCE = 'Endurance',
+    FLEXIBILITY = 'Flexibility',
+    BALANCE = 'Balance'
 }
 
 export enum IntensityLevels {
