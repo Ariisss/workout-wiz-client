@@ -32,7 +32,7 @@ export default function Signup() {
     const router = useRouter();
     const nextForm = () => setFormIdx((prev) => prev + 1)
     const handleRedirect = () => {
-        router.push("../dashboard"); // Redirects to ../auth/login
+        router.push("../auth/login")
     };
 
     const formConfig: FormConfig = {
