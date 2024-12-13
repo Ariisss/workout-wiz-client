@@ -209,7 +209,7 @@ export default function Dashboard({ }: Props) {
                 </DashboardCard>
                 <DashboardCard
                     title='Weekly Progress'
-                    desc={`${completedDays} out of ${totalDays} workouts completed`}
+                    desc={totalDays == 0 ? "No workouts yet" : `${completedDays} out of ${totalDays} workouts completed`}
                     className='px-2 pt-2 pb-[5px]'
                 >
                     <div className='flex flex-col h-full justify-between'>
@@ -230,25 +230,31 @@ export default function Dashboard({ }: Props) {
                     desc='Your last 5 workouts'
                     className=''
                 >
-                    <div className='flex flex-col lg:flex-row gap-6'>
-                        <div className='w-full'>
-                            <CalorieChart data={dashboardData.weeklyCalories} />
-                        </div>
-                        <div className='w-full flex flex-col justify-center'>
-                            {
-                                dashboardData.recentExercises.map((activity, idx) => (
-                                    <ActivityContent
-                                        key={idx}
-                                        last={idx == data.activities.length - 1}
-                                        title={activity.exercise_name}
-                                        date={activity.date}
-                                        calories={Math.ceil(activity.calories_burned) + " cal"}
-                                        duration={activity.duration_mins + " min"}
-                                    />
-                                ))
-                            }
-                        </div>
-                    </div>
+                    {
+                        dashboardData.recentExercises.length == 0 ? (
+                            <p>No recent activities</p>
+                        ) : (
+                            <div className='flex flex-col lg:flex-row gap-6'>
+                                <div className='w-full'>
+                                    <CalorieChart data={dashboardData.weeklyCalories} />
+                                </div>
+                                <div className='w-full flex flex-col justify-center'>
+                                    {
+                                        dashboardData.recentExercises.map((activity, idx) => (
+                                            <ActivityContent
+                                                key={idx}
+                                                last={idx == data.activities.length - 1}
+                                                title={activity.exercise_name}
+                                                date={activity.date}
+                                                calories={Math.ceil(activity.calories_burned) + " cal"}
+                                                duration={activity.duration_mins + " min"}
+                                            />
+                                        ))
+                                    }
+                                </div>
+                            </div>
+                        )
+                    }
                 </DashboardCard>
             </div>
         </div>
