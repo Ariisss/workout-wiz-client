@@ -11,7 +11,6 @@ import UserProfileForm from "@/components/auth/ProfileForm";
 import FitnessGoalsForm from "@/components/auth/FitGoalsForm";
 import WorkoutPreferencesForm from "@/components/auth/WorkoutPrefForm";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/context/AuthProvider";
 import { toast } from "react-toastify";
 import ToastProgress from "@/components/general/ToastProgress";
 
@@ -32,30 +31,39 @@ export default function Signup() {
     const toastId = useRef<string | number | null>(null)
     const { isSubmitted, isLocked } = useFormContext(formList[formIdx])
     const router = useRouter();
-    const nextForm = () => setFormIdx((prev) => {
-        const nextIdx = prev + 1
-        const progress = nextIdx / (formList.length)
-        const toastContent = <ToastProgress
-            title="Completing Signup"
-            desc={`Steps ${nextIdx} out of ${formList.length} completed`}
-        />
+    
+    const nextForm = () => {
+        const currentIndex = formIdx
+        const nextIndex = currentIndex + 1
+        const progress = nextIndex / formList.length
+        const toastContent = (
+            <ToastProgress
+                title="Completing Signup"
+                desc={`Steps ${nextIndex} out of ${formList.length} completed`}
+            />
+        )
 
         if (toastId.current === null) {
             toastId.current = toast.loading(toastContent, {
-                progress: progress, progressClassName: 'bg-[#66FFC7]'
+                progress,
+                progressClassName: 'bg-[#66FFC7]',
             })
         } else {
             toast.update(toastId.current, {
                 render: toastContent,
-                progress: progress, progressClassName: 'bg-[#66FFC7]'
+                progress,
+                progressClassName: 'bg-[#66FFC7]',
             })
         }
 
-        return nextIdx
-    })
-    const handleRedirect = () => {
-        if (toastId.current !== null) toast.done(toastId.current)
-        router.push("../auth/login")
+        setFormIdx(nextIndex)
+    }
+
+    const handleFormCompletion = () => {
+        if (toastId.current !== null) {
+            toast.dismiss(toastId.current);
+        }
+        router.push("../auth/login");
     };
 
     const formConfig: FormConfig = {
@@ -85,7 +93,7 @@ export default function Signup() {
         'workoutprefs': {
             title: "Workout Preferences",
             description: "Tailor your fitness journey by sharing your preferences!",
-            formComponent: <WorkoutPreferencesForm formId="workoutprefs" nextForm={handleRedirect} />,
+            formComponent: <WorkoutPreferencesForm formId="workoutprefs" nextForm={handleFormCompletion} />,
             footer: null,
         },
     }
