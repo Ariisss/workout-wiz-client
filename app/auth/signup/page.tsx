@@ -63,7 +63,6 @@ export default function Signup() {
         if (toastId.current !== null) {
             toast.dismiss(toastId.current);
         }
-        router.push("../auth/login");
     };
 
     const formConfig: FormConfig = {
