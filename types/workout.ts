@@ -1,9 +1,9 @@
-export type GoalTypes = 
-  | "Muscle Gain"
-  | "Weight Loss"
-  | "Endurance"
-  | "Flexibility"
-  | "Balance"
+export type GoalTypes =
+    | "Muscle Gain"
+    | "Weight Loss"
+    | "Endurance"
+    | "Flexibility"
+    | "Balance"
 
 export type IntensityLevels =
     "Beginner" |
@@ -24,7 +24,7 @@ export interface ExerciseLog {
     log_id: number;
     user_id: number;
     plan_exercise_id: number;
-    date: string;  
+    date: string;
     duration_mins: number;
     calories_burned: number;
     createdAt?: string;
@@ -40,8 +40,8 @@ export interface DashboardData {
     workoutStats: { total: number; lastWeek: number };
     caloriesStats: { total: number; lastWeek: number };
     dailyExercises: Array<{ day: string; completed: number; total: number }>;
-    todaysWorkout: { planName: string; exercise: PlanExercise | null };
-    weeklyCalories: Array<{day: string; value: number}>
+    todaysWorkout: { planName: string; exercise: PlanExercise | null, upcomingDay: string; };
+    weeklyCalories: Array<{ day: string; value: number }>
 }
 
 // export interface LogTypes extends Omit<ExerciseLog, 'log_id' | ''>

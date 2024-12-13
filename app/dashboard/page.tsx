@@ -6,80 +6,60 @@ import {
     Flame,
     Zap,
     ChartNoAxesColumn,
-    ScrollText
+    ScrollText,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { CalorieChart } from '@/components/general/DataChart'
 import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
-import { getLogs, getPlans, getWorkouts } from '../api/workouts'
 import { useEffect, useState } from 'react'
 import { getRecentExercises, countDailyExercises, getWorkoutToday, countTotalWorkouts, calculateCaloriesBurned, getCaloriesByWeek, getWeeklyCompletion } from '@/lib/data-utils'
-import { ExerciseLog, PlanExercise, WorkoutPlan, DashboardData } from '@/types/workout'
+import { DashboardData } from '@/types/workout'
 import { useAuth } from '@/components/context/AuthProvider'
+import { toast } from 'react-toastify'
+import ToastError from '@/components/general/ToastError'
+import Loading from './loading'
+import Link from 'next/link'
 
 type Props = {}
 
 
 
 export default function Dashboard({ }: Props) {
-    // get info thingies
-
-    const { userData } = useAuth();
-    const [workouts, setWorkouts] = useState<PlanExercise[]>([])
-    const [plans, setPlans] = useState<WorkoutPlan[]>([])
-    const [logs, setLogs] = useState<ExerciseLog[]>([])
+    const { userData, workouts, plans, logs, loading } = useAuth();
     const [dashboardData, setDashboardData] = useState<DashboardData>({
         recentExercises: [],
         workoutStats: { total: 0, lastWeek: 0 },
         caloriesStats: { total: 0, lastWeek: 0 },
         dailyExercises: [],
-        todaysWorkout: { planName: '', exercise: null },
+        todaysWorkout: { planName: '', exercise: null, upcomingDay: '' },
         weeklyCalories: []
     });
-    const [loading, setLoading] = useState<any>(null)
+    const hasPlanSelected = dashboardData.todaysWorkout.planName !== ""
+    const hasWorkoutToday = dashboardData.todaysWorkout.upcomingDay == "Today"
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [workoutsRes, plansRes, logsRes] = await Promise.all([
-                    getWorkouts(),
-                    getPlans(),
-                    getLogs()
-                ]);
-
-                const workoutsData = workoutsRes?.data || [];
-                const plansData = plansRes?.data || [];
-                const logsData = logsRes?.data || [];
-
-                setWorkouts(workoutsData);
-                setPlans(plansData);
-                setLogs(logsData);
-
                 const computedData: DashboardData = {
-                    recentExercises: getRecentExercises(logsRes.data, plansRes.data),
-                    workoutStats: countTotalWorkouts(logsRes.data),
-                    caloriesStats: calculateCaloriesBurned(logsRes.data),
-                    dailyExercises: countDailyExercises(plansRes.data[0], logsRes.data),
-                    todaysWorkout: getWorkoutToday(plansRes.data, logsRes.data),
-                    weeklyCalories: getCaloriesByWeek(logsRes.data)
+                    recentExercises: getRecentExercises(logs, plans),
+                    workoutStats: countTotalWorkouts(logs),
+                    caloriesStats: calculateCaloriesBurned(logs),
+                    dailyExercises: countDailyExercises(plans[0], logs),
+                    todaysWorkout: getWorkoutToday(plans, logs),
+                    weeklyCalories: getCaloriesByWeek(logs)
                 };
 
                 setDashboardData(computedData);
-
-                console.log(computedData)
-
-                setLoading(false);
             } catch (error) {
-                console.error('Failed to fetch dashboard data:', error);
-                setLoading(false);
+                toast.error(<ToastError title="Data Retrieval Error" desc={error} />);
             }
         };
 
         fetchData();
     }, []);
 
-    // if (loading) return <div>Loading...</div>
+    if (loading) return <Loading />
 
     const data = {
         credentials: {
@@ -166,8 +146,6 @@ export default function Dashboard({ }: Props) {
     //     };
     // } | null>(null)
 
-    // const [loading, setLoading] = useState<boolean>(true)
-
     return (
         <div className='h-fit w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8'>
             <div>
@@ -200,24 +178,34 @@ export default function Dashboard({ }: Props) {
                 <DashboardCard
                     title='Current Workout Plan'
                     desc='Your next scheduled workout.'
-                    glow={data.workoutData.hasWorkoutToday}
+                    glow={hasWorkoutToday}
                 >
-                    <div className='flex flex-col h-full justify-between'>
-                        {data.workoutData ? (
+                    {hasPlanSelected ? (
+                        <div className='flex flex-col h-full justify-between'>
                             <WorkoutContent
-                                workoutName={dashboardData.todaysWorkout.planName || 'No workout'}
-                                date="Today"
-                                hasWorkoutToday={!!dashboardData.todaysWorkout}
+                                workoutName={dashboardData.todaysWorkout.planName}
+                                date={dashboardData.todaysWorkout.upcomingDay}
+                                hasWorkoutToday={hasWorkoutToday}
                                 upcomingExercise={dashboardData.todaysWorkout.exercise}  // Assuming the first exercise is next
                             />
-                        ) : (
+                            <Link href={'logs'}>
+                                <Button className='min-h-[3rem]'>
+                                    <ScrollText />
+                                    Log Exercise
+                                </Button>
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className='flex flex-col h-full justify-between'>
                             <p>No active workout plan</p>
-                        )}
-                        <Button className='min-h-[3rem]'>
-                            <ScrollText />
-                            Log Exercise
-                        </Button>
-                    </div>
+                            <Link href={'plans'}>
+                                <Button className='min-h-[3rem]'>
+                                    <Dumbbell />
+                                    Select a Workout Plan
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
                 </DashboardCard>
                 <DashboardCard
                     title='Weekly Progress'
@@ -226,7 +214,7 @@ export default function Dashboard({ }: Props) {
                 >
                     <div className='flex flex-col h-full justify-between'>
                         <div className='flex w-full'>
-                            <Progress value={(completedDays/totalDays)*100} className='h-[16px] bg-black/50' />
+                            <Progress value={(completedDays / totalDays) * 100} className='h-[16px] bg-black/50' />
                         </div>
                         <WeeklyProgress data={dashboardData.dailyExercises} />
                         <Button className='min-h-[3rem]'>

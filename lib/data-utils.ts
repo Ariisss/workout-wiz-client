@@ -6,10 +6,10 @@ import { ExerciseLog, WorkoutPlan, DailyExerciseCount, PlanExercise } from "@/ty
 
 export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[]) => {
     if (!logs.length) return [];
-    
+
     const sortedLogs = [...logs]
         .filter(log => log?.date)
-        .sort((a, b) => 
+        .sort((a, b) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
         )
         .slice(0, 5);
@@ -17,7 +17,7 @@ export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[]) =>
     return sortedLogs.map(log => {
         const exercise = plans.reduce<PlanExercise | undefined>((found, plan) => {
             if (found) return found;
-            return plan.planExercises?.find(ex => 
+            return plan.planExercises?.find(ex =>
                 ex.plan_exercise_id === log.plan_exercise_id
             );
         }, undefined);
@@ -31,10 +31,10 @@ export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[]) =>
 
 export const getWeeklyCompletion = (dailyExercises: Array<{ day: string; completed: number; total: number }>) => {
     const activeDays = dailyExercises.filter(day => day.total > 0);
-    
+
     const totalDays = activeDays.length;
-    
-    const completedDays = activeDays.filter(day => 
+
+    const completedDays = activeDays.filter(day =>
         day.completed >= day.total && day.total > 0
     ).length;
 
@@ -43,13 +43,13 @@ export const getWeeklyCompletion = (dailyExercises: Array<{ day: string; complet
 
 export const getCaloriesByWeek = (logs: ExerciseLog[]) => {
     const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    
+
     return weekDays.map(day => {
         const dayCalories = logs.reduce((sum, log) => {
             if (!log?.date) return sum;
             const logDate = new Date(log.date);
             const logDay = logDate.toLocaleDateString('en-US', { weekday: 'long' });
-            
+
             if (logDay === day) {
                 return sum + (log.calories_burned || 0);
             }
@@ -67,18 +67,18 @@ export const countDailyExercises = (plan: WorkoutPlan, logs: ExerciseLog[]) => {
     if (!plan?.planExercises) return [];
 
     const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    
+
     return weekDays.map(day => {
-        const total = plan.planExercises.filter(ex => 
+        const total = plan.planExercises.filter(ex =>
             ex?.workout_day === day
         ).length;
 
         const completed = logs.filter(log => {
             if (!log?.date) return false;
             const logDate = new Date(log.date);
-            return logDate.toDateString() === new Date().toDateString() && 
-                plan.planExercises.some(ex => 
-                    ex?.plan_exercise_id === log?.plan_exercise_id && 
+            return logDate.toDateString() === new Date().toDateString() &&
+                plan.planExercises.some(ex =>
+                    ex?.plan_exercise_id === log?.plan_exercise_id &&
                     ex?.workout_day === day
                 );
         }).length;
@@ -94,7 +94,7 @@ export const countDailyExercises = (plan: WorkoutPlan, logs: ExerciseLog[]) => {
 
 export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {
     if (!plans?.length) {
-        return { planName: '', exercise: null };
+        return { planName: '', exercise: null, upcomingDay: '' };
     }
 
     const today = new Date();
@@ -105,27 +105,29 @@ export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {
         if (!Array.isArray(plan.planExercises)) {
             return exercises;
         }
-        
+
         const planExercises = plan.planExercises.filter(exercise => {
             return exercise?.workout_day === dayOfWeek;
         });
-        
+
         return [...exercises, ...planExercises];
     }, []);
 
     if (!todaysExercises.length) {
         console.log("No exercises found for today");
-        return { planName: '', exercise: null };
+        const upcomingExercise = findUpcomingExercise(plans, today);
+        return { planName: upcomingExercise.planName || '', exercise: upcomingExercise.exercise || null, upcomingDay: upcomingExercise.dayOfWeek || '' };
     }
 
     if (!logs?.length) {
         console.log("No logs found, returning first exercise");
-        const plan = plans.find(p => 
+        const plan = plans.find(p =>
             p.planExercises?.some(ex => ex.plan_exercise_id === todaysExercises[0].plan_exercise_id)
         );
         return {
             planName: plan?.plan_name || '',
-            exercise: todaysExercises[0]
+            exercise: todaysExercises[0],
+            upcomingDay: 'Today'
         };
     }
 
@@ -135,23 +137,73 @@ export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {
         return logDate.toDateString() === today.toDateString();
     });
 
-    const nextExercise = todaysExercises.find(exercise => 
-        !todaysLogs.some(log => 
+    const nextExercise = todaysExercises.find(exercise =>
+        !todaysLogs.some(log =>
             log.plan_exercise_id === exercise.plan_exercise_id
         )
     );
 
-    if (!nextExercise) return { planName: '', exercise: null };
+    if (!nextExercise) {
+        console.log("All exercises for today are already logged.");
+        const upcomingExercise = findUpcomingExercise(plans, today);
+        return { planName: upcomingExercise.planName || '', exercise: upcomingExercise.exercise || null, upcomingDay: 'Tomorrow' }; // Set to "Tomorrow" if no exercise for today
+    }
 
-    const plan = plans.find(p => 
+    const plan = plans.find(p =>
         p.planExercises?.some(ex => ex.plan_exercise_id === nextExercise.plan_exercise_id)
     );
 
     return {
         planName: plan?.plan_name || '',
-        exercise: nextExercise
+        exercise: nextExercise,
+        upcomingDay: 'Today'
     };
 };
+
+// Helper function to find the next available exercise, considering the next week if necessary
+const findUpcomingExercise = (plans: WorkoutPlan[], today: Date): { exercise: PlanExercise | null, planName: string | null, dayOfWeek: string } => {
+    let upcomingDay: string = ''; // Add a default value here
+    let nextExercise: PlanExercise | null = null;
+    let planName: string | null = null;
+
+    // Iterate through the next 7 days, looking for the next exercise
+    for (let i = 0; i < 7; i++) {
+        const nextDay = new Date(today);
+        nextDay.setDate(today.getDate() + i); // Move through the next 7 days
+        upcomingDay = nextDay.toLocaleDateString('en-US', { weekday: 'long' });
+
+        // Find an exercise for that specific day
+        for (const plan of plans) {
+            const exerciseForNextDay = plan.planExercises?.find(exercise => exercise.workout_day === upcomingDay);
+            if (exerciseForNextDay) {
+                nextExercise = exerciseForNextDay;
+                planName = plan.plan_name;
+                break; // Stop once we find the next available exercise
+            }
+        }
+
+        if (nextExercise) break; // Break out of the loop if we find a valid exercise
+    }
+
+    // If no exercise is found in the next 7 days, look for the first exercise next week
+    if (!nextExercise) {
+        const firstDayOfNextWeek = new Date(today);
+        firstDayOfNextWeek.setDate(today.getDate() + 7); // Set to the same day next week
+        upcomingDay = firstDayOfNextWeek.toLocaleDateString('en-US', { weekday: 'long' });
+
+        for (const plan of plans) {
+            const exerciseForNextWeek = plan.planExercises?.find(exercise => exercise.workout_day === upcomingDay);
+            if (exerciseForNextWeek) {
+                nextExercise = exerciseForNextWeek;
+                planName = plan.plan_name;
+                break;
+            }
+        }
+    }
+
+    return { exercise: nextExercise, planName, dayOfWeek: upcomingDay };
+};
+
 
 
 export const countTotalWorkouts = (data: ExerciseLog[]) => {
@@ -174,7 +226,7 @@ export const countTotalWorkouts = (data: ExerciseLog[]) => {
     // const workoutCounts = countTotalWorkouts(exerciseLogs)
     // console.log(workoutCounts.total) 
     // console.log(workoutCounts.lastWeek) 
-    
+
 }
 
 
@@ -204,7 +256,7 @@ export const calculateCaloriesBurned = (data: ExerciseLog[]) => {
 // Partial rani, this i s so hard wtf
 export const calculateWeeklyStreak = (data: ExerciseLog[], plans: WorkoutPlan[]) => {
     // sorts desc order
-    const sortedLogs = [...data].sort((a, b) => 
+    const sortedLogs = [...data].sort((a, b) =>
         new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
