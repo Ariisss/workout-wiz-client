@@ -4,7 +4,8 @@ import { cn } from '@/lib/utils';
 
 interface ProgressData {
     day: string;
-    progress: number;
+    completed: number;
+    total: number;
 }
 
 interface WeeklyProgressProps {
@@ -13,7 +14,7 @@ interface WeeklyProgressProps {
 }
 
 const WeeklyProgress = ({ data, className }: WeeklyProgressProps) => {
-    const dummyDivider = 10
+    // const dummyDivider = 10
     const middleIndex = Math.ceil(data.length / 2);
     const column1 = data.slice(0, middleIndex);
     const column2 = data.slice(middleIndex);
@@ -27,10 +28,10 @@ const WeeklyProgress = ({ data, className }: WeeklyProgressProps) => {
                             <div className='w-full font-normal flex flex-row gap-4'>
                                 <p className='w-[50%]'>{item.day.slice(0, 3)}</p>
                                 <p className='w-full text-left text-muted-foreground'>
-                                    ({item.progress / dummyDivider}/{100 / dummyDivider})
+                                    ({item.completed}/{item.total})
                                 </p>
                             </div>
-                            <Progress value={item.progress} className="h-[14px] w-full bg-black/50" />
+                            <Progress value={(item.completed / item.total) * 100} className="h-[14px] w-full bg-black/50" />
                         </div>
                     ))}
                 </div>
