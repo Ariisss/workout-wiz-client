@@ -15,6 +15,11 @@ export interface DailyExerciseCount {
     total: number;
 }
 
+export interface PeriodComparison {
+    current: number;
+    previous: number;
+}
+
 export interface ExerciseLog {
     log_id: number;
     user_id: number;
