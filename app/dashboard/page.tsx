@@ -12,9 +12,9 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { CalorieChart } from '@/components/general/DataChart'
 import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
-import { getWorkouts } from '../api/workouts'
+import { getPlans, getWorkouts } from '../api/workouts'
 import { useEffect, useState } from 'react'
-import { ExerciseLog, PlanExercise, WorkoutPlan, GoalTypes, IntensityLevels } from '@/types/workout'
+import { getRecentExercises, countDailyExercises, getWorkoutToday, countTotalWorkouts, calculateCaloriesBurned } from '@/lib/data-utils'
 
 type Props = {}
 
@@ -27,22 +27,34 @@ export default function Dashboard({ }: Props) {
     const [loading, setLoading] = useState<any>(null)
 
     useEffect(() => {
-        const fetchWorkouts = async () => {
-            try {
-                const response = await getWorkouts();
-                setWorkouts(response.data);
-                // console.log(response.data);
-                // console.log(response.data.length);
-            } catch (error) {
-                console.error('Failed to fetch workouts:', error)
-            } finally {
-                setLoading(false)
-            }
-        }
-        
-        fetchWorkouts()
-        // console.log(workouts)
-    }, [])
+        const fetchData = async () => {
+            if (workouts) return
+    
+            const fetchWorkouts = async () => {
+                try {
+                    const response = await getWorkouts();
+                    setWorkouts(response.data);
+                } catch (error) {
+                    console.error('Failed to fetch workouts:', error);
+                }
+            };
+    
+            const fetchPlans = async () => {
+                try {
+                    const response = await getPlans();
+                    setWorkouts(response.data);
+                    // console.log("Hello: " + response.data[0].planExercises.length);
+                } catch (error) {
+                    console.error('Failed to fetch workouts:', error);
+                }
+            };
+    
+            await Promise.all([fetchPlans(), fetchWorkouts()]);
+            setLoading(false);
+        };
+    
+        fetchData();
+    }, [workouts])
 
     // if (loading) return <div>Loading...</div>
 
