@@ -1,8 +1,8 @@
 import { ExerciseLog, WorkoutPlan, DailyExerciseCount } from "@/types/workout"
 
+// needed data:
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
 // get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
-
 
 export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) => {
 
@@ -118,6 +118,7 @@ export const calculateCaloriesBurned = (data: ExerciseLog[]) => {
 
 }
 
+// Partial rani, this i s so hard wtf
 export const calculateWeeklyStreak = (data: ExerciseLog[], plans: WorkoutPlan[]) => {
     // sorts desc order
     const sortedLogs = [...data].sort((a, b) => 
