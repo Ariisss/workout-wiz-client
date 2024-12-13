@@ -54,8 +54,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     // loading handler
     useEffect(() => {
-        console.log('Useeffect triggerred asldkas');
-
         if (Cookies.get('token') !== undefined) {
             fetchUserData()
             fetchWorkoutData()
