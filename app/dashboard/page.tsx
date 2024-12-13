@@ -59,8 +59,7 @@ export default function Dashboard({ }: Props) {
         fetchData();
     }, []);
 
-    if (loading) return <Loading />
-
+    
     const data = {
         credentials: {
             name: 'Ced69'
@@ -130,22 +129,7 @@ export default function Dashboard({ }: Props) {
 
     const { completedDays, totalDays } = getWeeklyCompletion(dashboardData.dailyExercises);
 
-    // use this when integrated with backend already:
-
-    // const [workouts, setWorkouts] = useState<{
-    //     activities: ExerciseLog[];
-    //     workoutPlan: WorkoutPlan | null;
-    //     statSum: {
-    //         totalWorkouts: { val: string, last: number };
-    //         caloriesBurned: { val: string, last: number };
-    //         weekStreak: number;
-    //     };
-    //     chartData: {
-    //         calories: { period: string; value: number }[];
-    //         progressEx: { day: string; progress: number }[];
-    //     };
-    // } | null>(null)
-
+    if (loading) return <Loading />
     return (
         <div className='h-fit w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8'>
             <div>
