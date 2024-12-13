@@ -6,8 +6,9 @@ import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
 import { ProfileData } from '../auth/ProfileForm';
-import { Preferences as WorkoutPrefsData } from '@/types/workout';
+import { ExerciseLog, PlanExercise, WorkoutPlan, Preferences as WorkoutPrefsData } from '@/types/workout';
 import { toast } from 'react-toastify';
+import { getLogs, getPlans, getWorkouts } from '@/app/api/workouts';
 
 type userType = {
     user_id: number;
@@ -24,6 +25,9 @@ type userType = {
 
 type AuthContextProps = {
     userData: userType
+    workouts: PlanExercise[]
+    plans: WorkoutPlan[]
+    logs: ExerciseLog[]
     loading: boolean
     login: (values: LoginCredentials) => Promise<void>
     logout: () => Promise<void>
@@ -38,15 +42,25 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 export const publicRoutes = ['/', '/auth/login', '/auth/signup']
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [userData, setUserData] = useState<userType>(null)    
-    const [loading, setLoading] = useState(true)
-    const toastId = useRef<string | number | null>(null)
     const router = useRouter()
     const pathname = usePathname()
+    const toastId = useRef<string | number | null>(null)
+
+    const [loading, setLoading] = useState(true)
+    const [userData, setUserData] = useState<userType>(null)
+    const [workouts, setWorkouts] = useState<PlanExercise[]>([])
+    const [plans, setPlans] = useState<WorkoutPlan[]>([])
+    const [logs, setLogs] = useState<ExerciseLog[]>([])
 
     // loading handler
     useEffect(() => {
-        if (Cookies.get('token') !== undefined) fetchUserData()
+        console.log('Useeffect triggerred asldkas');
+
+        if (Cookies.get('token') !== undefined) {
+            fetchUserData()
+            fetchWorkoutData()
+        }
+
     }, []);
 
     // unauthenticated handler
@@ -66,6 +80,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             await loginUser(values)
 
             await fetchUserData()
+            await fetchWorkoutData()
             router.push("/dashboard");
         } catch (error) {
             console.error(error);
@@ -132,7 +147,35 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             if (toastId.current !== null) toast.done(toastId.current)
             setLoading(false)
         }
-    };
+    }
+
+    const fetchWorkoutData = async () => {
+        try {
+            setLoading(true);
+            toastId.current = toast.loading("Fetching Workout Data...", {
+                progressClassName: 'bg-[#66FFC7]'
+            });
+
+            const [workoutsRes, plansRes, logsRes] = await Promise.all([
+                getWorkouts(),
+                getPlans(),
+                getLogs()
+            ]);
+
+            const workoutsData = workoutsRes?.data || [];
+            const plansData = plansRes?.data || [];
+            const logsData = logsRes?.data || [];
+
+            setWorkouts(workoutsData);
+            setPlans(plansData);
+            setLogs(logsData);
+        } catch (error) {
+            console.error('Failed to fetch workout data:', error);
+        } finally {
+            if (toastId.current !== null) toast.done(toastId.current)
+            setLoading(false)
+        }
+    }
 
     return (
         <AuthContext.Provider value={{
@@ -142,6 +185,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             signup,
             setProfile,
             setWorkoutPrefs,
+            workouts,
+            plans,
+            logs,
             loading
         }}>
             {children}
