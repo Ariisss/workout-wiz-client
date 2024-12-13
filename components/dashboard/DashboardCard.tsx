@@ -1,6 +1,7 @@
 "use client"
 import { BackgroundGradient } from "../ui/background-gradient";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import React from "react";
@@ -61,7 +62,7 @@ export function DashboardCard({
         </Card>
     )
     
-    const backgrounds = [...defaultBackgrounds, ...backgroundOptions]; // Combine default and custom backgrounds
+    const backgrounds = [...defaultBackgrounds, ...backgroundOptions]; 
     return (
         <div className="rounded-[12px] h-full w-full">
             <BackgroundWrapper backgrounds={backgrounds}>
@@ -73,20 +74,20 @@ export function DashboardCard({
 
 function SkeletonLoader() {
     return (
-        <div className="flex flex-col gap-4 mt-2 md:-mt-2 h-full pb-8 lg:pb-0 animate-pulse">
-            <div className="flex flex-row gap-2 h-full justify-between items-center">
-                <div className="flex flex-col space-y-2 w-1/2">
-                    <div className="h-5 bg-gray-700 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-800 rounded w-1/2"></div>
+        <div className="flex flex-col justify-start mt-4 mb-4 space-y-6 py-4 h-full">
+            <div className="flex flex-row justify-between items-center space-x-4">
+                <div className="flex-1 space-y-3">
+                    <Skeleton className="h-6 w-3/4 bg-gray-700 rounded animate-pulse" />
+                    <Skeleton className="h-4 w-1/2 bg-gray-600 rounded animate-pulse" />
                 </div>
-                <div className="w-1/4 h-8 bg-gray-700 rounded"></div>
+                <Skeleton className="h-10 w-1/4 bg-gray-800 rounded-lg animate-pulse" />
             </div>
-            <div className="flex flex-row gap-2 h-full justify-between items-center">
-                <div className="flex flex-col space-y-2 w-1/2">
-                    <div className="h-5 bg-gray-700 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-800 rounded w-1/2"></div>
+            <div className="flex flex-row justify-between items-center space-x-4">
+                <div className="flex-1 space-y-3">
+                    <Skeleton className="h-6 w-3/4 bg-gray-700 rounded animate-pulse" />
+                    <Skeleton className="h-4 w-1/2 bg-gray-600 rounded animate-pulse" />
                 </div>
-                <div className="w-1/4 h-8 bg-gray-700 rounded"></div>
+                <Skeleton className="h-10 w-1/4 bg-gray-800 rounded-lg animate-pulse" />
             </div>
         </div>
     );
@@ -161,7 +162,6 @@ export function WorkoutContent({
                     </div>
                     {upcomingExercise && (
                         <div className="flex flex-col gap-0 justify-center w-full h-full">
-                            {/* Next exercise */}
                             <p className="text-lg font-medium">Upcoming Exercise</p>
                             <p className="text-muted-foreground font-roboto">
                                 {upcomingExercise.name} | {upcomingExercise.sets} sets, {upcomingExercise.reps} reps
