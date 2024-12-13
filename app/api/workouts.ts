@@ -1,9 +1,15 @@
+import { ExerciseLog, PlanExercise, WorkoutPlan } from '@/types/workout';
 import { API } from './auth'
 
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
 // get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
 
-export const getWorkouts = async () => {
+interface ApiResponse<T> {
+    data: T[];
+    error?: string;
+}
+
+export const getWorkouts = async (): Promise<ApiResponse<PlanExercise>> => {
 
     const response = await fetch(`${API}/exercises`, {
         method: 'GET',
@@ -15,10 +21,10 @@ export const getWorkouts = async () => {
         throw new Error(error.message)
     }
 
-    return response.json()
+    return response.json() as Promise<ApiResponse<PlanExercise>>;
 }
 
-export const getPlans = async () => {
+export const getPlans = async (): Promise<ApiResponse<WorkoutPlan>> => {
 
     const response = await fetch(`${API}/workout-plan`, {
         method: 'GET',
@@ -33,7 +39,7 @@ export const getPlans = async () => {
     return response.json()
 }
 
-export const getLogs = async () => {
+export const getLogs = async (): Promise<ApiResponse<ExerciseLog>> => {
 
     const response = await fetch(`${API}/exercise-logs`, {
         method: 'GET',
