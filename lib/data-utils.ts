@@ -64,7 +64,6 @@ export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) =
 
 export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {
     if (!plans?.length) {
-        console.log("No plans found");
         return null;
     }
 
@@ -72,20 +71,15 @@ export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {
     const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
     console.log("Current day:", dayOfWeek);
 
-    // Get all exercises scheduled for today from all plans
     const todaysExercises = plans.reduce<PlanExercise[]>((exercises, plan) => {
-        // Check for planExercises instead of exercises
         if (!Array.isArray(plan.planExercises)) {
-            console.log("Plan has no planExercises array:", plan);
             return exercises;
         }
         
         const planExercises = plan.planExercises.filter(exercise => {
-            console.log("Checking exercise:", exercise);
             return exercise?.workout_day === dayOfWeek;
         });
         
-        console.log("Found exercises for today:", planExercises);
         return [...exercises, ...planExercises];
     }, []);
 
