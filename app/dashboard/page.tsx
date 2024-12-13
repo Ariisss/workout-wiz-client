@@ -31,7 +31,6 @@ export default function Dashboard({ }: Props) {
         recentExercises: [] as ExerciseLog[],
         workoutStats: { total: 0, lastWeek: 0 },
         caloriesStats: { total: 0, lastWeek: 0 },
-        weeklyStreak: 0,
         dailyExercises: {} as Record<string, { completed: number; total: number }>,
         todaysWorkout: null as PlanExercise | null
     })
@@ -39,41 +38,35 @@ export default function Dashboard({ }: Props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            // if (workouts) return
-    
-            const fetchWorkouts = async () => {
-                try {
-                    const response = await getWorkouts();
-                    setWorkouts(response.data);
-                } catch (error) {
-                    console.error('Failed to fetch workouts:', error);
-                }
-            };
-    
-            const fetchPlans = async () => {
-                try {
-                    const response = await getPlans();
-                    setPlans(response.data);
-                } catch (error) {
-                    console.error('Failed to fetch workouts:', error);
-                }
-            };
+            try {
+                const [workoutsRes, plansRes, logsRes] = await Promise.all([
+                    getWorkouts(),
+                    getPlans(),
+                    getLogs()
+                ]);
 
-            const fetchLogs = async () => {
-                try {
-                    const response = await getLogs();
-                    setLogs(response.data);
-                } catch (error) {
-                    console.error('Failed to fetch workouts:', error);
-                }
+                setWorkouts(workoutsRes.data);
+                setPlans(plansRes.data);
+                setLogs(logsRes.data);
+
+                const computedData = {
+                    recentExercises: getRecentExercises(logsRes.data),
+                    workoutStats: countTotalWorkouts(logsRes.data),
+                    caloriesStats: calculateCaloriesBurned(logsRes.data),
+                    dailyExercises: countDailyExercises(plansRes.data, logsRes.data),
+                    todaysWorkout: plansRes.data[0] ? getWorkoutToday(plansRes.data[0], logsRes.data) : null
+                };
+
+                setDashboardData(computedData);
+                setLoading(false);
+            } catch (error) {
+                console.error('Failed to fetch dashboard data:', error);
+                setLoading(false);
             }
-    
-            await Promise.all([fetchPlans(), fetchWorkouts(), fetchLogs()]);
-            setLoading(false);
         };
-    
+
         fetchData();
-    }, [])
+    }, []);
 
     // if (loading) return <div>Loading...</div>
 
