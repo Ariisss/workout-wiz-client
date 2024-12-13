@@ -39,7 +39,7 @@ export function DashboardCard({
         : []
 
     const CardElement = () => (
-        <Card className={cn("w-full h-full p-0 flex flex-col gap-2 bg-background-darkest border-2 border-background", className)}>
+        <Card className={cn("w-full h-full flex flex-col gap-2 bg-background-darkest border-2 border-background", className)}>
             {subHeader ?
                 <CardHeader className="flex flex-row justify-between items-center p-6 pb-0 h-full">
                     <h3 className="text-white font-medium mt-[2px]">{title}</h3>
@@ -56,9 +56,7 @@ export function DashboardCard({
             }
             <CardContent className="h-full">
                 <div className={clsx("h-full w-full", contentClassName)}>
-                    {/* {isLoading ? <SkeletonLoader /> : children } */}
-
-                    {isLoading ? children : <SkeletonLoader />} 
+                    {children}
                 </div>
             </CardContent>
         </Card>
@@ -70,27 +68,6 @@ export function DashboardCard({
             <BackgroundWrapper backgrounds={backgrounds}>
                 <CardElement />
             </BackgroundWrapper>
-        </div>
-    );
-}
-
-function SkeletonLoader() {
-    return (
-        <div className="flex flex-col justify-start mt-4 mb-4 space-y-6 h-full">
-            <div className="flex flex-row justify-between items-center space-x-4">
-                <div className="flex-1 space-y-3">
-                    <Skeleton className="h-6 w-3/4 bg-gray-700 rounded animate-pulse" />
-                    <Skeleton className="h-4 w-1/2 bg-gray-600 rounded animate-pulse" />
-                </div>
-                <Skeleton className="h-10 w-1/4 bg-gray-800 rounded-lg animate-pulse" />
-            </div>
-            <div className="flex flex-row justify-between items-center space-x-4">
-                <div className="flex-1 space-y-3">
-                    <Skeleton className="h-6 w-3/4 bg-gray-700 rounded animate-pulse" />
-                    <Skeleton className="h-4 w-1/2 bg-gray-600 rounded animate-pulse" />
-                </div>
-                <Skeleton className="h-10 w-1/4 bg-gray-800 rounded-lg animate-pulse" />
-            </div>
         </div>
     );
 }
