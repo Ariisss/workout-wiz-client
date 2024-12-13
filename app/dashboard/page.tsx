@@ -12,9 +12,10 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { CalorieChart } from '@/components/general/DataChart'
 import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
-import { getPlans, getWorkouts } from '../api/workouts'
+import { getLogs, getPlans, getWorkouts } from '../api/workouts'
 import { useEffect, useState } from 'react'
 import { getRecentExercises, countDailyExercises, getWorkoutToday, countTotalWorkouts, calculateCaloriesBurned } from '@/lib/data-utils'
+import { ExerciseLog, PlanExercise, WorkoutPlan } from '@/types/workout'
 
 type Props = {}
 
@@ -23,12 +24,22 @@ type Props = {}
 export default function Dashboard({ }: Props) {
     // get info thingies
 
-    const [workouts, setWorkouts] = useState<any>(null)
+    const [workouts, setWorkouts] = useState<PlanExercise[]>([])
+    const [plans, setPlans] = useState<WorkoutPlan[]>([])
+    const [logs, setLogs] = useState<ExerciseLog[]>([])
+    const [dashboardData, setDashboardData] = useState({
+        recentExercises: [] as ExerciseLog[],
+        workoutStats: { total: 0, lastWeek: 0 },
+        caloriesStats: { total: 0, lastWeek: 0 },
+        weeklyStreak: 0,
+        dailyExercises: {} as Record<string, { completed: number; total: number }>,
+        todaysWorkout: null as PlanExercise | null
+    })
     const [loading, setLoading] = useState<any>(null)
 
     useEffect(() => {
         const fetchData = async () => {
-            if (workouts) return
+            // if (workouts) return
     
             const fetchWorkouts = async () => {
                 try {
@@ -42,19 +53,27 @@ export default function Dashboard({ }: Props) {
             const fetchPlans = async () => {
                 try {
                     const response = await getPlans();
-                    setWorkouts(response.data);
-                    // console.log("Hello: " + response.data[0].planExercises.length);
+                    setPlans(response.data);
                 } catch (error) {
                     console.error('Failed to fetch workouts:', error);
                 }
             };
+
+            const fetchLogs = async () => {
+                try {
+                    const response = await getLogs();
+                    setLogs(response.data);
+                } catch (error) {
+                    console.error('Failed to fetch workouts:', error);
+                }
+            }
     
-            await Promise.all([fetchPlans(), fetchWorkouts()]);
+            await Promise.all([fetchPlans(), fetchWorkouts(), fetchLogs()]);
             setLoading(false);
         };
     
         fetchData();
-    }, [workouts])
+    }, [])
 
     // if (loading) return <div>Loading...</div>
 
