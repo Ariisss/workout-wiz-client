@@ -3,6 +3,51 @@ import { ExerciseLog, WorkoutPlan } from "@/types/workout"
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
 // get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
 
+interface DailyExerciseCount {
+    completed: number
+    total: number
+}
+
+export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) => {
+
+    const today = new Date();
+    const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const result: { [key: string]: DailyExerciseCount } = {};
+    
+    weekDays.forEach(day => {
+        const totalExercises = plans.reduce((sum, plan) => 
+            sum + plan.exercises.filter(ex => ex.workout_day === day).length, 0
+        );
+
+        const completedExercises = logs.filter(log => {
+            const logDate = new Date(log.date);
+            return logDate.toDateString() === today.toDateString() && 
+                   plans.some(plan => 
+                       plan.exercises.some(ex => 
+                           ex.plan_exercise_id === log.plan_exercise_id && 
+                           ex.workout_day === day
+                       )
+                   );
+        }).length;
+
+        if (totalExercises > 0) {
+            result[day] = {
+                completed: completedExercises,
+                total: totalExercises
+            };
+        }
+    });
+    return result;
+    //Usage:
+    // const result = countDailyExercises(workoutPlans, exerciseLogs);
+    // Returns: { 
+    //   "Monday": { completed: 2, total: 10 },
+    //   "Wednesday": { completed: 1, total: 5 },
+    //   "Friday": { completed: 0, total: 3 }
+    // }
+}
+
+
 export const getWorkoutToday = (plan: WorkoutPlan, logs?: ExerciseLog[]) => {
     const today = new Date();
     const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
@@ -19,13 +64,11 @@ export const getWorkoutToday = (plan: WorkoutPlan, logs?: ExerciseLog[]) => {
         return todaysExercises[0];
     }
 
-    // Filter today's logs
     const todaysLogs = logs.filter(log => {
         const logDate = new Date(log.date);
         return logDate.toDateString() === today.toDateString();
     });
 
-    // Find first exercise that hasn't been logged today
     const nextExercise = todaysExercises.find(exercise => 
         !todaysLogs.some(log => 
             log.plan_exercise_id === exercise.plan_exercise_id
