@@ -27,11 +27,13 @@ import { Button } from "../ui/button"
 type WorkoutSelectProps = {
     selected: string
     data: string[]
+    onSelect?: (value: string) => void
+    onDelete?: () => void
 }
 
-export function WorkoutSelect({ selected, data }: WorkoutSelectProps) {
+export function WorkoutSelect({ selected, data, onSelect }: WorkoutSelectProps) {
     return (
-        <Select>
+        <Select onValueChange={onSelect}>
             <SelectTrigger className="w-[240px] bg-primary h-[3rem] font-medium">
                 <SelectValue className="text-xl" placeholder="Switch workout" />
             </SelectTrigger>
@@ -58,7 +60,7 @@ export function WorkoutSelect({ selected, data }: WorkoutSelectProps) {
     )
 }
 
-export const WorkoutOptions = ({ selected, data }: WorkoutSelectProps) => {
+export const WorkoutOptions = ({ selected, data, onSelect, onDelete }: WorkoutSelectProps) => {
     return (
         <NavigationMenu>
             <NavigationMenuList className="bg-none rounded-[12px] mt-2 lg:mt-0">
@@ -71,7 +73,7 @@ export const WorkoutOptions = ({ selected, data }: WorkoutSelectProps) => {
                     <NavigationMenuContent className=" w-full rounded-[12px] pl-[0.4rem] pr-[0.5rem] py-[0.6rem]">
                         <ul className="w-full md:w-[228px]">
                             {data.map((element, idx) => (
-                                <li key={idx}>
+                                <li key={idx} onClick={() => onSelect?.(element)}>
                                     <NavigationMenuLink>
                                         <div
                                             className={clsx(
@@ -101,14 +103,19 @@ export const WorkoutOptions = ({ selected, data }: WorkoutSelectProps) => {
                     </NavigationMenuContent>
                 </NavigationMenuItem>
 
-                <NavigationMenuItem>
-                    <Button className='w-full lg:w-fit bg-red-600 hover:bg-destructive'>
-                        <NavigationMenuLink>
-                            <Trash2 className="stroke-[2px]" />
-                        </NavigationMenuLink>
-                    </Button>
-                </NavigationMenuItem>
+                {selected && (
+                    <NavigationMenuItem>
+                        <Button 
+                            className='w-full lg:w-fit bg-red-600 hover:bg-destructive'
+                            onClick={onDelete}
+                        >
+                            <NavigationMenuLink>
+                                <Trash2 className="stroke-[2px]" />
+                            </NavigationMenuLink>
+                        </Button>
+                    </NavigationMenuItem>
+                )}
             </NavigationMenuList>
-        </NavigationMenu >
+        </NavigationMenu>
     )
 }
