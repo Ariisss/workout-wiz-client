@@ -56,10 +56,9 @@ export function DashboardCard({
             }
             <CardContent className="h-full">
                 <div className={clsx("h-full w-full", contentClassName)}>
-                    {isLoading ? <SkeletonLoader /> : children }
+                    {/* {isLoading ? <SkeletonLoader /> : children } */}
 
-                    {/* use this to test/display skeleton
-                    {isLoading ? children : <SkeletonLoader />}  */}
+                    {isLoading ? children : <SkeletonLoader />} 
                 </div>
             </CardContent>
         </Card>
@@ -77,7 +76,7 @@ export function DashboardCard({
 
 function SkeletonLoader() {
     return (
-        <div className="flex flex-col justify-start mt-4 mb-4 space-y-6 py-4 h-full">
+        <div className="flex flex-col justify-start mt-4 mb-4 space-y-6 h-full">
             <div className="flex flex-row justify-between items-center space-x-4">
                 <div className="flex-1 space-y-3">
                     <Skeleton className="h-6 w-3/4 bg-gray-700 rounded animate-pulse" />
