@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { use } from 'react'
 import { ActivityContent, DashboardCard, ValueContent, WorkoutContent } from '@/components/dashboard/DashboardCard'
 import {
     Dumbbell,
@@ -14,8 +14,9 @@ import { CalorieChart } from '@/components/general/DataChart'
 import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
 import { getLogs, getPlans, getWorkouts } from '../api/workouts'
 import { useEffect, useState } from 'react'
-import { getRecentExercises, countDailyExercises, getWorkoutToday, countTotalWorkouts, calculateCaloriesBurned } from '@/lib/data-utils'
-import { ExerciseLog, PlanExercise, WorkoutPlan } from '@/types/workout'
+import { getRecentExercises, countDailyExercises, getWorkoutToday, countTotalWorkouts, calculateCaloriesBurned, getCaloriesByWeek } from '@/lib/data-utils'
+import { ExerciseLog, PlanExercise, WorkoutPlan, DashboardData } from '@/types/workout'
+import { useAuth } from '@/components/context/AuthProvider'
 
 type Props = {}
 
@@ -24,16 +25,18 @@ type Props = {}
 export default function Dashboard({ }: Props) {
     // get info thingies
 
+    const { userData } = useAuth();
     const [workouts, setWorkouts] = useState<PlanExercise[]>([])
     const [plans, setPlans] = useState<WorkoutPlan[]>([])
     const [logs, setLogs] = useState<ExerciseLog[]>([])
-    const [dashboardData, setDashboardData] = useState({
-        recentExercises: [] as ExerciseLog[],
+    const [dashboardData, setDashboardData] = useState<DashboardData>({
+        recentExercises: [],
         workoutStats: { total: 0, lastWeek: 0 },
         caloriesStats: { total: 0, lastWeek: 0 },
-        dailyExercises: {} as Record<string, { completed: number; total: number }>,
-        todaysWorkout: null as PlanExercise | null
-    })
+        dailyExercises: [],
+        todaysWorkout: { planName: '', exercise: null },
+        weeklyCalories: []
+    });
     const [loading, setLoading] = useState<any>(null)
 
     useEffect(() => {
@@ -45,19 +48,27 @@ export default function Dashboard({ }: Props) {
                     getLogs()
                 ]);
 
-                setWorkouts(workoutsRes.data);
-                setPlans(plansRes.data);
-                setLogs(logsRes.data);
+                const workoutsData = workoutsRes?.data || [];
+                const plansData = plansRes?.data || [];
+                const logsData = logsRes?.data || [];
 
-                const computedData = {
-                    recentExercises: getRecentExercises(logsRes.data),
+                setWorkouts(workoutsData);
+                setPlans(plansData);
+                setLogs(logsData);
+
+                const computedData: DashboardData = {
+                    recentExercises: getRecentExercises(logsRes.data, plansRes.data),
                     workoutStats: countTotalWorkouts(logsRes.data),
                     caloriesStats: calculateCaloriesBurned(logsRes.data),
-                    dailyExercises: countDailyExercises(plansRes.data, logsRes.data),
-                    todaysWorkout: plansRes.data[0] ? getWorkoutToday(plansRes.data[0], logsRes.data) : null
+                    dailyExercises: countDailyExercises(plansRes.data[0], logsRes.data),
+                    todaysWorkout: getWorkoutToday(plansRes.data, logsRes.data),
+                    weeklyCalories: getCaloriesByWeek(logsRes.data)
                 };
 
                 setDashboardData(computedData);
+
+                console.log(computedData)
+
                 setLoading(false);
             } catch (error) {
                 console.error('Failed to fetch dashboard data:', error);
@@ -158,7 +169,7 @@ export default function Dashboard({ }: Props) {
     return (
         <div className='h-fit w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8'>
             <div>
-                <ValueContent main={`Welcome back, ${data.credentials.name}`} sub={"Here's your fitness overview for today"} />
+                <ValueContent main={`Welcome back, ${userData?.username}`} sub={"Here's your fitness overview for today"} />
             </div>
             <div className='min-h-[144px] flex flex-col lg:flex-row gap-6'>
                 <DashboardCard
@@ -166,14 +177,14 @@ export default function Dashboard({ }: Props) {
                     title='Total Workouts'
                     icon={<Dumbbell className='-rotate-45 text-primary-light h-6 w-6 my-[-5px]' />}
                 >
-                    <ValueContent main={data.statSum.totalWorkouts.val} sub={`+${data.statSum.totalWorkouts.last} from last week`} />
+                    <ValueContent main={dashboardData.workoutStats.total.toString()} sub={`+${dashboardData.workoutStats.lastWeek} from last week`} />
                 </DashboardCard>
                 <DashboardCard
                     subHeader
                     title='Calories Burned'
                     icon={<Flame className='text-primary-light h-6 w-6' />}
                 >
-                    <ValueContent main={data.statSum.caloriesBurned.val} sub={`+${data.statSum.caloriesBurned.last} from last week`} />
+                    <ValueContent main={Math.ceil(dashboardData.caloriesStats.total).toString()} sub={`+${Math.ceil(dashboardData.caloriesStats.lastWeek)} from last week`} />
                 </DashboardCard>
                 <DashboardCard
                     subHeader
@@ -192,10 +203,10 @@ export default function Dashboard({ }: Props) {
                     <div className='flex flex-col h-full justify-between'>
                         {data.workoutData ? (
                             <WorkoutContent
-                                workoutName={data.workoutData.workoutName}
+                                workoutName={dashboardData.todaysWorkout.planName || 'No workout'}
                                 date="Today"
-                                hasWorkoutToday={true}
-                                upcomingExercise={data.workoutData.upcomingExercise}  // Assuming the first exercise is next
+                                hasWorkoutToday={!!dashboardData.todaysWorkout}
+                                upcomingExercise={dashboardData.todaysWorkout.exercise}  // Assuming the first exercise is next
                             />
                         ) : (
                             <p>No active workout plan</p>
@@ -215,7 +226,7 @@ export default function Dashboard({ }: Props) {
                         <div className='flex w-full'>
                             <Progress value={80} className='h-[16px] bg-black/50' />
                         </div>
-                        <WeeklyProgress data={data.chartData.progressEx} />
+                        <WeeklyProgress data={dashboardData.dailyExercises} />
                         <Button className='min-h-[3rem]'>
                             <ChartNoAxesColumn />
                             View Progress
@@ -231,18 +242,18 @@ export default function Dashboard({ }: Props) {
                 >
                     <div className='flex flex-col lg:flex-row gap-6'>
                         <div className='w-full'>
-                            <CalorieChart data={data.chartData.calories} />
+                            <CalorieChart data={dashboardData.weeklyCalories} />
                         </div>
                         <div className='w-full flex flex-col justify-center'>
                             {
-                                data.activities.map((activity, idx) => (
+                                dashboardData.recentExercises.map((activity, idx) => (
                                     <ActivityContent
                                         key={idx}
                                         last={idx == data.activities.length - 1}
-                                        title={activity.title}
+                                        title={activity.exercise_name}
                                         date={activity.date}
-                                        calories={activity.calories + " cal"}
-                                        duration={activity.duration + " min"}
+                                        calories={Math.ceil(activity.calories_burned) + " cal"}
+                                        duration={activity.duration_mins + " min"}
                                     />
                                 ))
                             }
