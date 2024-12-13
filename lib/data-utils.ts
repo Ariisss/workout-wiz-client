@@ -19,47 +19,33 @@ export const getRecentExercises = (logs: ExerciseLog[]) => {
     // console.log('Last 5 workouts:', recentLogs);    
 }
 
-export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) => {
-    if (!plans.length) return {};
+export const countDailyExercises = (plan: WorkoutPlan, logs: ExerciseLog[]) => {
+    if (!plan?.planExercises) return [];
 
-    const today = new Date();
-    const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const result: { [key: string]: DailyExerciseCount } = {};
+    const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     
-    weekDays.forEach(day => {
-        const totalExercises = plans.reduce((sum, plan) => {
-            if (!plan?.planExercises) return sum;
-            return sum + (plan.planExercises.filter(ex => ex?.workout_day === day)?.length || 0);
-        }, 0);
+    return weekDays.map(day => {
+        const total = plan.planExercises.filter(ex => 
+            ex?.workout_day === day
+        ).length;
 
-        const completedExercises = logs.filter(log => {
+        const completed = logs.filter(log => {
             if (!log?.date) return false;
             const logDate = new Date(log.date);
-            return logDate.toDateString() === today.toDateString() && 
-                   plans.some(plan => 
-                       plan?.planExercises?.some(ex => 
-                           ex?.plan_exercise_id === log?.plan_exercise_id && 
-                           ex?.workout_day === day
-                       )
-                   );
+            return logDate.toDateString() === new Date().toDateString() && 
+                plan.planExercises.some(ex => 
+                    ex?.plan_exercise_id === log?.plan_exercise_id && 
+                    ex?.workout_day === day
+                );
         }).length;
 
-        if (totalExercises > 0) {
-            result[day] = {
-                completed: completedExercises,
-                total: totalExercises
-            };
-        }
+        return {
+            day,
+            completed,
+            total
+        };
     });
-    return result;
-    //Usage:
-    // const result = countDailyExercises(workoutPlans, exerciseLogs);
-    // Returns: { 
-    //   "Monday": { completed: 2, total: 10 },
-    //   "Wednesday": { completed: 1, total: 5 },
-    //   "Friday": { completed: 0, total: 3 }
-    // }
-}
+};
 
 
 export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {

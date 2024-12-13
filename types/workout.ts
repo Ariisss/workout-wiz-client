@@ -35,7 +35,7 @@ export interface DashboardData {
     recentExercises: ExerciseLog[];
     workoutStats: { total: number; lastWeek: number };
     caloriesStats: { total: number; lastWeek: number };
-    dailyExercises: Record<string, { completed: number; total: number }>;
+    dailyExercises: Array<{ day: string; completed: number; total: number }>;
     todaysWorkout: { planName: string; exercise: PlanExercise | null };
 }
 
