@@ -1,11 +1,13 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences } from '@/app/api/auth';
 import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
 import { ProfileData } from '../auth/ProfileForm';
+import { Preferences as WorkoutPrefsData } from '@/types/workout';
+import { toast } from 'react-toastify';
 
 type userType = {
     user_id: number;
@@ -27,6 +29,7 @@ type AuthContextProps = {
     logout: () => Promise<void>
     signup: (values: SignUpCredentials) => Promise<void>
     setProfile: (values: ProfileData) => Promise<void>
+    setWorkoutPrefs: (values: WorkoutPrefsData) => Promise<void>
 
 }
 
@@ -35,10 +38,9 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 export const publicRoutes = ['/', '/auth/login', '/auth/signup']
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [userData, setUserData] = useState<userType>(null)
-
-
+    const [userData, setUserData] = useState<userType>(null)    
     const [loading, setLoading] = useState(true)
+    const toastId = useRef<string | number | null>(null)
     const router = useRouter()
     const pathname = usePathname()
 
@@ -101,17 +103,33 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const setWorkoutPrefs = async (values: WorkoutPrefsData) => {
+        try {
+            await setWorkoutPreferences(values)
+            await fetchUserData()
+            router.push('/dashboard')
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+
     ////////////////////////
     //   DATA RETRIEVAL   //
     ////////////////////////
     const fetchUserData = async () => {
         try {
             setLoading(true);
+            toastId.current = toast.loading("Fetching User Data...", {
+                progressClassName: 'bg-[#66FFC7]'
+            });
             const data: userType = await fetchUser()
             setUserData(data)
         } catch (error) {
             throw error
         } finally {
+            if (toastId.current !== null) toast.done(toastId.current)
             setLoading(false)
         }
     };
@@ -123,6 +141,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             logout,
             signup,
             setProfile,
+            setWorkoutPrefs,
             loading
         }}>
             {children}

@@ -62,11 +62,15 @@ export default function DesktopSidebar({ }: Props) {
         <div
             className={cn(
                 "rounded-md flex flex-col md:flex-row bg-background-darkest w-full flex-1 max-w-7xl mx-auto overflow-hidden",
-                "h-screen"
+                "h-screen",
             )}
         >
             <Sidebar open={open} setOpen={setOpen}>
-                <SidebarBody className="justify-between gap-12">
+                <SidebarBody className={clsx("justify-between gap-12 border-r-transparent border-r-2", {
+                    "border-background": !open,
+                    "border-primary": open
+                })}
+                >
                     <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
                         <SidebarLink
                             link={{

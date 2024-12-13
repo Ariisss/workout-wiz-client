@@ -6,11 +6,13 @@ import { AnimatePresence } from "motion/react";
 import SignupForm from "@/components/auth/SignupForm";
 import Link from "next/link";
 import clsx from "clsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import UserProfileForm from "@/components/auth/ProfileForm";
 import FitnessGoalsForm from "@/components/auth/FitGoalsForm";
 import WorkoutPreferencesForm from "@/components/auth/WorkoutPrefForm";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import ToastProgress from "@/components/general/ToastProgress";
 
 type FormKey = "signup" | "profile" | "fitgoals" | "workoutprefs";
 type FormConfig = {
@@ -26,12 +28,41 @@ type FormConfig = {
 export default function Signup() {
     const formList: FormKey[] = ['signup', 'profile', 'fitgoals', 'workoutprefs']
     const [formIdx, setFormIdx] = useState<number>(0);
+    const toastId = useRef<string | number | null>(null)
     const { isSubmitted, isLocked } = useFormContext(formList[formIdx])
     const router = useRouter();
-    const nextForm = () => setFormIdx((prev) => prev + 1)
-    const handleRedirect = () => {
-        // clear formprovider
-        router.push("../auth/login"); // Redirects to ../auth/login
+    
+    const nextForm = () => {
+        const currentIndex = formIdx
+        const nextIndex = currentIndex + 1
+        const progress = nextIndex / formList.length
+        const toastContent = (
+            <ToastProgress
+                title="Completing Signup"
+                desc={`Steps ${nextIndex} out of ${formList.length} completed`}
+            />
+        )
+
+        if (toastId.current === null) {
+            toastId.current = toast.loading(toastContent, {
+                progress,
+                progressClassName: 'bg-[#66FFC7]',
+            })
+        } else {
+            toast.update(toastId.current, {
+                render: toastContent,
+                progress,
+                progressClassName: 'bg-[#66FFC7]',
+            })
+        }
+
+        setFormIdx(nextIndex)
+    }
+
+    const handleFormCompletion = () => {
+        if (toastId.current !== null) {
+            toast.dismiss(toastId.current);
+        }
     };
 
     const formConfig: FormConfig = {
@@ -61,7 +92,7 @@ export default function Signup() {
         'workoutprefs': {
             title: "Workout Preferences",
             description: "Tailor your fitness journey by sharing your preferences!",
-            formComponent: <WorkoutPreferencesForm formId="workoutprefs" nextForm={handleRedirect} />,
+            formComponent: <WorkoutPreferencesForm formId="workoutprefs" nextForm={handleFormCompletion} />,
             footer: null,
         },
     }
@@ -72,7 +103,7 @@ export default function Signup() {
     const Content = (): React.ReactNode => (
         <div className={clsx("flex flex-col space-y-4 w-full p-[10%] lg:p-[15%]", { "select-none": isSubmitted })}>
             <div className="flex flex-col space-y-2">
-                <p className={clsx("title-primary", {"text-2xl": title.length > 15})}>{title}</p>
+                <p className={clsx("title-primary", { "text-2xl": title.length > 15 })}>{title}</p>
                 <p className="text-gray-400 text-sm">{description}</p>
             </div>
             {formComponent}

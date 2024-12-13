@@ -72,6 +72,8 @@ export default function UserProfileForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             username: "",
+            height: 0,
+            weight: 0
         },
     })
 
@@ -89,7 +91,7 @@ export default function UserProfileForm({
             await setProfile(transformedValues)
             nextForm()
         } catch (error) {
-            toast.error(<ToastError title="Signup Failed" desc={error} />)
+            toast.error(<ToastError title="Submission Failed" desc={error} />)
         } finally {
             unlockForm()
         }
@@ -194,7 +196,13 @@ export default function UserProfileForm({
                             <FormItem className="w-full">
                                 <FormLabel>Height</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="cm" {...field} disabled={isLocked} />
+                                    <Input
+                                        type="number"
+                                        placeholder="cm"
+                                        {...field}
+                                        value={field.value === 0 ? "" : field.value}
+                                        disabled={isLocked}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -207,7 +215,13 @@ export default function UserProfileForm({
                             <FormItem className="w-full">
                                 <FormLabel>Weight</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="kg" {...field} disabled={isLocked} />
+                                    <Input
+                                        type="number"
+                                        placeholder="kg"
+                                        {...field}
+                                        value={field.value === 0 ? "" : field.value}
+                                        disabled={isLocked}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

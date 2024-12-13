@@ -1,4 +1,5 @@
-import React from 'react'
+"use client"
+import React, { useState } from 'react'
 import { ActivityContent, DashboardCard, ValueContent, WorkoutContent } from '@/components/dashboard/DashboardCard'
 import clsx from 'clsx'
 import { GenWorkoutCard, WorkoutPlanContent, WorkoutPlan, ExerciseProps } from '@/components/plans/PlanCards'

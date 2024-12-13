@@ -1,14 +1,14 @@
-export enum GoalTypes {
-    MUSCLE_BUILDING = "muscle_building",
-    WEIGHT_LOSS = "weight_loss",
-    MAINTENANCE = "maintenance"
-}
+export type GoalTypes = 
+  | "Muscle Gain"
+  | "Weight Loss"
+  | "Endurance"
+  | "Flexibility"
+  | "Balance"
 
-export enum IntensityLevels {
-    BEGINNER = "beginner",
-    INTERMEDIATE = "intermediate",
-    ADVANCED = "advanced"
-}
+export type IntensityLevels =
+    "Beginner" |
+    "Intermediate" |
+    "Advanced"
 
 export interface DailyExerciseCount {
     completed: number;
@@ -73,12 +73,8 @@ export interface WorkoutPlan {
 }
 
 export interface Preferences {
-    preference_id: number;
-    user_id: number;
-    goal_type: GoalTypes;
+    goal_type: string;
     with_gym: boolean;
     workout_days: string;
     intensity: IntensityLevels;
-    createdAt?: string;
-    updatedAt?: string;
 }

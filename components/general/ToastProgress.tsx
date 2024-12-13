@@ -5,7 +5,7 @@ type Props = {
     desc: any,
 }
 
-export default function ToastError({ title, desc }: Props) {
+export default function ToastProgress({ title, desc }: Props) {
     return (
         <div className="font-sans space-y-1">
             <p>{title}</p>
