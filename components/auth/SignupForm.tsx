@@ -12,6 +12,9 @@ import {
 import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { z } from "zod"
+import ToastError from "../general/ToastError"
+import { toast } from "react-toastify"
+import { useAuth } from "../context/AuthProvider"
 
 
 const formSchema = z.object({
@@ -22,11 +25,14 @@ const formSchema = z.object({
     // . refine(async (e) => { }) // search database for "email not found"
 
     password: z
-        .string()
-        .min(1, { message: "Password is required." }),
+    .string()
+    .min(1, { message: "Password is required." }) // Ensure the field is not empty
+    .regex(/^(?=.*[a-z])(?=.*[A-Z]).{8,}$/, { 
+        message: "Password must be at least 8 characters long, including one uppercase and one lowercase letter."
+    }),
     confirm: z
         .string()
-        
+
 }).refine((data) => data.password === data.confirm, {
     message: "Passwords do not match",
     path: ["confirm"]
@@ -41,6 +47,8 @@ export default function SignupForm({
     formId,
     nextForm = () => null
 }: FormProps) {
+    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
+    const { signup } = useAuth()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -50,24 +58,18 @@ export default function SignupForm({
         },
     })
 
-
-    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
-        const { confirm, ...filteredValues } = values
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-
-        // ON SUCCESS
-        submitForm()
-        function timeout(delay: number) {
-            return new Promise(res => setTimeout(res, delay));
+        try {
+            const { confirm, ...filteredValues } = values
+            console.log(filteredValues)
+            await signup(filteredValues)
+            nextForm()
+        } catch (error) {
+            toast.error(<ToastError title="Signup Failed" desc={error} />)
+        } finally {
+            unlockForm()
         }
-
-        await timeout(2000)     // TESTING PURPOSES
-        unlockForm()
-        nextForm()
-        console.log(values)
     }
 
     return (
@@ -115,3 +117,5 @@ export default function SignupForm({
     )
 
 }
+
+export type SignUpCredentials = Omit<z.infer<typeof formSchema>, 'confirm'>

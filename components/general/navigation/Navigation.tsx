@@ -1,11 +1,12 @@
 "use client"
 import MobileNavbar from './MobileNavbar'
 import DesktopSidebar from './DesktopSidebar'
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { usePathname } from 'next/navigation'
-import { publicRoutes } from '@/components/context/AuthProvider'
+import { publicRoutes, useAuth } from '@/components/context/AuthProvider'
 import { motion } from 'motion/react'
+import Loading from '@/app/loading'
 
 type Props = {
     children: React.ReactNode
@@ -13,6 +14,7 @@ type Props = {
 
 export default function NavLayout({ children }: Props) {
     const pathname = usePathname()
+    const { loading } = useAuth()
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -37,7 +39,9 @@ export default function NavLayout({ children }: Props) {
     return (
         <div className='flex flex-col md:flex-row h-full font-sans gap-8 relative'>
             <div className='flex-1 h-fit order-1 md:order-2 pb-4 lg:pb-0' >
-                {children}
+                <Suspense fallback={<Loading />}>
+                    {children}
+                </Suspense>
             </div>
             {!(publicRoutes.includes(pathname)) &&
                 <div className={clsx(

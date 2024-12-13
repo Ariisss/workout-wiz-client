@@ -89,7 +89,7 @@ export const DesktopSidebar = ({
         <>
             <motion.div
                 className={cn(
-                    "h-full px-4 py-4 hidden  md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] flex-shrink-0",
+                    "h-full pl-4 pr-2 py-4 hidden  md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] flex-shrink-0",
                     className
                 )}
                 initial={{width: "60px"}}
@@ -159,16 +159,19 @@ export const MobileSidebar = ({
 export const SidebarLink = ({
     link,
     className,
+    onClick,
     ...props
 }: {
     link: Links;
     className?: string;
+    onClick?: () => Promise<void>
     props?: LinkProps;
 }) => {
     const { open, animate } = useSidebar();
     return (
         <Link
             href={link.href}
+            onClick={onClick}
             className={cn(
                 "flex items-center justify-start gap-2  group/sidebar py-2",
                 className

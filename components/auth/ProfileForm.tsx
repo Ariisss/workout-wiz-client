@@ -31,6 +31,9 @@ import {
     SelectTrigger,
     SelectValue
 } from "../ui/select"
+import { toast } from "react-toastify"
+import ToastError from "../general/ToastError"
+import { useAuth } from "../context/AuthProvider"
 
 
 const formSchema = z.object({
@@ -38,7 +41,7 @@ const formSchema = z.object({
         .string()
         .min(1, { message: "Username is required." }),
 
-    dob: z
+    date_of_birth: z
         .date(),
     sex: z
         .preprocess(
@@ -62,31 +65,38 @@ export default function UserProfileForm({
     formId,
     nextForm = () => null
 }: FormProps) {
+    const { setProfile } = useAuth()
     const { width } = useWindowSize()
+    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             username: "",
+            height: 0,
+            weight: 0
         },
     })
 
-    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
+        try {
+            const transformedValues = {
+                ...values,
+                date_of_birth: (values.date_of_birth instanceof Date)
+                    ? format(values.date_of_birth, 'yyyy-MM-dd') // Format the Date object to "YYYY-MM-DD"
+                    : values.date_of_birth, // Retain original if not a Date object
+            }
 
-        // ON SUCCESS
-        submitForm()
-        function timeout(delay: number) {
-            return new Promise(res => setTimeout(res, delay));
+            console.log(transformedValues)
+            await setProfile(transformedValues)
+            nextForm()
+        } catch (error) {
+            toast.error(<ToastError title="Submission Failed" desc={error} />)
+        } finally {
+            unlockForm()
         }
-
-        await timeout(2000)     // TESTING PURPOSES
-        unlockForm()
-        nextForm()
-        console.log(values)
     }
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -105,7 +115,7 @@ export default function UserProfileForm({
                 <div className="flex flex-row space-x-4 w-full font-sans">
                     <FormField
                         control={form.control}
-                        name="dob"
+                        name="date_of_birth"
                         render={({ field }) => (
                             <FormItem className="w-full">
                                 <Popover>
@@ -186,7 +196,13 @@ export default function UserProfileForm({
                             <FormItem className="w-full">
                                 <FormLabel>Height</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="cm" {...field} disabled={isLocked} />
+                                    <Input
+                                        type="number"
+                                        placeholder="cm"
+                                        {...field}
+                                        value={field.value === 0 ? "" : field.value}
+                                        disabled={isLocked}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -199,7 +215,13 @@ export default function UserProfileForm({
                             <FormItem className="w-full">
                                 <FormLabel>Weight</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="kg" {...field} disabled={isLocked} />
+                                    <Input
+                                        type="number"
+                                        placeholder="kg"
+                                        {...field}
+                                        value={field.value === 0 ? "" : field.value}
+                                        disabled={isLocked}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -211,4 +233,8 @@ export default function UserProfileForm({
         </Form>
     )
 
+}
+
+export type ProfileData = Omit<z.infer<typeof formSchema>, 'date_of_birth'> & {
+    date_of_birth: string
 }

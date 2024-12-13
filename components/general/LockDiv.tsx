@@ -47,6 +47,7 @@ export function LockDiv() {
             <div className="relative flex justify-center items-center text-primary-light text-[416px]">
                 <motion.div
                     className={cn('flex flex-row')}
+                    style={{ x: '0%' }}
                     initial={{ x: '-100%' }}
                     animate={{ x: '0%', ...springStyle }}
                     exit={{ x: '-100%', ...springStyle }}

@@ -14,6 +14,8 @@ import {
     FormItem,
     FormMessage,
 } from "@/components/ui/form"
+import { toast } from "react-toastify"
+import ToastError from "../general/ToastError"
 
 
 const formSchema = z.object({
@@ -44,19 +46,14 @@ export default function LoginForm({ formId }: LoginFormProps) {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-
-        // ON SUCCESS
-        submitForm()
-        function timeout(delay: number) {
-            return new Promise(res => setTimeout(res, delay));
+        try {
+            await login(values);
+            toast.success("Login Successful")
+        } catch (error) {
+            toast.error(<ToastError title="Login Failed" desc={error} />)
+        } finally {
+            unlockForm()
         }
-
-        await timeout(2000)     // TESTING PURPOSES
-        //unlockForm()
-        login("Ced420")
-        console.log(values)
     }
 
     return (
@@ -92,3 +89,5 @@ export default function LoginForm({ formId }: LoginFormProps) {
     )
 
 }
+
+export type LoginCredentials = z.infer<typeof formSchema>

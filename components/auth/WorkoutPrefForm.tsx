@@ -18,6 +18,9 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import { toast } from "react-toastify"
+import ToastError from "../general/ToastError"
+import { useAuth } from "../context/AuthProvider"
 
 const days_of_week = [
     { id: "monday", label: "Mon" },
@@ -29,6 +32,7 @@ const days_of_week = [
     { id: "sunday", label: "Sun" },
 ] as const;
 
+const dayIds = days_of_week.map((day) => day.id)
 const intensity_levels = ["Beginner", "Intermediate", "Advanced"] as const
 
 const formSchema = z.object({
@@ -36,9 +40,11 @@ const formSchema = z.object({
         (value) => value === "true" || value === true,
         z.boolean()),
 
-    workout_days: z.array(z.string()).refine((value) => value.some((day) => day), {
-        message: "You have to select at least one day.",
-    }),
+    workout_days: z
+        .array(z.enum(dayIds as [string, ...string[]])) // Ensures only valid day IDs
+        .refine((value) => value.length > 0, {
+            message: "You have to select at least one day.",
+        }),
 
     intensity: z.enum(intensity_levels, {
         required_error: "You need to set your experience level."
@@ -54,6 +60,8 @@ export default function WorkoutPreferencesForm({
     formId,
     nextForm = () => null
 }: FormProps) {
+    const { setWorkoutPrefs } = useAuth()
+    const { isLocked, lockForm, unlockForm, signupData } = useFormContext(formId);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -64,22 +72,30 @@ export default function WorkoutPreferencesForm({
     })
 
 
-    const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
         lockForm()
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
+        try {
+            const { workout_days, ...filteredValues } = values
+            if (!signupData.goal_type || signupData.goal_type.length === 0) {
+                throw new Error("Missing fitness goals data.");
+            }
 
-        // ON SUCCESS
-        submitForm()
-        function timeout(delay: number) {
-            return new Promise(res => setTimeout(res, delay));
+            const prefsData = {
+                workout_days: days_of_week.reduce((acc, day) =>
+                    acc + (workout_days.includes(day.id) ? "1" : "0"), ""
+                ),
+                ...signupData,
+                ...filteredValues
+            }
+            
+            await setWorkoutPrefs(prefsData)
+            toast.success("Account Setup Complete")
+            nextForm()
+        } catch (error) {
+            toast.error(<ToastError title="Submission Failed" desc={error} />)
+        } finally {
+            unlockForm()
         }
-
-        await timeout(2000)     // TESTING PURPOSES
-        unlockForm()
-        nextForm()
-        console.log(values)
     }
 
     return (
@@ -143,7 +159,7 @@ export default function WorkoutPreferencesForm({
                                                 const checkState = field.value?.includes(day.id)
                                                 return (
                                                     <FormItem
-                                                        key={day.id}
+                                                        key={day.id + "item"}
                                                         className={clsx(
                                                             "flex flex-row items-center justify-center space-y-0",
                                                             "bg-white border-2 border-white  h-[3rem] w-[3.5rem] rounded-[10px] text-black font-sans font-medium",
@@ -152,7 +168,7 @@ export default function WorkoutPreferencesForm({
                                                             }
                                                         )}
                                                     >
-                                                        <FormControl>
+                                                        <FormControl key={day.id+"fc"}>
                                                             <Checkbox
                                                                 className="hidden"
                                                                 checked={field.value?.includes(day.id)}
@@ -193,9 +209,9 @@ export default function WorkoutPreferencesForm({
                                         defaultValue={field.value}
                                         className="flex flex-row gap-0 bg-white h-[3rem] rounded-[16px] items-center"
                                     >
-                                        {intensity_levels.map((level) => {
+                                        {intensity_levels.map((level, idx) => {
                                             return (
-                                                <FormItem className={clsx(
+                                                <FormItem key={"il"+idx} className={clsx(
                                                     "flex items-center h-full w-full text-black rounded-[14px] border-2 border-white  space-y-0",
                                                     "has-[:checked]:bg-background-darkest",
                                                     "has-[:checked]:text-white",
