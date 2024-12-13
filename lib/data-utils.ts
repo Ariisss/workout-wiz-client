@@ -5,9 +5,13 @@ import { ExerciseLog, WorkoutPlan, DailyExerciseCount } from "@/types/workout"
 // get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
 
 export const getRecentExercises = (logs: ExerciseLog[]) => {
-    const sortedLogs = [...logs].sort((a, b) => 
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    if (!logs.length) return [];
+    
+    const sortedLogs = [...logs]
+        .filter(log => log?.date)
+        .sort((a, b) => 
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
 
     return sortedLogs.slice(0, 5);
     // usage:
@@ -16,23 +20,26 @@ export const getRecentExercises = (logs: ExerciseLog[]) => {
 }
 
 export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) => {
+    if (!plans.length) return {};
 
     const today = new Date();
     const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const result: { [key: string]: DailyExerciseCount } = {};
     
     weekDays.forEach(day => {
-        const totalExercises = plans.reduce((sum, plan) => 
-            sum + plan.exercises.filter(ex => ex.workout_day === day).length, 0
-        );
+        const totalExercises = plans.reduce((sum, plan) => {
+            if (!plan?.exercises) return sum;
+            return sum + (plan.exercises.filter(ex => ex?.workout_day === day)?.length || 0);
+        }, 0);
 
         const completedExercises = logs.filter(log => {
+            if (!log?.date) return false;
             const logDate = new Date(log.date);
             return logDate.toDateString() === today.toDateString() && 
                    plans.some(plan => 
-                       plan.exercises.some(ex => 
-                           ex.plan_exercise_id === log.plan_exercise_id && 
-                           ex.workout_day === day
+                       plan?.exercises?.some(ex => 
+                           ex?.plan_exercise_id === log?.plan_exercise_id && 
+                           ex?.workout_day === day
                        )
                    );
         }).length;
@@ -87,6 +94,9 @@ export const getWorkoutToday = (plan: WorkoutPlan, logs?: ExerciseLog[]) => {
 
 
 export const countTotalWorkouts = (data: ExerciseLog[]) => {
+
+    if (!data.length) return { total: 0, lastWeek: 0 };
+
     const today = new Date()
     const lastWeekStart = new Date(today)
     lastWeekStart.setDate(today.getDate() - 7)
@@ -108,6 +118,9 @@ export const countTotalWorkouts = (data: ExerciseLog[]) => {
 
 
 export const calculateCaloriesBurned = (data: ExerciseLog[]) => {
+
+    if (!data.length) return { total: 0, lastWeek: 0 };
+
     const today = new Date()
     const lastWeekStart = new Date(today)
     lastWeekStart.setDate(today.getDate() - 7)
