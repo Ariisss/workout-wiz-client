@@ -74,7 +74,7 @@ export interface WorkoutPlan {
     createdAt?: string;
     updatedAt?: string;
     // Relation to PlanExercise
-    exercises: PlanExercise[];
+    planExercises: PlanExercise[];
 }
 
 export interface Preferences {
