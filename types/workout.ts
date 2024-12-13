@@ -31,12 +31,17 @@ export interface ExerciseLog {
     updatedAt?: string;
 }
 
+export interface ExerciseLogWithName extends ExerciseLog {
+    exercise_name: string;
+}
+
 export interface DashboardData {
-    recentExercises: ExerciseLog[];
+    recentExercises: ExerciseLogWithName[];
     workoutStats: { total: number; lastWeek: number };
     caloriesStats: { total: number; lastWeek: number };
     dailyExercises: Array<{ day: string; completed: number; total: number }>;
     todaysWorkout: { planName: string; exercise: PlanExercise | null };
+    weeklyCalories: Array<{day: string; value: number}>
 }
 
 // export interface LogTypes extends Omit<ExerciseLog, 'log_id' | ''>

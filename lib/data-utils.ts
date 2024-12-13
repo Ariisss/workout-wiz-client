@@ -4,20 +4,52 @@ import { ExerciseLog, WorkoutPlan, DailyExerciseCount, PlanExercise } from "@/ty
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
 // get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
 
-export const getRecentExercises = (logs: ExerciseLog[]) => {
+export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[]) => {
     if (!logs.length) return [];
     
     const sortedLogs = [...logs]
         .filter(log => log?.date)
         .sort((a, b) => 
             new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
+        )
+        .slice(0, 5);
 
-    return sortedLogs.slice(0, 5);
-    // usage:
-    // const recentLogs = getRecentExercises(exerciseLogs);
-    // console.log('Last 5 workouts:', recentLogs);    
-}
+    return sortedLogs.map(log => {
+        const exercise = plans.reduce<PlanExercise | undefined>((found, plan) => {
+            if (found) return found;
+            return plan.planExercises?.find(ex => 
+                ex.plan_exercise_id === log.plan_exercise_id
+            );
+        }, undefined);
+
+        return {
+            ...log,
+            exercise_name: exercise?.exercise_name || 'Unknown Exercise'
+        };
+    });
+};
+
+export const getCaloriesByWeek = (logs: ExerciseLog[]) => {
+    const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    
+    return weekDays.map(day => {
+        const dayCalories = logs.reduce((sum, log) => {
+            if (!log?.date) return sum;
+            const logDate = new Date(log.date);
+            const logDay = logDate.toLocaleDateString('en-US', { weekday: 'long' });
+            
+            if (logDay === day) {
+                return sum + (log.calories_burned || 0);
+            }
+            return sum;
+        }, 0);
+
+        return {
+            day: day,
+            value: Math.round(dayCalories)
+        };
+    });
+};
 
 export const countDailyExercises = (plan: WorkoutPlan, logs: ExerciseLog[]) => {
     if (!plan?.planExercises) return [];
