@@ -29,6 +29,18 @@ export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[]) =>
     });
 };
 
+export const getWeeklyCompletion = (dailyExercises: Array<{ day: string; completed: number; total: number }>) => {
+    const activeDays = dailyExercises.filter(day => day.total > 0);
+    
+    const totalDays = activeDays.length;
+    
+    const completedDays = activeDays.filter(day => 
+        day.completed >= day.total && day.total > 0
+    ).length;
+
+    return { completedDays, totalDays };
+};
+
 export const getCaloriesByWeek = (logs: ExerciseLog[]) => {
     const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     

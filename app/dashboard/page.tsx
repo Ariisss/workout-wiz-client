@@ -14,7 +14,7 @@ import { CalorieChart } from '@/components/general/DataChart'
 import WeeklyProgress from '@/components/dashboard/WeeklyProgress'
 import { getLogs, getPlans, getWorkouts } from '../api/workouts'
 import { useEffect, useState } from 'react'
-import { getRecentExercises, countDailyExercises, getWorkoutToday, countTotalWorkouts, calculateCaloriesBurned, getCaloriesByWeek } from '@/lib/data-utils'
+import { getRecentExercises, countDailyExercises, getWorkoutToday, countTotalWorkouts, calculateCaloriesBurned, getCaloriesByWeek, getWeeklyCompletion } from '@/lib/data-utils'
 import { ExerciseLog, PlanExercise, WorkoutPlan, DashboardData } from '@/types/workout'
 import { useAuth } from '@/components/context/AuthProvider'
 
@@ -148,6 +148,8 @@ export default function Dashboard({ }: Props) {
         }
     }
 
+    const { completedDays, totalDays } = getWeeklyCompletion(dashboardData.dailyExercises);
+
     // use this when integrated with backend already:
 
     // const [workouts, setWorkouts] = useState<{
@@ -219,12 +221,12 @@ export default function Dashboard({ }: Props) {
                 </DashboardCard>
                 <DashboardCard
                     title='Weekly Progress'
-                    desc={`${4} out of ${5} workouts completed`}
+                    desc={`${completedDays} out of ${totalDays} workouts completed`}
                     className='px-2 pt-2 pb-[5px]'
                 >
                     <div className='flex flex-col h-full justify-between'>
                         <div className='flex w-full'>
-                            <Progress value={80} className='h-[16px] bg-black/50' />
+                            <Progress value={(completedDays/totalDays)*100} className='h-[16px] bg-black/50' />
                         </div>
                         <WeeklyProgress data={dashboardData.dailyExercises} />
                         <Button className='min-h-[3rem]'>
