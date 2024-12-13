@@ -1,7 +1,8 @@
 "use client"
 import { BackgroundGradient } from "../ui/background-gradient";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { ArrowBigRightDash, ChevronsRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { motion } from "motion/react";
@@ -18,6 +19,7 @@ type DashboardCardProps = {
     className?: string
     contentClassName?: string
     backgroundOptions?: React.FC<{ children: React.ReactNode }>[];
+    isLoading?: boolean;
 };
 
 export function DashboardCard({
@@ -29,15 +31,15 @@ export function DashboardCard({
     subHeader = false,
     className,
     contentClassName,
-    backgroundOptions = []
+    backgroundOptions = [],
+    isLoading = false
 }: DashboardCardProps) {
     const defaultBackgrounds = glow
         ? [BackgroundGradient]
         : []
 
-
     const CardElement = () => (
-        <Card className={cn("w-full h-full p-0 flex flex-col gap-2 bg-background-darkest border-2 border-background", className)}>
+        <Card className={cn("w-full h-full flex flex-col gap-2 bg-background-darkest border-2 border-background", className)}>
             {subHeader ?
                 <CardHeader className="flex flex-row justify-between items-center p-6 pb-0 h-full">
                     <h3 className="text-white font-medium mt-[2px]">{title}</h3>
@@ -60,8 +62,7 @@ export function DashboardCard({
         </Card>
     )
     
-    
-    const backgrounds = [...defaultBackgrounds, ...backgroundOptions]; // Combine default and custom backgrounds
+    const backgrounds = [...defaultBackgrounds, ...backgroundOptions]; 
     return (
         <div className="rounded-[12px] h-full w-full">
             <BackgroundWrapper backgrounds={backgrounds}>
@@ -112,7 +113,6 @@ export function WorkoutContent({
                         <ChevronsRight className="h-14 w-14 text-gray-600 stroke-[1.25]  animate-pulse" />
                     </div>
                     <div className="w-full h-full items-center">
-                        {/* Alt component if no workout today */}
                         <div className="w-full h-full flex flex-col justify-center gap-0">
                             <p className="text-xl font-medium">{workoutName}</p>
                             <p className="text-muted-foreground font-roboto">{date}</p>
@@ -121,7 +121,6 @@ export function WorkoutContent({
                 </div>
             ) : (
                 <div className="flex flex-col md:flex-row justify-center gap-2 h-full">
-                    {/* Component for today's workout */}
                     <div className="flex w-full justify-between items-end ">
                         <div className="w-full h-full flex flex-col justify-center gap-0">
                             <p className="text-lg font-medium">{workoutName}</p>
@@ -134,9 +133,6 @@ export function WorkoutContent({
                             transition={{
                                 repeat: Infinity,
                                 repeatType: 'reverse',
-                                // mass: 1,
-                                // stiffness: 90,
-                                // damping: 8,
                                 duration: '0.5'
                             }}
                         >
@@ -145,7 +141,6 @@ export function WorkoutContent({
                     </div>
                     {upcomingExercise && (
                         <div className="flex flex-col gap-0 justify-center w-full h-full">
-                            {/* Next exercise */}
                             <p className="text-lg font-medium">Upcoming Exercise</p>
                             <p className="text-muted-foreground font-roboto">
                                 {upcomingExercise.name} | {upcomingExercise.sets} sets, {upcomingExercise.reps} reps
