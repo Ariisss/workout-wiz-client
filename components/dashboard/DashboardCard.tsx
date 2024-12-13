@@ -8,6 +8,7 @@ import React from "react";
 import { motion } from "motion/react";
 import clsx from "clsx";
 import BackgroundWrapper from "../general/BackgroundWrapper";
+import { PlanExercise } from "@/types/workout";
 
 type DashboardCardProps = {
     title: string
@@ -89,11 +90,7 @@ type WorkoutContentProps = {
     workoutName: string;
     date: string;
     hasWorkoutToday: boolean;
-    upcomingExercise?: {
-        name: string;
-        sets: number;
-        reps: number;
-    }
+    upcomingExercise: PlanExercise | null
 }
 
 export function WorkoutContent({
@@ -143,7 +140,7 @@ export function WorkoutContent({
                         <div className="flex flex-col gap-0 justify-center w-full h-full">
                             <p className="text-lg font-medium">Upcoming Exercise</p>
                             <p className="text-muted-foreground font-roboto">
-                                {upcomingExercise.name} | {upcomingExercise.sets} sets, {upcomingExercise.reps} reps
+                                {upcomingExercise.exercise_name} | {upcomingExercise.sets} sets, {upcomingExercise.reps} reps
                             </p>
                         </div>
                     )}
