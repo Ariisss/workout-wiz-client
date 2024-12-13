@@ -56,7 +56,10 @@ export function DashboardCard({
             }
             <CardContent className="h-full">
                 <div className={clsx("h-full w-full", contentClassName)}>
-                    {isLoading ? children : <SkeletonLoader />}
+                    {isLoading ? <SkeletonLoader /> : children }
+
+                    {/* use this to test/display skeleton
+                    {isLoading ? children : <SkeletonLoader />}  */}
                 </div>
             </CardContent>
         </Card>
