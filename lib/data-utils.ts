@@ -1,12 +1,8 @@
-import { ExerciseLog, WorkoutPlan } from "@/types/workout"
+import { ExerciseLog, WorkoutPlan, DailyExerciseCount } from "@/types/workout"
 
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
 // get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
 
-interface DailyExerciseCount {
-    completed: number
-    total: number
-}
 
 export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) => {
 

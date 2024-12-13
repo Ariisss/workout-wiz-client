@@ -10,6 +10,11 @@ export enum IntensityLevels {
     ADVANCED = "advanced"
 }
 
+export interface DailyExerciseCount {
+    completed: number;
+    total: number;
+}
+
 export interface ExerciseLog {
     log_id: number;
     user_id: number;
