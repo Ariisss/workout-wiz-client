@@ -64,7 +64,7 @@ export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) =
 
 export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {
     if (!plans?.length) {
-        return null;
+        return { planName: '', exercise: null };
     }
 
     const today = new Date();
@@ -85,12 +85,18 @@ export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {
 
     if (!todaysExercises.length) {
         console.log("No exercises found for today");
-        return null;
+        return { planName: '', exercise: null };
     }
 
     if (!logs?.length) {
         console.log("No logs found, returning first exercise");
-        return todaysExercises[0];
+        const plan = plans.find(p => 
+            p.planExercises?.some(ex => ex.plan_exercise_id === todaysExercises[0].plan_exercise_id)
+        );
+        return {
+            planName: plan?.plan_name || '',
+            exercise: todaysExercises[0]
+        };
     }
 
     const todaysLogs = logs.filter(log => {
@@ -105,7 +111,16 @@ export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {
         )
     );
 
-    return nextExercise || null;
+    if (!nextExercise) return { planName: '', exercise: null };
+
+    const plan = plans.find(p => 
+        p.planExercises?.some(ex => ex.plan_exercise_id === nextExercise.plan_exercise_id)
+    );
+
+    return {
+        planName: plan?.plan_name || '',
+        exercise: nextExercise
+    };
 };
 
 

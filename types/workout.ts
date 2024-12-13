@@ -31,6 +31,14 @@ export interface ExerciseLog {
     updatedAt?: string;
 }
 
+export interface DashboardData {
+    recentExercises: ExerciseLog[];
+    workoutStats: { total: number; lastWeek: number };
+    caloriesStats: { total: number; lastWeek: number };
+    dailyExercises: Record<string, { completed: number; total: number }>;
+    todaysWorkout: { planName: string; exercise: PlanExercise | null };
+}
+
 // export interface LogTypes extends Omit<ExerciseLog, 'log_id' | ''>
 
 export interface PlanExercise {
