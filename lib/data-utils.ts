@@ -1,4 +1,4 @@
-import { ExerciseLog, WorkoutPlan, DailyExerciseCount } from "@/types/workout"
+import { ExerciseLog, WorkoutPlan, DailyExerciseCount, PlanExercise } from "@/types/workout"
 
 // needed data:
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
@@ -28,8 +28,8 @@ export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) =
     
     weekDays.forEach(day => {
         const totalExercises = plans.reduce((sum, plan) => {
-            if (!plan?.exercises) return sum;
-            return sum + (plan.exercises.filter(ex => ex?.workout_day === day)?.length || 0);
+            if (!plan?.planExercises) return sum;
+            return sum + (plan.planExercises.filter(ex => ex?.workout_day === day)?.length || 0);
         }, 0);
 
         const completedExercises = logs.filter(log => {
@@ -37,7 +37,7 @@ export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) =
             const logDate = new Date(log.date);
             return logDate.toDateString() === today.toDateString() && 
                    plans.some(plan => 
-                       plan?.exercises?.some(ex => 
+                       plan?.planExercises?.some(ex => 
                            ex?.plan_exercise_id === log?.plan_exercise_id && 
                            ex?.workout_day === day
                        )
@@ -62,23 +62,45 @@ export const countDailyExercises = (plans: WorkoutPlan[], logs: ExerciseLog[]) =
 }
 
 
-export const getWorkoutToday = (plan: WorkoutPlan, logs?: ExerciseLog[]) => {
-    const today = new Date();
-    const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
-
-    const todaysExercises = plan.exercises.filter(exercise => 
-        exercise.workout_day === dayOfWeek
-    );
-
-    if (todaysExercises.length === 0) {
+export const getWorkoutToday = (plans: WorkoutPlan[], logs?: ExerciseLog[]) => {
+    if (!plans?.length) {
+        console.log("No plans found");
         return null;
     }
 
-    if (!logs) {
+    const today = new Date();
+    const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
+    console.log("Current day:", dayOfWeek);
+
+    // Get all exercises scheduled for today from all plans
+    const todaysExercises = plans.reduce<PlanExercise[]>((exercises, plan) => {
+        // Check for planExercises instead of exercises
+        if (!Array.isArray(plan.planExercises)) {
+            console.log("Plan has no planExercises array:", plan);
+            return exercises;
+        }
+        
+        const planExercises = plan.planExercises.filter(exercise => {
+            console.log("Checking exercise:", exercise);
+            return exercise?.workout_day === dayOfWeek;
+        });
+        
+        console.log("Found exercises for today:", planExercises);
+        return [...exercises, ...planExercises];
+    }, []);
+
+    if (!todaysExercises.length) {
+        console.log("No exercises found for today");
+        return null;
+    }
+
+    if (!logs?.length) {
+        console.log("No logs found, returning first exercise");
         return todaysExercises[0];
     }
 
     const todaysLogs = logs.filter(log => {
+        if (!log?.date) return false;
         const logDate = new Date(log.date);
         return logDate.toDateString() === today.toDateString();
     });
@@ -90,7 +112,7 @@ export const getWorkoutToday = (plan: WorkoutPlan, logs?: ExerciseLog[]) => {
     );
 
     return nextExercise || null;
-}
+};
 
 
 export const countTotalWorkouts = (data: ExerciseLog[]) => {
@@ -182,9 +204,9 @@ export const calculateWeeklyStreak = (data: ExerciseLog[], plans: WorkoutPlan[])
 
         // Check if all planned exercises for this week were completed
         const allExercisesCompleted = plans.every(plan => {
-            return plan.exercises.every(exercise => {
+            return plan.planExercises.every(exercise => {
                 // Find all exercises scheduled for this week
-                const scheduledDays = plan.exercises.filter(ex =>
+                const scheduledDays = plan.planExercises.filter(ex =>
                     // Check if the exercise's workout day falls within the current week
                     isWorkoutDayInWeek(ex.workout_day, currentWeek)
                 );
