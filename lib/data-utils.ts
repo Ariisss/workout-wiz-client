@@ -121,12 +121,10 @@ export const calculateCaloriesBurned = (data: ExerciseLog[]) => {
             })
             .reduce((sum, log) => sum + log.calories_burned, 0)
     }
-
     // Usage:
     // const caloriesStats = calculateCaloriesBurned(exerciseLogs)
     // console.log(caloriesStats.total)
     // console.log(caloriesStats.lastWeek) 
-
 }
 
 // Partial rani, this i s so hard wtf
