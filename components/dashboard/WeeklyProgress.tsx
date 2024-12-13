@@ -14,10 +14,11 @@ interface WeeklyProgressProps {
 }
 
 const WeeklyProgress = ({ data, className }: WeeklyProgressProps) => {
-    // const dummyDivider = 10
-    const middleIndex = Math.ceil(data.length / 2);
-    const column1 = data.slice(0, middleIndex);
-    const column2 = data.slice(middleIndex);
+    const activeDays = data.filter(item => item.total > 0);
+    
+    const middleIndex = Math.ceil(activeDays.length / 2);
+    const column1 = activeDays.slice(0, middleIndex);
+    const column2 = activeDays.slice(middleIndex);
 
     return (
         <div className={cn("flex flex-col lg:flex-row w-full gap-2 lg:gap-24 justify-between my-4", className)}>
