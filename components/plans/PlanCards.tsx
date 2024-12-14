@@ -7,13 +7,6 @@ import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardContent } from "../ui/card";
 import { WorkoutSelect } from "./WorkoutSelect";
 
-type TitleCardProps = {
-    title: string
-    duration: number
-    data: string[]
-    selected: string
-}
-
 export const TitleCard = ({
     title,
     duration,
