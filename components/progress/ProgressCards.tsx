@@ -1,4 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import clsx from "clsx"
 import { ArrowUp } from "lucide-react"
 
 export function LogChartTabs({ children }: { children: React.ReactNode }) {
@@ -43,12 +44,16 @@ type WeeklyCompRow = {
 export function WeeklyCompRow({ title, data }: WeeklyCompRow) {
     return (
         <div className='flex flex-col justify-between h-fit w-full'>
-            <div className='flex flex-row justify-between'>
-                <p className='text-[#C0D0E6] w-[40%] lg:w-full'>{title}</p>
-                <div className='flex flex-row items-center gap-2 w-full justify-end'>
-                    <p className='text-white text-right'>{data.val}</p>
-                    <p className='text-xs text-primary-light flex flex-row w-[40%] lg:w-[30%] justify-end'>
-                        <ArrowUp className='h-[1rem] w-[1rem]' />
+            <div className="grid grid-cols-[1fr,auto] gap-2">
+                <p className="text-[#C0D0E6]">{title}</p>
+                <div className="flex flex-row justify-end items-center gap-2">
+                    <p className="text-white">{data.val}</p>
+                    <p className={clsx('text-xs flex flex-row', { 'text-primary-light': data.inc > 0, 'text-red-500': data.inc < 0 })}>
+                        <ArrowUp className={clsx('h-[1rem] w-[1rem]', {
+                            'rotate-180': data.inc < 0,
+                            'rotate-0': data.inc > 0,
+                            'hidden': data.inc == 0
+                        })} />
                         {data.inc.toFixed(1).toString()} %
                     </p>
                 </div>

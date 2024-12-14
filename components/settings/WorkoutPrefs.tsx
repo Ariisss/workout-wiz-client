@@ -18,8 +18,11 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useWindowSize } from "react-use"
+import { useAuth } from "../context/AuthProvider"
+import { convertBinaryDaysToWeekdays } from "@/lib/data-utils"
+import { PreferencesForm } from "@/types/workout"
 
 const days_of_week = [
     { id: "monday", label: "Mon" },
@@ -56,16 +59,35 @@ export default function WorkoutPreferencesForm({
     formId,
     nextForm = () => null
 }: FormProps) {
+    const { prefs: workoutPrefs } = useAuth()
     const { width } = useWindowSize()
     const [isLocked, setIsLocked] = useState(false)
+    const [prefsData, setPrefsData] = useState<PreferencesForm>({
+        with_gym: false,
+        workout_days: [],
+        intensity: "Beginner"
+    })
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            with_gym: true,
-            workout_days: ["monday", "wednesday", "friday"],
-            intensity: "Advanced"
+            ...prefsData
         },
     })
+
+    useEffect(() => {
+        try {
+            const data: PreferencesForm = {
+                with_gym: workoutPrefs?.with_gym ?? prefsData.with_gym,
+                workout_days: workoutPrefs ? convertBinaryDaysToWeekdays(workoutPrefs.workout_days || '') : prefsData.workout_days,
+                intensity: workoutPrefs?.intensity || prefsData.intensity || 'Beginner'
+            }
+            console.log(data)
+            setPrefsData(data)
+            form.reset(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }, [workoutPrefs])
 
 
     //const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
@@ -94,9 +116,9 @@ export default function WorkoutPreferencesForm({
                                         defaultValue={field.value.toString()}
                                         className="flex flex-row gap-0 bg-white h-[3rem] rounded-[16px] items-center space-y-0"
                                     >
-                                        {[true, false].map((action) => {
+                                        {[true, false].map((action, idx) => {
                                             return (
-                                                <FormItem className={clsx(
+                                                <FormItem key={"equip" + idx} className={clsx(
                                                     "flex items-center h-full w-full text-black rounded-[14px] border-2 border-white space-y-0",
                                                     "has-[:checked]:bg-background-darkest",
                                                     "has-[:checked]:text-white",
@@ -139,7 +161,7 @@ export default function WorkoutPreferencesForm({
                                                         key={day.id}
                                                         className={clsx(
                                                             "flex flex-row items-center justify-center space-y-0",
-                                                            "bg-white border-2 border-white  h-[3rem] w-[3.5rem] rounded-[10px] text-black font-sans font-medium",
+                                                            "bg-white border-2 border-white  h-[3rem] w-[3.5rem] lg:w-full rounded-[10px] text-black font-sans font-medium",
                                                             {
                                                                 "bg-background-darkest text-white border-primary-light border-solid": checkState
                                                             }
@@ -188,7 +210,7 @@ export default function WorkoutPreferencesForm({
                                     >
                                         {intensity_levels.map((level) => {
                                             return (
-                                                <FormItem className={clsx(
+                                                <FormItem key={"equip" + level} className={clsx(
                                                     "flex items-center h-full w-full text-black rounded-[14px] border-2 border-white  space-y-0",
                                                     "has-[:checked]:bg-background-darkest",
                                                     "has-[:checked]:text-white",

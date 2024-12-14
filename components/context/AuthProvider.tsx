@@ -1,13 +1,14 @@
 'use client';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences } from '@/app/api/auth';
 import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
 import { ProfileData } from '../auth/ProfileForm';
-import { Preferences as WorkoutPrefsData } from '@/types/workout';
+import { ExerciseLog, PlanExercise, WorkoutPlan, Preferences as WorkoutPrefsData } from '@/types/workout';
 import { toast } from 'react-toastify';
+import { getLogs, getPlans, getWorkouts } from '@/app/api/workouts';
 
 type userType = {
     user_id: number;
@@ -18,12 +19,17 @@ type userType = {
     date_of_birth: Date,
     height: number;
     weight: number;
+    weeklyStreak: number;
     createdAt: Date;
     updatedAt: Date;
 } | null
 
 type AuthContextProps = {
     userData: userType
+    prefs: WorkoutPrefsData | null
+    workouts: PlanExercise[]
+    plans: WorkoutPlan[]
+    logs: ExerciseLog[]
     loading: boolean
     login: (values: LoginCredentials) => Promise<void>
     logout: () => Promise<void>
@@ -38,23 +44,36 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 export const publicRoutes = ['/', '/auth/login', '/auth/signup']
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [userData, setUserData] = useState<userType>(null)    
-    const [loading, setLoading] = useState(true)
-    const toastId = useRef<string | number | null>(null)
+    const token = Cookies.get('token');
     const router = useRouter()
     const pathname = usePathname()
+    const toastId = useRef<string | number | null>(null)
+
+    const [loading, setLoading] = useState(true)
+    const [userData, setUserData] = useState<userType>(null)
+    const [prefs, setUserPrefs] = useState<WorkoutPrefsData | null>(null)
+    const [workouts, setWorkouts] = useState<PlanExercise[]>([])
+    const [plans, setPlans] = useState<WorkoutPlan[]>([])
+    const [logs, setLogs] = useState<ExerciseLog[]>([])
 
     // loading handler
     useEffect(() => {
-        if (Cookies.get('token') !== undefined) fetchUserData()
+        if (token !== undefined) {
+            fetchAll()
+        }
     }, []);
+
+    useEffect(() => {
+        const isDataFetched = userData !== null && workouts !== null && plans !== null && logs !== null;
+        setLoading(!isDataFetched);
+    }, [userData, workouts, plans, logs, prefs]);
 
     // unauthenticated handler
     useEffect(() => {
-        if (!loading && !userData && !publicRoutes.includes(pathname)) {
-            router.push('/auth/login');
+        if (!token && !userData && !publicRoutes.includes(pathname)) {
+            router.replace('/auth/login');
         }
-    }, [userData, loading, pathname]);
+    }, [userData, pathname]);
 
 
     ///////////////////////
@@ -65,7 +84,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             router.prefetch('/dashboard')
             await loginUser(values)
 
-            await fetchUserData()
+            await fetchAll()
             router.push("/dashboard");
         } catch (error) {
             console.error(error);
@@ -106,7 +125,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const setWorkoutPrefs = async (values: WorkoutPrefsData) => {
         try {
             await setWorkoutPreferences(values)
-            await fetchUserData()
+            await fetchAll()
             router.push('/dashboard')
         } catch (error) {
             console.error(error);
@@ -118,21 +137,59 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     ////////////////////////
     //   DATA RETRIEVAL   //
     ////////////////////////
+    const fetchAll = async () => {
+        await fetchUserData()
+        await fetchWorkoutData()
+        await fetchUserPrefs()
+    }
     const fetchUserData = async () => {
         try {
-            setLoading(true);
-            toastId.current = toast.loading("Fetching User Data...", {
-                progressClassName: 'bg-[#66FFC7]'
-            });
             const data: userType = await fetchUser()
             setUserData(data)
         } catch (error) {
             throw error
         } finally {
             if (toastId.current !== null) toast.done(toastId.current)
-            setLoading(false)
         }
-    };
+    }
+
+    const fetchWorkoutData = async () => {
+        try {
+            toastId.current = toast.loading("Fetching User Data...", {
+                progressClassName: 'bg-[#66FFC7]'
+            });
+            const [workoutsRes, plansRes, logsRes] = await Promise.all([
+                getWorkouts(),
+                getPlans(),
+                getLogs()
+            ]);
+
+            const workoutsData = workoutsRes?.data || [];
+            const plansData = plansRes?.data || [];
+            const logsData = logsRes?.data || [];
+
+            setWorkouts(workoutsData);
+            setPlans(plansData);
+            setLogs(logsData);
+        } catch (error) {
+            console.error('Failed to fetch workout data:', error);
+        } finally {
+            if (toastId.current !== null) toast.done(toastId.current)
+        }
+    }
+
+    const fetchUserPrefs = async () => {
+        try {
+            const prefsRes = await getWorkoutPreferences()
+            const prefsData = prefsRes?.data[0] || null
+            console.log(prefsData)
+            setUserPrefs(prefsData)
+        } catch (error) {
+            console.error('Failed to fetch workout preferences:', error);
+        } finally {
+            if (toastId.current !== null) toast.done(toastId.current)
+        }
+    }
 
     return (
         <AuthContext.Provider value={{
@@ -142,6 +199,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             signup,
             setProfile,
             setWorkoutPrefs,
+            workouts,
+            plans,
+            prefs,
+            logs,
             loading
         }}>
             {children}

@@ -31,32 +31,40 @@ type WorkoutSelectProps = {
     onDelete?: () => void
 }
 
-export function WorkoutSelect({ selected, data, onSelect }: WorkoutSelectProps) {
+export function WorkoutSelect({ selected, data, onSelect, onDelete }: WorkoutSelectProps) {
     return (
-        <Select onValueChange={onSelect}>
-            <SelectTrigger className="w-[240px] bg-primary h-[3rem] font-medium">
-                <SelectValue className="text-xl" placeholder="Switch workout" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectGroup>
-                    {data.map((element, idx) => (
-                        <SelectItem
-                            value={element} key={idx}
-                            disabled={element === selected}
-                            className={clsx({ "bg-background-darkest": element === selected })}
-                        >
-                            {element}
-                        </SelectItem>
-                    ))}
-                </SelectGroup>
-                <SelectItem value={"new"}>
-                    <div className="flex flex-row gap-2 items-center justify-between w-full">
-                        Generate New
-                        <RefreshCcw className="h-4 w-4" />
-                    </div>
-                </SelectItem>
-            </SelectContent>
-        </Select>
+        <div className="flex flex-row gap-2">
+            <Select onValueChange={onSelect}>
+                <SelectTrigger className="w-[240px] bg-black/30 h-[3rem] font-medium">
+                    <SelectValue className="text-xl" placeholder="Switch workout" />
+                </SelectTrigger>
+                <SelectContent className="bg-background-darkest w-[240px]">
+                    <SelectGroup>
+                        {data.map((element, idx) => (
+                            <SelectItem
+                                value={element} key={idx}
+                                disabled={element === selected}
+                                className={clsx("font-roboto",{ "": element === selected })}
+                            >
+                                {element}
+                            </SelectItem>
+                        ))}
+                    </SelectGroup>
+                    <SelectItem value={"new"} className="w-full">
+                        <div className="flex flex-row gap-2 items-center justify-between w-full">
+                            Generate New
+                            <RefreshCcw className="h-4 w-4" />
+                        </div>
+                    </SelectItem>
+                </SelectContent>
+            </Select>
+            <Button
+                className='w-full lg:w-fit bg-red-600 hover:bg-destructive'
+                onClick={onDelete}
+            >
+                <Trash2 className="stroke-[2px]" />
+            </Button>
+        </div>
     )
 }
 
@@ -66,12 +74,12 @@ export const WorkoutOptions = ({ selected, data, onSelect, onDelete }: WorkoutSe
             <NavigationMenuList className="bg-none rounded-[12px] mt-2 lg:mt-0">
                 <NavigationMenuItem>
                     <NavigationMenuTrigger
-                        className="w-full md:w-[240px] bg-primary hover:bg-primary-dark h-[3rem] font-medium flex flex-row justify-between"
+                        className="w-full md:w-[240px] bg-black/30 hover:bg-primary-dark h-[3rem] font-medium flex flex-row justify-between"
                     >
                         Switch Workout
                     </NavigationMenuTrigger>
                     <NavigationMenuContent className=" w-full rounded-[12px] pl-[0.4rem] pr-[0.5rem] py-[0.6rem]">
-                        <ul className="w-full md:w-[228px]">
+                        <ul className="w-full space-y-2 md:w-[228px]">
                             {data.map((element, idx) => (
                                 <li key={idx} onClick={() => onSelect?.(element)}>
                                     <NavigationMenuLink>
@@ -105,7 +113,7 @@ export const WorkoutOptions = ({ selected, data, onSelect, onDelete }: WorkoutSe
 
                 {selected && (
                     <NavigationMenuItem>
-                        <Button 
+                        <Button
                             className='w-full lg:w-fit bg-red-600 hover:bg-destructive'
                             onClick={onDelete}
                         >

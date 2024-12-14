@@ -1,9 +1,9 @@
-export type GoalTypes = 
-  | "Muscle Gain"
-  | "Weight Loss"
-  | "Endurance"
-  | "Flexibility"
-  | "Balance"
+export type GoalTypes =
+    | "Muscle Gain"
+    | "Weight Loss"
+    | "Endurance"
+    | "Flexibility"
+    | "Balance"
 
 export type IntensityLevels =
     "Beginner" |
@@ -15,17 +15,64 @@ export interface DailyExerciseCount {
     total: number;
 }
 
+export interface PeriodComparison {
+    current: number;
+    previous: number;
+}
+
 export interface ExerciseLog {
     log_id: number;
     user_id: number;
     plan_exercise_id: number;
-    date: string;  
+    date: string;
     duration_mins: number;
     calories_burned: number;
     createdAt?: string;
     updatedAt?: string;
 }
 
+export interface ExerciseLogWithName extends ExerciseLog {
+    exercise_name: string;
+}
+
+export interface DashboardData {
+    recentExercises: ExerciseLogWithName[];
+    workoutStats: { total: number; lastWeek: number };
+    caloriesStats: { total: number; lastWeek: number };
+    dailyExercises: Array<{ day: string; completed: number; total: number }>;
+    todaysWorkout: { planName: string; exercise: PlanExercise | null, upcomingDay: string; };
+    weeklyCalories: Array<{ day: string; value: number }>
+}
+
+export interface LogData {
+    past: ExerciseLogWithName[];
+    current: PlanExercise[];
+    missing: PlanExercise[];
+}
+
+export interface StatSum {
+    totalWorkouts: string,
+    totalCalories: string,
+    totalDuration: number
+}
+
+export interface WeeklyData {
+    weeklyCalories: Array<{ day: string, value: number }>,
+    weeklyDurations: Array<{ day: string, value: number }>
+}
+
+export interface Highlights {
+    calories: number,
+    duration: number,
+    consistency: number
+}
+
+export interface WeeklyComparison {
+    calories: { val: number, inc: number },
+    workouts: { val: number, inc: number },
+    exercises: { val: number, inc: number },
+    duration: { val: number, inc: number }
+}
 // export interface LogTypes extends Omit<ExerciseLog, 'log_id' | ''>
 
 export interface PlanExercise {
@@ -69,12 +116,18 @@ export interface WorkoutPlan {
     createdAt?: string;
     updatedAt?: string;
     // Relation to PlanExercise
-    exercises: PlanExercise[];
+    planExercises: PlanExercise[];
 }
 
 export interface Preferences {
     goal_type: string;
     with_gym: boolean;
     workout_days: string;
+    intensity: IntensityLevels;
+}
+
+export interface PreferencesForm {
+    with_gym: boolean;
+    workout_days: string[];
     intensity: IntensityLevels;
 }
