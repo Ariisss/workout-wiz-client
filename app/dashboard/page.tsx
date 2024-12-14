@@ -172,7 +172,7 @@ export default function Dashboard({}: Props) {
             main={Math.ceil(dashboardData.caloriesStats.total).toString()}
             sub={
               <>
-                <span className="text-green-500">
+                <span>
                   +{Math.ceil(dashboardData.caloriesStats.lastWeek)}
                 </span>{" "}
                 from last week
