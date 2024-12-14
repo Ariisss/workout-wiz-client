@@ -22,12 +22,12 @@ export const TitleCard = ({ title, duration, data, selected }: TitleCardProps) =
             desc={`Duration: ${duration} weeks`}
             icon={
                 <div className="hidden lg:flex flex-row gap-2">
-                    <WorkoutOptions selected={selected} data={data} />
+                    <WorkoutSelect selected={selected} data={data} />
                 </div>
             }
         >
             <div className="flex flex-col gap-2 lg:hidden">
-                <WorkoutOptions selected={selected} data={data} />
+                <WorkoutSelect selected={selected} data={data} />
             </div>
         </DashboardCard>
     )
