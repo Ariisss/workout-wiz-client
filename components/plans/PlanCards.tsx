@@ -33,27 +33,30 @@ export const TitleCard = ({ title, duration, data, selected }: TitleCardProps) =
     )
 }
 
-export const GenWorkoutCard = () => (
+export const GenWorkoutCard = ({ generateWorkout }: { generateWorkout: () => Promise<any> }) => (
     <DashboardCard
-        title='Create your first workout plan'
-        desc='Get started with a personalized AI-generated workout plan'
-        className='p-0'
-        glow
+      title='Create your first workout plan'
+      desc='Get started with a personalized AI-generated workout plan'
+      className='p-0'
+      glow
     >
-        <div className='flex flex-col h-full items-center justify-center gap-4'>
-            <Logo width={200} height={200} />
-            <p className='font-roboto text-muted-foreground text-justify lg:text-right'>
-                No workout plans generated yet.
-                Let's create a customized plan tailored to your fitness goals!
-            </p>
-            <Button className='w-full lg:w-[50%]'>
-                <RefreshCcw />
-                Generate Workout
-            </Button>
-        </div>
+      <div className='flex flex-col h-full items-center justify-center gap-4'>
+        <Logo width={200} height={200} />
+        <p className='font-roboto text-muted-foreground text-justify lg:text-right'>
+          No workout plans generated yet.
+          Let's create a customized plan tailored to your fitness goals!
+        </p>
+        <Button
+          className='w-full lg:w-[50%]'
+          onClick={() => generateWorkout()}
+        >
+          <RefreshCcw />
+          Generate Workout
+        </Button>
+      </div>
     </DashboardCard>
-)
-
+  );
+  
 export type ExerciseProps = {
     exercise_name: string;
     description: string;

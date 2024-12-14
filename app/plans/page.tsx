@@ -18,6 +18,7 @@ import ToastError from "@/components/general/ToastError";
 import { toast } from "react-toastify";
 import { getActiveWorkoutPlan } from "@/lib/data-utils";
 import Loading from "./loading";
+import { generateWorkout } from "../api/workouts";
 
 type Props = {};
 
@@ -30,7 +31,7 @@ export default function Plans({ }: Props) {
         const fetchData = async () => {
             try {
                 const fetchActivePlan = getActiveWorkoutPlan(plans)
-                setActivePlan(fetchActivePlan);
+                setActivePlan(fetchActivePlan); 
                 setWorkoutDays(
                     Array.from(new Set(fetchActivePlan?.planExercises.map((exercise) => exercise.workout_day))) || []
                 );
@@ -58,7 +59,7 @@ export default function Plans({ }: Props) {
                         <WorkoutPlanContent active={activePlan} plans={plans} workoutDays={workoutDays}/>
                     </div>
                 ) : (
-                    <GenWorkoutCard />
+                    <GenWorkoutCard generateWorkout={generateWorkout}/>
                 )}
             </div>
 
