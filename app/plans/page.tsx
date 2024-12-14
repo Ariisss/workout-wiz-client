@@ -56,7 +56,7 @@ export default function Plans({}: Props) {
         "Plan Name": "Epic Leg Training 2",
         Description: "Good legs = good life",
         Goal: "Sigma Balls",
-        Duration_Weeks: 2,
+        Duration_Weeks: 1,
         Intensity: "Beginner",
         Workout_Days: "Friday, Saturday, Sunday",
         Exercises: [
