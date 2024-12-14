@@ -19,7 +19,7 @@ type WorkoutSelectProps = {
 
 export function WorkoutSelect({ data, onGenerateNew }: WorkoutSelectProps) {
     const [workouts, setWorkouts] = useState(data);
-    const [selected, setSelected] = useState(data[0] || ""); 
+    const [selected, setSelected] = useState(data[0] || "");
 
     const handleSelect = (value: string) => {
         if (value === "new") {
@@ -30,7 +30,7 @@ export function WorkoutSelect({ data, onGenerateNew }: WorkoutSelectProps) {
     };
 
     const handleGenerateNew = () => {
-        const newWorkout = `Workout ${workouts.length + 1}`; 
+        const newWorkout = `Workout ${workouts.length + 1}`;
         const updatedWorkouts = [...workouts, newWorkout];
         setWorkouts(updatedWorkouts);
         setSelected(newWorkout);
@@ -39,7 +39,7 @@ export function WorkoutSelect({ data, onGenerateNew }: WorkoutSelectProps) {
 
     return (
         <Select onValueChange={handleSelect} value={selected}>
-            <SelectTrigger className="w-[240px] bg-primary h-[3rem] font-medium">
+            <SelectTrigger className="w-[240px] bg-primary h-[3rem] font-medium hover:bg-primary-dark hover:bg-opacity-90 transition">
                 <SelectValue
                     className="text-xl"
                     placeholder="Switch workout"
@@ -48,13 +48,17 @@ export function WorkoutSelect({ data, onGenerateNew }: WorkoutSelectProps) {
             <SelectContent>
                 <SelectGroup>
                     {workouts.map((element, idx) => (
-                        <SelectItem value={element} key={idx}>
+                        <SelectItem
+                            value={element}
+                            key={idx}
+                            className="cursor-pointer"
+                        >
                             {element}
                         </SelectItem>
                     ))}
                     <SelectItem
                         value="new"
-                        className="flex flex-row gap-2 items-center"
+                        className="flex flex-row gap-2 items-center cursor-pointer"
                     >
                         <div className="flex items-center gap-2">
                             <span>Generate New</span>
