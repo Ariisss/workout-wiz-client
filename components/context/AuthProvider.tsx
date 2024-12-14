@@ -36,6 +36,7 @@ type AuthContextProps = {
     signup: (values: SignUpCredentials) => Promise<void>
     setProfile: (values: ProfileData) => Promise<void>
     setWorkoutPrefs: (values: WorkoutPrefsData) => Promise<void>
+    refreshPlans: () => Promise<void>
     updateWorkoutPrefs: (values: Partial<WorkoutPrefsData>) => Promise<void>
 
 }
@@ -194,8 +195,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             setUserPrefs(prefsData)
         } catch (error) {
             console.error('Failed to fetch workout preferences:', error);
+        } finally {
+            if (toastId.current !== null) toast.done(toastId.current)
         }
     }
+
+    const refreshPlans = async () => {
+        const plansRes = await getPlans();
+        const plansData = plansRes?.data || [];
+        const updatedPlans = [...plans, ...plansData];
+        setPlans(updatedPlans);
+    };
 
     return (
         <AuthContext.Provider value={{
@@ -210,7 +220,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             plans,
             prefs,
             logs,
-            loading
+            loading,
+            refreshPlans
         }}>
             {children}
         </AuthContext.Provider>

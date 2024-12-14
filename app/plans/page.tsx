@@ -23,7 +23,7 @@ import { generateWorkout } from "../api/workouts";
 type Props = {};
 
 export default function Plans({ }: Props) {
-    const { plans, logs, loading } = useAuth();
+    const { plans, logs, loading, refreshPlans } = useAuth();
     const [activePlan, setActivePlan] = useState<WorkoutPlan | null>(null);
     const [workoutDays, setWorkoutDays] = useState<string[]>([]);
 
@@ -44,6 +44,15 @@ export default function Plans({ }: Props) {
         fetchData();
     }, [plans]);
 
+    const handleGenerateWorkout = async () => {
+        try {
+            await generateWorkout();
+            await refreshPlans();
+        } catch (error) {
+            toast.error(<ToastError title="Workout Generation Error" desc={error} />);
+        }
+    };
+
     if (loading) return <Loading />
     return (
         <div className="h-fit lg:h-full w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8">
@@ -59,7 +68,7 @@ export default function Plans({ }: Props) {
                         <WorkoutPlanContent active={activePlan} plans={plans} workoutDays={workoutDays}/>
                     </div>
                 ) : (
-                    <GenWorkoutCard generateWorkout={generateWorkout}/>
+                    <GenWorkoutCard generateWorkout={handleGenerateWorkout}/>
                 )}
             </div>
 
