@@ -128,7 +128,7 @@ export default function WorkoutPreferencesForm({
                                                     <FormControl>
                                                         <RadioGroupItem value={action.toString()} className="hidden" />
                                                     </FormControl>
-                                                    <FormLabel className="font-medium flex w-full h-full items-center justify-center">
+                                                    <FormLabel className="cursor-pointer font-medium flex w-full h-full items-center justify-center">
                                                         {action ? "Yes" : "No"}
                                                     </FormLabel>
                                                 </FormItem>
@@ -220,7 +220,7 @@ export default function WorkoutPreferencesForm({
                                                     <FormControl>
                                                         <RadioGroupItem value={level} className="hidden" />
                                                     </FormControl>
-                                                    <FormLabel className="text-xs lg:text-sm flex w-full h-full items-center justify-center">
+                                                    <FormLabel className="cursor-pointer text-xs lg:text-sm flex w-full h-full items-center justify-center">
                                                         {level}
                                                     </FormLabel>
                                                 </FormItem>

@@ -105,7 +105,7 @@ export default function FitnessGoalsForm({
                                                         disabled={isLocked}
                                                     />
                                                 </FormControl>
-                                                <FormLabel className="text-sm font-medium w-full h-full flex items-center">
+                                                <FormLabel className="cursor-pointer text-sm font-medium w-full h-full flex items-center">
                                                     {goal}
                                                 </FormLabel>
                                             </FormItem>
