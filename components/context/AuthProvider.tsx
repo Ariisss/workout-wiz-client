@@ -62,8 +62,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }, []);
 
     useEffect(() => {
-        // Set loading to false only after all necessary data is fetched
-        setLoading(!userData || !workouts.length || !plans.length || !logs.length);
+        const isDataFetched = userData !== null && workouts !== null && plans !== null && logs !== null;
+        setLoading(!isDataFetched);
     }, [userData, workouts, plans, logs]);
 
     // unauthenticated handler
