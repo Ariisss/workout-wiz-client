@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardContent } from "../ui/card";
 import { WorkoutOptions, WorkoutSelect } from "./WorkoutOptions";
+import { WorkoutPlan } from "@/types/workout";
 
 type TitleCardProps = {
     title: string
@@ -102,35 +103,28 @@ export const ExerciseCard = ({
     )
 }
 
-export type WorkoutPlan = {
-    "Plan Name": string;
-    Description: string;
-    Goal: string;
-    Duration_Weeks: number;
-    Intensity: string;
-    Workout_Days: string;
-    Exercises: ExerciseProps[];
-}
 
 export type WorkoutPlanProps = {
-    plan: WorkoutPlan
+    active: WorkoutPlan
+    plans: WorkoutPlan[]
+    workoutDays: string[]
 }
 
 
-export const WorkoutPlanContent = ({ plan }: WorkoutPlanProps) => {
+export const WorkoutPlanContent = ({ active, plans, workoutDays }: WorkoutPlanProps) => {
     return (
         <div className="flex flex-col gap-8">
             <TitleCard
-                title={plan["Plan Name"]}
-                duration={plan.Duration_Weeks}
-                selected={plan["Plan Name"]}
-                data={[plan["Plan Name"]]}
+                title={active.plan_name}
+                duration={active.duration_weeks}
+                selected={active.plan_name}
+                data={plans.map((plan) => plan.plan_name)}
             />
-            <div className="flex flex-col md:flex-row gap-8">
-                {plan.Workout_Days.split(', ').map((day, didx) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {workoutDays.map((day, didx) => (
                     <DashboardCard title={day} key={didx} className="w-full">
                         <div className="flex flex-col gap-4 pt-2">
-                            {plan.Exercises.filter((ex) => ex.workout_day == day).map((exercise, eidx) =>
+                            {active.planExercises.filter((ex) => ex.workout_day == day).map((exercise, eidx) =>
                                 <ExerciseCard key={[didx, eidx].join('')} {...exercise} />
                             )}
                         </div>

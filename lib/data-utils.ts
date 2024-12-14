@@ -338,3 +338,9 @@ const isWorkoutDayInWeek = (workoutDay: string, weekStart: Date): boolean => {
     });
     return weekDays.includes(workoutDay);
 };
+
+
+// PLANS PAGE
+export const getActiveWorkoutPlan = (plans: WorkoutPlan[]): WorkoutPlan | null => {
+    return plans.find(plan => plan.is_active === true) ?? null;
+}
