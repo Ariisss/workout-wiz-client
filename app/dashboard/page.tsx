@@ -23,8 +23,6 @@ import Link from 'next/link'
 
 type Props = {}
 
-
-
 export default function Dashboard({ }: Props) {
     const { userData, workouts, plans, logs, loading } = useAuth();
     const [dashboardData, setDashboardData] = useState<DashboardData>({
@@ -207,7 +205,9 @@ export default function Dashboard({ }: Props) {
                         <WeeklyProgress data={dashboardData.dailyExercises} />
                         <Button className='min-h-[3rem]'>
                             <ChartNoAxesColumn />
-                            View Progress
+                            <Link href={'progress'}>
+                                View Progress
+                            </Link>
                         </Button>
                     </div>
                 </DashboardCard>
