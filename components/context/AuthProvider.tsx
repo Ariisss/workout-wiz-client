@@ -36,7 +36,7 @@ type AuthContextProps = {
     signup: (values: SignUpCredentials) => Promise<void>
     setProfile: (values: ProfileData) => Promise<void>
     setWorkoutPrefs: (values: WorkoutPrefsData) => Promise<void>
-
+    refreshPlans: () => Promise<void>
 }
 
 
@@ -191,6 +191,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const refreshPlans = async () => {
+        const plansRes = await getPlans();
+        const plansData = plansRes?.data || [];
+        const updatedPlans = [...plans, ...plansData];
+        setPlans(updatedPlans);
+    };
+
     return (
         <AuthContext.Provider value={{
             userData: userData,
@@ -203,7 +210,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             plans,
             prefs,
             logs,
-            loading
+            loading,
+            refreshPlans
         }}>
             {children}
         </AuthContext.Provider>
