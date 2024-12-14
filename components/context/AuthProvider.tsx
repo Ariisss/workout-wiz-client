@@ -61,6 +61,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }, []);
 
+    useEffect(() => {
+        // Set loading to false only after all necessary data is fetched
+        setLoading(!userData || !workouts.length || !plans.length || !logs.length);
+    }, [userData, workouts, plans, logs]);
+
     // unauthenticated handler
     useEffect(() => {
         if (!token && !userData && !publicRoutes.includes(pathname)) {
@@ -133,23 +138,20 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     ////////////////////////
     const fetchUserData = async () => {
         try {
-            setLoading(true);
-            toastId.current = toast.loading("Fetching User Data...", {
-                progressClassName: 'bg-[#66FFC7]'
-            });
             const data: userType = await fetchUser()
             setUserData(data)
         } catch (error) {
             throw error
         } finally {
             if (toastId.current !== null) toast.done(toastId.current)
-            setLoading(false)
         }
     }
 
     const fetchWorkoutData = async () => {
         try {
-            setLoading(true);
+            toastId.current = toast.loading("Fetching User Data...", {
+                progressClassName: 'bg-[#66FFC7]'
+            });
             const [workoutsRes, plansRes, logsRes] = await Promise.all([
                 getWorkouts(),
                 getPlans(),
@@ -167,7 +169,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             console.error('Failed to fetch workout data:', error);
         } finally {
             if (toastId.current !== null) toast.done(toastId.current)
-            setLoading(false)
         }
     }
 
