@@ -132,7 +132,7 @@ export function GenericChart({
                     >
                         <CartesianGrid vertical={false} />
                         <XAxis
-                            dataKey="period"
+                            dataKey="day"
                             tickLine={true}
                             axisLine={true}
                             tickMargin={8}
