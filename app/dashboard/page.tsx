@@ -57,7 +57,7 @@ export default function Dashboard({ }: Props) {
         };
 
         fetchData();
-    }, []);
+    }, [plans, logs, userData]);
 
     
     const data = {
