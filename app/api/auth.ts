@@ -138,3 +138,21 @@ export const getWorkoutPreferences = async () => {
 
     return response.json()
 }
+
+export const updateUserPassword = async (values: { oldPassword: string, newPassword: string }) => {
+    const response = await fetch(`${API}/user/password`, {
+        method: 'PUT',
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+    })
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message)
+    }
+
+    return response.json()
+}
