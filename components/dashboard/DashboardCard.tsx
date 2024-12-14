@@ -8,6 +8,7 @@ import React from "react";
 import { motion } from "motion/react";
 import clsx from "clsx";
 import BackgroundWrapper from "../general/BackgroundWrapper";
+import { PlanExercise } from "@/types/workout";
 
 type DashboardCardProps = {
     title: string
@@ -61,8 +62,8 @@ export function DashboardCard({
             </CardContent>
         </Card>
     )
-    
-    const backgrounds = [...defaultBackgrounds, ...backgroundOptions]; 
+
+    const backgrounds = [...defaultBackgrounds, ...backgroundOptions];
     return (
         <div className="rounded-[12px] h-full w-full">
             <BackgroundWrapper backgrounds={backgrounds}>
@@ -89,11 +90,7 @@ type WorkoutContentProps = {
     workoutName: string;
     date: string;
     hasWorkoutToday: boolean;
-    upcomingExercise?: {
-        name: string;
-        sets: number;
-        reps: number;
-    }
+    upcomingExercise: PlanExercise | null
 }
 
 export function WorkoutContent({
@@ -122,28 +119,28 @@ export function WorkoutContent({
             ) : (
                 <div className="flex flex-col md:flex-row justify-center gap-2 h-full">
                     <div className="flex w-full justify-between items-end ">
-                        <div className="w-full h-full flex flex-col justify-center gap-0">
+                        <div className="w-3/4 h-full flex flex-col justify-center gap-0">
                             <p className="text-lg font-medium">{workoutName}</p>
                             <p className="text-muted-foreground font-roboto">{date}</p>
                         </div>
-                        <motion.div
-                            className="w-full pl-5 h-full hidden md:flex items-center"
-                            initial={{ x: 0 }}
-                            animate={{ x: 40 }}
-                            transition={{
-                                repeat: Infinity,
-                                repeatType: 'reverse',
-                                duration: '0.5'
-                            }}
-                        >
-                            <ChevronsRight className="h-16 w-16 text-primary-light stroke-[1.5]  animate-pulse" />
-                        </motion.div>
                     </div>
+                    <motion.div
+                        className="w-1/2 pl-5 h-full hidden md:flex items-center"
+                        initial={{ x: 0 }}
+                        animate={{ x: [-20, 20] }}
+                        transition={{
+                            repeat: Infinity,
+                            repeatType: 'reverse',
+                            duration: '0.5'
+                        }}
+                    >
+                        <ChevronsRight className="h-16 w-16 text-primary-light stroke-[1.5]  animate-pulse" />
+                    </motion.div>
                     {upcomingExercise && (
                         <div className="flex flex-col gap-0 justify-center w-full h-full">
                             <p className="text-lg font-medium">Upcoming Exercise</p>
                             <p className="text-muted-foreground font-roboto">
-                                {upcomingExercise.name} | {upcomingExercise.sets} sets, {upcomingExercise.reps} reps
+                                {upcomingExercise.exercise_name} | {upcomingExercise.sets} sets, {upcomingExercise.reps} reps
                             </p>
                         </div>
                     )}
@@ -176,7 +173,7 @@ export function ActivityContent({
             )}>
                 <div className="flex flex-col justify-end w-full">
                     <h3 className="text-white font-medium">{title}</h3>
-                    <p className="text-sm text-muted-foreground font-roboto">{date}</p>
+                    <p className="text-sm text-muted-foreground font-roboto">{new Date(date).toLocaleDateString('en-US')}</p>
                 </div>
                 <div className="flex flex-col justify-end w-full">
                     <h3 className="text-primary-light font-medium text-right">{calories}</h3>

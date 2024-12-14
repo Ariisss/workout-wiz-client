@@ -72,7 +72,7 @@ export function WeeklyDuration({ data, className }: GenericChartWrapperProps) {
 
 
 type ChartDataProps = {
-    period: string; // Time period (e.g., day, week, or month)
+    day: string; // Time period (e.g., day, week, or month)
     value: number; // Y-axis data
 };
 
@@ -132,7 +132,7 @@ export function GenericChart({
                     >
                         <CartesianGrid vertical={false} />
                         <XAxis
-                            dataKey="period"
+                            dataKey="day"
                             tickLine={true}
                             axisLine={true}
                             tickMargin={8}

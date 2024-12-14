@@ -39,8 +39,7 @@ export default function Loading() {
                         opacity: [0.2, 1],
                         rotate: [0, 60],
                         transition: {
-                            duration: 40,
-                            type: 'spring',
+                            duration: 10,
                             repeat: Infinity,
                             repeatType: "reverse",
                         }
