@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences } from '@/app/api/auth';
 import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
@@ -26,6 +26,7 @@ type userType = {
 
 type AuthContextProps = {
     userData: userType
+    prefs: WorkoutPrefsData | null
     workouts: PlanExercise[]
     plans: WorkoutPlan[]
     logs: ExerciseLog[]
@@ -50,22 +51,22 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     const [loading, setLoading] = useState(true)
     const [userData, setUserData] = useState<userType>(null)
+    const [prefs, setUserPrefs] = useState<WorkoutPrefsData | null>(null)
     const [workouts, setWorkouts] = useState<PlanExercise[]>([])
     const [plans, setPlans] = useState<WorkoutPlan[]>([])
     const [logs, setLogs] = useState<ExerciseLog[]>([])
-    
+
     // loading handler
     useEffect(() => {
         if (token !== undefined) {
-            fetchUserData()
-            fetchWorkoutData()
+            fetchAll()
         }
     }, []);
 
     useEffect(() => {
         const isDataFetched = userData !== null && workouts !== null && plans !== null && logs !== null;
         setLoading(!isDataFetched);
-    }, [userData, workouts, plans, logs]);
+    }, [userData, workouts, plans, logs, prefs]);
 
     // unauthenticated handler
     useEffect(() => {
@@ -83,8 +84,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             router.prefetch('/dashboard')
             await loginUser(values)
 
-            await fetchUserData()
-            await fetchWorkoutData()
+            await fetchAll()
             router.push("/dashboard");
         } catch (error) {
             console.error(error);
@@ -125,7 +125,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const setWorkoutPrefs = async (values: WorkoutPrefsData) => {
         try {
             await setWorkoutPreferences(values)
-            await fetchUserData()
+            await fetchAll()
             router.push('/dashboard')
         } catch (error) {
             console.error(error);
@@ -137,6 +137,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     ////////////////////////
     //   DATA RETRIEVAL   //
     ////////////////////////
+    const fetchAll = async () => {
+        await fetchUserData()
+        await fetchWorkoutData()
+        await fetchUserPrefs()
+    }
     const fetchUserData = async () => {
         try {
             const data: userType = await fetchUser()
@@ -173,6 +178,19 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const fetchUserPrefs = async () => {
+        try {
+            const prefsRes = await getWorkoutPreferences()
+            const prefsData = prefsRes?.data[0] || null
+            console.log(prefsData)
+            setUserPrefs(prefsData)
+        } catch (error) {
+            console.error('Failed to fetch workout preferences:', error);
+        } finally {
+            if (toastId.current !== null) toast.done(toastId.current)
+        }
+    }
+
     return (
         <AuthContext.Provider value={{
             userData: userData,
@@ -183,6 +201,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             setWorkoutPrefs,
             workouts,
             plans,
+            prefs,
             logs,
             loading
         }}>
