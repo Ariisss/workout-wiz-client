@@ -44,6 +44,12 @@ export interface DashboardData {
     weeklyCalories: Array<{ day: string; value: number }>
 }
 
+
+export interface LogData {
+    past: ExerciseLogWithName[];
+    current: PlanExercise[];
+    missing: PlanExercise[];
+}
 // export interface LogTypes extends Omit<ExerciseLog, 'log_id' | ''>
 
 export interface PlanExercise {

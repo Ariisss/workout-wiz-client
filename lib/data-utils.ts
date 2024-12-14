@@ -4,7 +4,7 @@ import { ExerciseLog, WorkoutPlan, DailyExerciseCount, PlanExercise } from "@/ty
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
 // get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
 
-export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[]) => {
+export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[], limit: number = 5) => {
     if (!logs.length) return [];
 
     const sortedLogs = [...logs]
@@ -12,7 +12,7 @@ export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[]) =>
         .sort((a, b) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
         )
-        .slice(0, 5);
+        .slice(0, limit);
 
     return sortedLogs.map(log => {
         const exercise = plans.reduce<PlanExercise | undefined>((found, plan) => {
@@ -344,3 +344,48 @@ const isWorkoutDayInWeek = (workoutDay: string, weekStart: Date): boolean => {
 export const getActiveWorkoutPlan = (plans: WorkoutPlan[]): WorkoutPlan | null => {
     return plans.find(plan => plan.is_active === true) ?? null;
 }
+
+// LOGS PAGE
+
+export const getUnfinishedExercisesToday = (plans: WorkoutPlan[], logs: ExerciseLog[]): PlanExercise[] => {
+    const today = new Date();
+    const todayLogs = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return logDate.toDateString() === today.toDateString();
+    });
+    const activePlan = getActiveWorkoutPlan(plans);
+    if (!activePlan) return [];
+
+    const todayWorkoutDays = activePlan.planExercises.filter(exercise => exercise.workout_day === today.toLocaleDateString('en-US', { weekday: 'long' }));
+    const completedExerciseIds = todayLogs.map(log => log.plan_exercise_id);
+
+    return todayWorkoutDays.filter(exercise => !completedExerciseIds.includes(exercise.plan_exercise_id));
+};
+
+export const getMissedExercisesThisWeek = (plans: WorkoutPlan[], logs: ExerciseLog[]): PlanExercise[] => {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Move to Sunday
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6); // Move to Saturday
+
+    const weeklyLogs = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return logDate >= startOfWeek && logDate <= endOfWeek;
+    });
+    const activePlan = getActiveWorkoutPlan(plans);
+    if (!activePlan) return [];
+
+    const completedExerciseIds = weeklyLogs.map(log => log.plan_exercise_id);
+
+    // Get the planned exercises for this week
+    const weeklyExercises = activePlan.planExercises.filter(exercise => {
+        const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(exercise.workout_day);
+        const workoutDay = new Date(startOfWeek);
+        workoutDay.setDate(startOfWeek.getDate() + dayIndex);
+        return workoutDay >= startOfWeek && workoutDay <= endOfWeek;
+    });
+
+    // Get the missed exercises
+    return weeklyExercises.filter(exercise => !completedExerciseIds.includes(exercise.plan_exercise_id));
+};
