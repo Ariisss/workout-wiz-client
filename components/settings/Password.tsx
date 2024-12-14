@@ -26,9 +26,15 @@ const formSchema = z.object({
 
     new_password: z
         .string()
-        .min(1, { message: "Password is required." }),
+        .min(1, { message: "Password is required." }) // Ensure the field is not empty
+        .regex(/^(?=.*[a-z])(?=.*[A-Z]).{8,}$/, {
+            message: "Password must be at least 8 characters long, including one uppercase and one lowercase letter."
+        }),
     confirm: z
         .string()
+}).refine((data) => data.new_password === data.confirm, {
+    message: "Passwords do not match",
+    path: ["confirm"]
 })
 
 type FormProps = {
@@ -71,7 +77,7 @@ export default function PasswordForm({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full flex flex-col justify-between">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full lg:max-w-[320px] flex flex-col justify-between">
                 <div className="space-y-4 mt-8">
                     <FormField
                         control={form.control}
@@ -110,7 +116,7 @@ export default function PasswordForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0 bg-red-500">Change Password</Button>
+                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0 bg-red-500 active:bg-red-900">Change Password</Button>
             </form>
         </Form >
     )
