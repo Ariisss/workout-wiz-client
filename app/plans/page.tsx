@@ -41,7 +41,7 @@ export default function Plans({ }: Props) {
         };
 
         fetchData();
-    }, [loading]);
+    }, [plans]);
 
     if (loading) return <Loading />
     return (
