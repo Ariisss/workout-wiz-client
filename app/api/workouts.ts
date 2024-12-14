@@ -9,6 +9,21 @@ interface ApiResponse<T> {
     error?: string;
 }
 
+export const generateWorkout = async () => {
+
+    const response = await fetch(`${API}/workout-plan/generate/preferences`, {
+        method: 'POST',
+        credentials: 'include'
+    })
+
+    if(!response.ok){
+        const error = await response.json()
+        throw new Error(error.message)
+    }
+
+    return response.json();
+}
+
 export const getWorkouts = async (): Promise<ApiResponse<PlanExercise>> => {
 
     const response = await fetch(`${API}/exercises`, {
