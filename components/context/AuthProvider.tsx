@@ -37,6 +37,7 @@ type AuthContextProps = {
     setProfile: (values: ProfileData) => Promise<void>
     setWorkoutPrefs: (values: WorkoutPrefsData) => Promise<void>
     refreshPlans: () => Promise<void>
+    updateProfile: (values: Partial<ProfileData>) => Promise<void>
     updateWorkoutPrefs: (values: Partial<WorkoutPrefsData>) => Promise<void>
 
 }
@@ -135,6 +136,15 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const updateProfile = async (values: Partial<ProfileData>) => {
+        try {
+            await updateUserProfile(values)
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     const updateWorkoutPrefs = async (values: Partial<WorkoutPrefsData>) => {
         try {
             await updateWorkoutPreferences(values)
@@ -215,6 +225,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             signup,
             setProfile,
             setWorkoutPrefs,
+            updateProfile,
             updateWorkoutPrefs,
             workouts,
             plans,
