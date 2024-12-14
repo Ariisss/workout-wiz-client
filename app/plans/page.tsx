@@ -22,46 +22,119 @@ import { generateWorkout } from "../api/workouts";
 
 type Props = {};
 
-export default function Plans({ }: Props) {
-    const { plans, logs, loading } = useAuth();
-    const [activePlan, setActivePlan] = useState<WorkoutPlan | null>(null);
-    const [workoutDays, setWorkoutDays] = useState<string[]>([]);
+export default function Plans({}: Props) {
+  const data = {
+    workoutPlans: [
+      {
+        "Plan Name": "Epic Leg Training 1",
+        Description: "Good legs = good life",
+        Goal: "Sigma Balls",
+        Duration_Weeks: 2,
+        Intensity: "Beginner",
+        Workout_Days: "Monday, Wednesday, Friday",
+        Exercises: [
+          {
+            exercise_name: "Squats",
+            description: "Squatters",
+            sets: 3,
+            reps: 12,
+            duration_mins: 40,
+            workout_day: "Monday",
+            met_value: 123.23,
+          },
+          {
+            exercise_name: "Leg Machine",
+            description: "Idk what this is",
+            sets: 3,
+            reps: 12,
+            duration_mins: 40,
+            workout_day: "Wednesday",
+            met_value: 123.23,
+          },
+          {
+            exercise_name: "Bulgarian Squats",
+            description: "Gahd damn",
+            sets: 3,
+            reps: 12,
+            duration_mins: 40,
+            workout_day: "Friday",
+            met_value: 123.23,
+          },
+        ],
+      },
+      {
+        "Plan Name": "Epic Leg Training 2",
+        Description: "Good legs = good life",
+        Goal: "Sigma Balls",
+        Duration_Weeks: 1,
+        Intensity: "Beginner",
+        Workout_Days: "Friday, Saturday, Sunday",
+        Exercises: [
+          {
+            exercise_name: "Ultra Squats",
+            description: "Squatters",
+            sets: 3,
+            reps: 12,
+            duration_mins: 40,
+            workout_day: "Friday",
+            met_value: 123.23,
+          },
+          {
+            exercise_name: "Buff Legs Machine",
+            description: "Idk what this is",
+            sets: 3,
+            reps: 12,
+            duration_mins: 40,
+            workout_day: "Saturday",
+            met_value: 123.23,
+          },
+          {
+            exercise_name: "FILIPINO Squats",
+            description: "Gahd damn",
+            sets: 3,
+            reps: 12,
+            duration_mins: 40,
+            workout_day: "Sunday",
+            met_value: 123.23,
+          },
+        ],
+      },
+    ],
+    dummy: [],
+  };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const fetchActivePlan = getActiveWorkoutPlan(plans)
-                setActivePlan(fetchActivePlan); 
-                setWorkoutDays(
-                    Array.from(new Set(fetchActivePlan?.planExercises.map((exercise) => exercise.workout_day))) || []
-                );
-                console.log(getActiveWorkoutPlan(plans))
-            } catch (error) {
-                toast.error(<ToastError title="Data Retrieval Error" desc={error} />);
-            }
-        };
+  // State for the selected plan
+  const [selectedPlan, setSelectedPlan] = useState(data.workoutPlans[0]);
 
-        fetchData();
-    }, [plans]);
+  // Update function for changing the selected plan
+  const handleSelectPlan = (planName: string) => {
+    const newPlan = data.workoutPlans.find(
+      (plan) => plan["Plan Name"] === planName
+    );
+    if (newPlan) setSelectedPlan(newPlan);
+  };
 
-    if (loading) return <Loading />
-    return (
-        <div className="h-fit lg:h-full w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8">
-            <div>
-                <ValueContent
-                    main="Workout plans"
-                    sub="Your personalized training schedule"
-                />
-            </div>
-            <div className="h-fit flex flex-col">
-                {activePlan ? (
-                    <div>
-                        <WorkoutPlanContent active={activePlan} plans={plans} workoutDays={workoutDays}/>
-                    </div>
-                ) : (
-                    <GenWorkoutCard generateWorkout={generateWorkout}/>
-                )}
-            </div>
+  return (
+    <div className="h-fit lg:h-full w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8">
+      <div>
+        <ValueContent
+          main="Workout plans"
+          sub="Your personalized training schedule"
+        />
+      </div>
+      <div className="h-fit flex flex-col">
+        {selectedPlan ? (
+          <div>
+            <WorkoutPlanContent
+              plan={selectedPlan}
+              allPlans={data.workoutPlans}
+              onSelectPlan={handleSelectPlan}
+            />
+          </div>
+        ) : (
+          <GenWorkoutCard />
+        )}
+      </div>
 
             <div
                 className={clsx("h-fit md:h-[144px] flex flex-col lg:flex-row gap-6", {
