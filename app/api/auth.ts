@@ -107,6 +107,24 @@ export const setWorkoutPreferences = async (values: Preferences) => {
     return response.json()
 }
 
+export const updateWorkoutPreferences = async (values: Partial<Preferences>) => {
+    const response = await fetch(`${API}/work-preference`, {
+        method: 'PUT',
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+    })
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message)
+    }
+
+    return response.json()
+}
+
 export const getWorkoutPreferences = async () => {
     const response = await fetch(`${API}/work-preference`, {
         method: 'GET',

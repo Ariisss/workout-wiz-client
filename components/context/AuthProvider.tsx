@@ -37,6 +37,8 @@ type AuthContextProps = {
     setProfile: (values: ProfileData) => Promise<void>
     setWorkoutPrefs: (values: WorkoutPrefsData) => Promise<void>
     refreshPlans: () => Promise<void>
+    updateWorkoutPrefs: (values: Partial<WorkoutPrefsData>) => Promise<void>
+
 }
 
 
@@ -133,14 +135,28 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const updateWorkoutPrefs = async (values: Partial<WorkoutPrefsData>) => {
+        try {
+            await updateWorkoutPrefs(values)
+            await fetchUserPrefs()
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
 
     ////////////////////////
     //   DATA RETRIEVAL   //
     ////////////////////////
     const fetchAll = async () => {
+        toastId.current = toast.loading("Fetching User Data...", {
+            progressClassName: 'bg-[#66FFC7]'
+        });
         await fetchUserData()
         await fetchWorkoutData()
         await fetchUserPrefs()
+        if (toastId.current !== null) toast.done(toastId.current)
     }
     const fetchUserData = async () => {
         try {
@@ -148,16 +164,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             setUserData(data)
         } catch (error) {
             throw error
-        } finally {
-            if (toastId.current !== null) toast.done(toastId.current)
         }
     }
 
     const fetchWorkoutData = async () => {
         try {
-            toastId.current = toast.loading("Fetching User Data...", {
-                progressClassName: 'bg-[#66FFC7]'
-            });
             const [workoutsRes, plansRes, logsRes] = await Promise.all([
                 getWorkouts(),
                 getPlans(),
@@ -173,8 +184,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             setLogs(logsData);
         } catch (error) {
             console.error('Failed to fetch workout data:', error);
-        } finally {
-            if (toastId.current !== null) toast.done(toastId.current)
         }
     }
 
@@ -206,6 +215,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             signup,
             setProfile,
             setWorkoutPrefs,
+            updateWorkoutPrefs,
             workouts,
             plans,
             prefs,
