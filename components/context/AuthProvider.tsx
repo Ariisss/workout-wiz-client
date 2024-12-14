@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences, updateWorkoutPreferences } from '@/app/api/auth';
 import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
@@ -136,7 +136,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     const updateWorkoutPrefs = async (values: Partial<WorkoutPrefsData>) => {
         try {
-            await updateWorkoutPrefs(values)
+            await updateWorkoutPreferences(values)
             await fetchUserPrefs()
         } catch (error) {
             console.error(error);
