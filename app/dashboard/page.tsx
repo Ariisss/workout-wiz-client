@@ -155,7 +155,11 @@ export default function Dashboard({ }: Props) {
                     title='Weekly Streak'
                     icon={<Zap className='text-primary-light h-6 w-6' />}
                 >
-                    <ValueContent main={data.statSum.weekStreak.toString() + " weeks"} sub="Fuelling the progress machine!" />
+                    {userData?.weeklyStreak === 0 || userData?.weeklyStreak === undefined ? (
+                        <ValueContent main="No streak" sub="Get moving to start your streak!" />
+                        ) : (
+                        <ValueContent main={userData.weeklyStreak.toString() + " week" + (userData.weeklyStreak > 1 ? "s" : "")} sub="Fuelling the progress machine!" />
+                    )}
                 </DashboardCard>
             </div>
             <div className='lg:h-[350px] flex flex-col lg:flex-row gap-6'>

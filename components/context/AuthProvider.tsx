@@ -19,6 +19,7 @@ type userType = {
     date_of_birth: Date,
     height: number;
     weight: number;
+    weeklyStreak: number;
     createdAt: Date;
     updatedAt: Date;
 } | null
