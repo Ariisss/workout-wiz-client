@@ -1,17 +1,12 @@
 "use client";
-import React, { useState } from "react";
 import {
-  ActivityContent,
   DashboardCard,
   ValueContent,
-  WorkoutContent,
 } from "@/components/dashboard/DashboardCard";
 import clsx from "clsx";
 import {
   GenWorkoutCard,
   WorkoutPlanContent,
-  WorkoutPlan,
-  ExerciseProps,
 } from "@/components/plans/PlanCards";
 
 type Props = {};
@@ -98,8 +93,7 @@ export default function Plans({}: Props) {
     dummy: [],
   };
 
-  // Show only the first workout plan
-  const workoutPlanToShow = data.workoutPlans[0]; // This will only display the first plan
+  const selectedPlan = data.workoutPlans[0]; 
 
   return (
     <div className="h-fit lg:h-full w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8">
@@ -110,9 +104,9 @@ export default function Plans({}: Props) {
         />
       </div>
       <div className="h-fit flex flex-col">
-        {workoutPlanToShow ? (
+        {selectedPlan ? (
           <div>
-            <WorkoutPlanContent plan={workoutPlanToShow} />
+            <WorkoutPlanContent plan={selectedPlan} />
           </div>
         ) : (
           <GenWorkoutCard />
@@ -121,7 +115,7 @@ export default function Plans({}: Props) {
 
       <div
         className={clsx("h-fit md:h-[144px] flex flex-col lg:flex-row gap-6", {
-          hidden: workoutPlanToShow,
+          hidden: selectedPlan,
         })}
       >
         <DashboardCard title="Personalized Workouts">
