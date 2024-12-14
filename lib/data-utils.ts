@@ -1,4 +1,4 @@
-import { ExerciseLog, WorkoutPlan, DailyExerciseCount, PlanExercise } from "@/types/workout"
+import { ExerciseLog, WorkoutPlan, DailyExerciseCount, PlanExercise, WeeklyComparison } from "@/types/workout"
 
 // needed data:
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
@@ -247,10 +247,6 @@ export const calculateCaloriesBurned = (data: ExerciseLog[]) => {
             })
             .reduce((sum, log) => sum + log.calories_burned, 0)
     }
-    // Usage:
-    // const caloriesStats = calculateCaloriesBurned(exerciseLogs)
-    // console.log(caloriesStats.total)
-    // console.log(caloriesStats.lastWeek) 
 }
 
 // Partial rani, this i s so hard wtf
@@ -346,7 +342,6 @@ export const getActiveWorkoutPlan = (plans: WorkoutPlan[]): WorkoutPlan | null =
 }
 
 // LOGS PAGE
-
 export const getUnfinishedExercisesToday = (plans: WorkoutPlan[], logs: ExerciseLog[]): PlanExercise[] => {
     const today = new Date();
     const todayLogs = logs.filter(log => {
@@ -388,4 +383,233 @@ export const getMissedExercisesThisWeek = (plans: WorkoutPlan[], logs: ExerciseL
 
     // Get the missed exercises
     return weeklyExercises.filter(exercise => !completedExerciseIds.includes(exercise.plan_exercise_id));
+};
+
+// PROGRESS PAGE
+export const countAllWorkouts = (logs: ExerciseLog[]): number => logs.length;
+
+export const calculateAllCaloriesBurned = (logs: ExerciseLog[]): number =>
+    logs.reduce((total, log) => total + log.calories_burned, 0);
+
+export const countTotalDuration = (logs: ExerciseLog[], exercises: PlanExercise[]): number =>
+    logs.reduce((total, log) => {
+        const exercise = exercises.find(ex => ex.plan_exercise_id === log.plan_exercise_id);
+        return total + (exercise?.duration_mins || 0);
+    }, 0);
+
+export const getAllExercisesFromPlans = (plans: WorkoutPlan[]): PlanExercise[] => {
+    return plans.reduce<PlanExercise[]>((allExercises, plan) => {
+        return [...allExercises, ...plan.planExercises];
+    }, []);
+};
+
+export const getPastMonthWeeklyCalories = (logs: ExerciseLog[]): Array<{ day: string, value: number }> => {
+    const today = new Date();
+    const startOfMonth = new Date(today);
+    startOfMonth.setDate(1);
+    const endOfMonth = new Date(startOfMonth);
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+    endOfMonth.setDate(endOfMonth.getDate() - 1);
+
+    const logsInMonth = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return logDate >= startOfMonth && logDate <= endOfMonth;
+    });
+
+    const weeksInMonth = Array.from({ length: 4 }).map((_, i) => {
+        const weekStart = new Date(startOfMonth);
+        weekStart.setDate(startOfMonth.getDate() + (i * 7));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        return {
+            weekStart,
+            weekEnd,
+        };
+    });
+
+    const weeklyCalories = weeksInMonth.map(({ weekStart, weekEnd }, index) => {
+        const weekLogs = logsInMonth.filter(log => {
+            const logDate = new Date(log.date);
+            return logDate >= weekStart && logDate <= weekEnd;
+        });
+        const weekCalories = weekLogs.reduce((sum, log) => sum + log.calories_burned, 0);
+        return {
+            day: `${index + 1}`,
+            value: weekCalories,
+        };
+    });
+
+    return weeklyCalories;
+};
+
+export const getPastMonthWeeklyDurations = (logs: ExerciseLog[], exercises: PlanExercise[]): Array<{ day: string, value: number }> => {
+    const today = new Date();
+    const startOfMonth = new Date(today);
+    startOfMonth.setDate(1);
+    const endOfMonth = new Date(startOfMonth);
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+    endOfMonth.setDate(endOfMonth.getDate() - 1);
+
+    const logsInMonth = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return logDate >= startOfMonth && logDate <= endOfMonth;
+    });
+
+    const weeksInMonth = Array.from({ length: 4 }).map((_, i) => {
+        const weekStart = new Date(startOfMonth);
+        weekStart.setDate(startOfMonth.getDate() + (i * 7));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        return {
+            weekStart,
+            weekEnd,
+        };
+    });
+
+    const weeklyDurations = weeksInMonth.map(({ weekStart, weekEnd }, index) => {
+        const weekLogs = logsInMonth.filter(log => {
+            const logDate = new Date(log.date);
+            return logDate >= weekStart && logDate <= weekEnd;
+        });
+        const weekDuration = weekLogs.reduce((sum, log) => {
+            const exercise = exercises.find(ex => ex.plan_exercise_id === log.plan_exercise_id);
+            return sum + (exercise?.duration_mins || 0);
+        }, 0);
+        return {
+            day: `${index + 1}`,
+            value: weekDuration,
+        };
+    });
+
+    return weeklyDurations;
+};
+
+export const getMostCaloriesBurnedInAWeek = (logs: ExerciseLog[]): number => {
+    const weeksInYear = Array.from({ length: 52 }).map((_, i) => {
+        const weekStart = new Date(new Date().getFullYear(), 0, 1 + (i * 7));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        return {
+            weekStart,
+            weekEnd,
+        };
+    });
+
+    const weeklyCalories = weeksInYear.map(({ weekStart, weekEnd }) => {
+        const weekLogs = logs.filter(log => {
+            const logDate = new Date(log.date);
+            return logDate >= weekStart && logDate <= weekEnd;
+        });
+        return weekLogs.reduce((sum, log) => sum + log.calories_burned, 0);
+    });
+
+    return Math.max(...weeklyCalories);
+};
+
+export const getMostDurationInAWeek = (logs: ExerciseLog[], exercises: PlanExercise[]): number => {
+    const weeksInYear = Array.from({ length: 52 }).map((_, i) => {
+        const weekStart = new Date(new Date().getFullYear(), 0, 1 + (i * 7));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        return {
+            weekStart,
+            weekEnd,
+        };
+    });
+
+    const weeklyDurations = weeksInYear.map(({ weekStart, weekEnd }) => {
+        const weekLogs = logs.filter(log => {
+            const logDate = new Date(log.date);
+            return logDate >= weekStart && logDate <= weekEnd;
+        });
+        return weekLogs.reduce((sum, log) => {
+            const exercise = exercises.find(ex => ex.plan_exercise_id === log.plan_exercise_id);
+            return sum + (exercise?.duration_mins || 0);
+        }, 0);
+    });
+
+    return Math.max(...weeklyDurations);
+};
+
+export const getMostWorkoutsInAWeek = (logs: ExerciseLog[]): number => {
+    const weeksInYear = Array.from({ length: 52 }).map((_, i) => {
+        const weekStart = new Date(new Date().getFullYear(), 0, 1 + (i * 7));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        return {
+            weekStart,
+            weekEnd,
+        };
+    });
+
+    const weeklyWorkouts = weeksInYear.map(({ weekStart, weekEnd }) => {
+        const weekLogs = logs.filter(log => {
+            const logDate = new Date(log.date);
+            return logDate >= weekStart && logDate <= weekEnd;
+        });
+        return weekLogs.length;
+    });
+
+    return Math.max(...weeklyWorkouts);
+};
+
+
+const getSundayOfLastWeek = () => {
+    const today = new Date();
+    const lastSunday = new Date(today.setDate(today.getDate() - today.getDay()));
+    lastSunday.setDate(lastSunday.getDate() - 7);
+    return lastSunday;
+};
+
+const getSaturdayOfLastWeek = () => {
+    const lastSunday = getSundayOfLastWeek();
+    const lastSaturday = new Date(lastSunday);
+    lastSaturday.setDate(lastSaturday.getDate() + 6);
+    return lastSaturday;
+};
+
+export const getWeeklyComparison = (logs: ExerciseLog[], exercises: PlanExercise[]): WeeklyComparison => {
+    const lastSunday = getSundayOfLastWeek();
+    const lastSaturday = getSaturdayOfLastWeek();
+
+    const lastWeekLogs = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return logDate >= lastSunday && logDate <= lastSaturday;
+    });
+
+    const thisWeekLogs = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return logDate >= lastSaturday && logDate <= new Date();
+    });
+
+    const lastWeekWorkouts = countTotalWorkouts(lastWeekLogs);
+    const thisWeekWorkouts = countTotalWorkouts(thisWeekLogs);
+
+    const lastWeekCalories = calculateCaloriesBurned(lastWeekLogs);
+    const thisWeekCalories = calculateCaloriesBurned(thisWeekLogs);
+
+    const lastWeekDurations = countTotalDuration(lastWeekLogs, exercises);
+    const thisWeekDurations = countTotalDuration(thisWeekLogs, exercises);
+
+    const lastWeekExercises = Array.from(new Set(lastWeekLogs.map(log => log.plan_exercise_id))).map(id => exercises.find(ex => ex.plan_exercise_id === id)).filter(ex => ex) as PlanExercise[];
+    const thisWeekExercises = Array.from(new Set(thisWeekLogs.map(log => log.plan_exercise_id))).map(id => exercises.find(ex => ex.plan_exercise_id === id)).filter(ex => ex) as PlanExercise[];
+
+    return {
+        calories: {
+            val: thisWeekCalories.total,
+            inc: (thisWeekCalories.total - lastWeekCalories.total) / (lastWeekCalories.total || 1) * 100,
+        },
+        workouts: {
+            val: thisWeekWorkouts.total,
+            inc: (thisWeekWorkouts.total - lastWeekWorkouts.total) / (lastWeekWorkouts.total || 1) * 100,
+        },
+        exercises: {
+            val: thisWeekExercises.length,
+            inc: (thisWeekExercises.length - lastWeekExercises.length) / (lastWeekExercises.length || 1) * 100,
+        },
+        duration: {
+            val: thisWeekDurations,
+            inc: (thisWeekDurations - lastWeekDurations) / (lastWeekDurations || 1) * 100,
+        },
+    };
 };

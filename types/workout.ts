@@ -44,11 +44,34 @@ export interface DashboardData {
     weeklyCalories: Array<{ day: string; value: number }>
 }
 
-
 export interface LogData {
     past: ExerciseLogWithName[];
     current: PlanExercise[];
     missing: PlanExercise[];
+}
+
+export interface StatSum {
+    totalWorkouts: string,
+    totalCalories: string,
+    totalDuration: number
+}
+
+export interface WeeklyData {
+    weeklyCalories: Array<{ day: string, value: number }>,
+    weeklyDurations: Array<{ day: string, value: number }>
+}
+
+export interface Highlights {
+    calories: number,
+    duration: number,
+    consistency: number
+}
+
+export interface WeeklyComparison {
+    calories: { val: number, inc: number },
+    workouts: { val: number, inc: number },
+    exercises: { val: number, inc: number },
+    duration: { val: number, inc: number }
 }
 // export interface LogTypes extends Omit<ExerciseLog, 'log_id' | ''>
 
