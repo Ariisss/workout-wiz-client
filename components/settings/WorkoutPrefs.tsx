@@ -245,7 +245,7 @@ export default function WorkoutPreferencesForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isLocked} className="mt-8 lg:mt-0">Save</Button>
+                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0">Save</Button>
             </form>
         </Form>
     )

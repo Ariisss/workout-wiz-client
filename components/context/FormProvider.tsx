@@ -12,7 +12,7 @@ type FormState = {
 interface SignupData {
     email?: string
     password?: string
-    goal_type: string[]
+    goal_type: string
     
 }
 
@@ -35,7 +35,7 @@ const FormContext = createContext<FormContextProps | null>(null);
 
 export const FormProvider = ({ children }: React.PropsWithChildren) => {
     const [forms, setForms] = useState<FormState>({});
-    const [signupData, setSignupData] = useState<SignupData>({goal_type: []});
+    const [signupData, setSignupData] = useState<SignupData>({goal_type: ""});
 
     const updateSignupData = (data: Partial<SignupData>) => {
         setSignupData((prev) => ({ ...prev, ...data }));

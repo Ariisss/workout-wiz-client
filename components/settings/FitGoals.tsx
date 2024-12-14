@@ -14,14 +14,18 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useAuth } from "../context/AuthProvider"
+import { toast } from "react-toastify"
+import ToastError from "../general/ToastError"
+import { Preferences } from "@/types/workout"
 
 const goals = [
     "Muscle Gain",
     "Weight Loss",
     "Endurance",
-    "General Fitness",
-    "Aesthetic"
+    "Flexibility",
+    "Balance"
 ] as const
 
 const formSchema = z.object({
@@ -39,23 +43,33 @@ export default function FitnessGoalsForm({
     formId,
     nextForm = () => null
 }: FormProps) {
-    const [isLocked, setIsLocked] = useState(false) //TEMP ONLY
+    const { prefs, updateWorkoutPrefs } = useAuth()
+    const [isLocked, setIsLocked] = useState(false)
+    const [goalData, setGoalData] = useState<{ goal_type: string[] }>({ goal_type: [] })
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            goal_type: ["Muscle Gain", "Weight Loss", "Aesthetic",],
-        },
+        defaultValues: goalData
     })
 
+    useEffect(() => {
+        if (prefs?.goal_type) {
+            const updatedGoalData = {goal_type: prefs.goal_type.split(",")}
+            setGoalData(updatedGoalData)
+            form.reset(updatedGoalData);
+        }
+    }, [prefs])
 
-    //const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
-
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-
-        console.log(values)
+        try {
+            setIsLocked(true)
+            await updateWorkoutPrefs({ goal_type: values.goal_type.join(",") })
+            toast.success("Successfully updated workout preferences.")
+        } catch (error) {
+            toast.error(<ToastError title="Submission Failed" desc={error} />)
+        } finally {
+            setIsLocked(false)
+        }
     }
 
     return (
@@ -90,13 +104,13 @@ export default function FitnessGoalsForm({
                                                             className="border-0 shadow-none ml-[5%] h-[1.5rem] w-[1.5rem]"
                                                             checked={field.value?.includes(goal)}
                                                             onCheckedChange={(checked) => {
-                                                                return checked
-                                                                    ? field.onChange([...field.value, goal])
-                                                                    : field.onChange(
-                                                                        field.value?.filter(
-                                                                            (value) => value !== goal
-                                                                        )
-                                                                    )
+                                                                const currentValues = Array.isArray(field.value) ? field.value : [];
+
+                                                                if (checked) {
+                                                                    field.onChange([...currentValues, goal]);
+                                                                } else {
+                                                                    field.onChange(currentValues.filter((value) => value !== goal));
+                                                                }
                                                             }}
                                                             disabled={isLocked}
                                                         />
@@ -114,7 +128,7 @@ export default function FitnessGoalsForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isLocked} className="mt-8 lg:mt-0">Save</Button>
+                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0">Save</Button>
             </form>
         </Form >
     )
