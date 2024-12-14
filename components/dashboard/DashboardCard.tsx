@@ -173,7 +173,7 @@ export function ActivityContent({
             )}>
                 <div className="flex flex-col justify-end w-full">
                     <h3 className="text-white font-medium">{title}</h3>
-                    <p className="text-sm text-muted-foreground font-roboto">{date}</p>
+                    <p className="text-sm text-muted-foreground font-roboto">{new Date(date).toLocaleDateString('en-US')}</p>
                 </div>
                 <div className="flex flex-col justify-end w-full">
                     <h3 className="text-primary-light font-medium text-right">{calories}</h3>
