@@ -613,3 +613,10 @@ export const getWeeklyComparison = (logs: ExerciseLog[], exercises: PlanExercise
         },
     };
 };
+
+// SETTINGS
+export const convertBinaryDaysToWeekdays = (binaryDays: string): string[] => {
+    const daysOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+    return binaryDays.split('').map((char, index) => char === '1' ? 
+    daysOfWeek[index] : null).filter(day => day !== null) as string[];
+};

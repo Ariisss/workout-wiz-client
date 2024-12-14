@@ -125,3 +125,9 @@ export interface Preferences {
     workout_days: string;
     intensity: IntensityLevels;
 }
+
+export interface PreferencesForm {
+    with_gym: boolean;
+    workout_days: string[];
+    intensity: IntensityLevels;
+}
