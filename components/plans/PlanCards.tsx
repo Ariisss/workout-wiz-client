@@ -14,23 +14,37 @@ type TitleCardProps = {
     selected: string
 }
 
-export const TitleCard = ({ title, duration, data, selected }: TitleCardProps) => {
+export const TitleCard = ({
+    title,
+    duration,
+    data,
+    selected,
+    onSelectPlan,
+  }: any) => {
     return (
-        <DashboardCard
-            title={title}
-            desc={`Duration: ${duration} weeks`}
-            icon={
-                <div className="hidden lg:flex flex-row gap-2">
-                    <WorkoutSelect selected={selected} data={data} />
-                </div>
-            }
-        >
-            <div className="flex flex-col gap-2 lg:hidden">
-                <WorkoutSelect selected={selected} data={data} />
-            </div>
-        </DashboardCard>
-    )
-}
+      <DashboardCard
+        title={title}
+        desc={`Duration: ${duration} weeks`}
+        icon={
+          <div className="hidden lg:flex flex-row gap-2">
+            <WorkoutSelect
+              selected={selected}
+              data={data}
+              onSelectPlan={onSelectPlan}
+            />
+          </div>
+        }
+      >
+        <div className="flex flex-col gap-2 lg:hidden">
+          <WorkoutSelect
+            selected={selected}
+            data={data}
+            onSelectPlan={onSelectPlan}
+          />
+        </div>
+      </DashboardCard>
+    );
+  };
 
 export const GenWorkoutCard = () => (
     <DashboardCard
@@ -117,26 +131,30 @@ export type WorkoutPlanProps = {
 }
 
 
-export const WorkoutPlanContent = ({ plan }: WorkoutPlanProps) => {
+export const WorkoutPlanContent = ({ plan, allPlans, onSelectPlan }: any) => {
     return (
-        <div className="flex flex-col gap-8">
-            <TitleCard
-                title={plan["Plan Name"]}
-                duration={plan.Duration_Weeks}
-                selected={plan["Plan Name"]}
-                data={[plan["Plan Name"]]}
-            />
-            <div className="flex flex-col md:flex-row gap-8">
-                {plan.Workout_Days.split(', ').map((day, didx) => (
-                    <DashboardCard title={day} key={didx} className="w-full">
-                        <div className="flex flex-col gap-4 pt-2">
-                            {plan.Exercises.filter((ex) => ex.workout_day == day).map((exercise, eidx) =>
-                                <ExerciseCard key={[didx, eidx].join('')} {...exercise} />
-                            )}
-                        </div>
-                    </DashboardCard>
-                ))}
-            </div>
+      <div className="flex flex-col gap-8">
+        <TitleCard
+          title={plan["Plan Name"]}
+          duration={plan.Duration_Weeks}
+          selected={plan["Plan Name"]}
+          data={allPlans.map((p: any) => p["Plan Name"])}
+          onSelectPlan={onSelectPlan}
+        />
+        <div className="flex flex-col md:flex-row gap-8">
+          {plan.Workout_Days.split(", ").map((day, didx) => (
+            <DashboardCard title={day} key={didx} className="w-full">
+              <div className="flex flex-col gap-4 pt-2">
+                {plan.Exercises.filter((ex) => ex.workout_day === day).map(
+                  (exercise, eidx) => (
+                    <ExerciseCard key={[didx, eidx].join("")} {...exercise} />
+                  )
+                )}
+              </div>
+            </DashboardCard>
+          ))}
         </div>
-    )
-}
+      </div>
+    );
+  };
+  

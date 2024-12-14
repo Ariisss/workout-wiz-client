@@ -1,4 +1,5 @@
 "use client";
+import React, { useState } from "react";
 import {
   DashboardCard,
   ValueContent,
@@ -12,11 +13,10 @@ import {
 type Props = {};
 
 export default function Plans({}: Props) {
-  // get info thingies
   const data = {
     workoutPlans: [
       {
-        "Plan Name": "Epic Leg Training",
+        "Plan Name": "Epic Leg Training 1",
         Description: "Good legs = good life",
         Goal: "Sigma Balls",
         Duration_Weeks: 2,
@@ -58,33 +58,33 @@ export default function Plans({}: Props) {
         Goal: "Sigma Balls",
         Duration_Weeks: 2,
         Intensity: "Beginner",
-        Workout_Days: "Monday, Wednesday, Friday",
+        Workout_Days: "Friday, Saturday, Sunday",
         Exercises: [
           {
-            exercise_name: "Squats",
+            exercise_name: "Ultra Squats",
             description: "Squatters",
             sets: 3,
             reps: 12,
             duration_mins: 40,
-            workout_day: "Monday",
+            workout_day: "Friday",
             met_value: 123.23,
           },
           {
-            exercise_name: "Leg Machine",
+            exercise_name: "Buff Legs Machine",
             description: "Idk what this is",
             sets: 3,
             reps: 12,
             duration_mins: 40,
-            workout_day: "Wednesday",
+            workout_day: "Saturday",
             met_value: 123.23,
           },
           {
-            exercise_name: "Bulgarian Squats",
+            exercise_name: "FILIPINO Squats",
             description: "Gahd damn",
             sets: 3,
             reps: 12,
             duration_mins: 40,
-            workout_day: "Friday",
+            workout_day: "Sunday",
             met_value: 123.23,
           },
         ],
@@ -93,7 +93,16 @@ export default function Plans({}: Props) {
     dummy: [],
   };
 
-  const selectedPlan = data.workoutPlans[0]; 
+  // State for the selected plan
+  const [selectedPlan, setSelectedPlan] = useState(data.workoutPlans[0]);
+
+  // Update function for changing the selected plan
+  const handleSelectPlan = (planName: string) => {
+    const newPlan = data.workoutPlans.find(
+      (plan) => plan["Plan Name"] === planName
+    );
+    if (newPlan) setSelectedPlan(newPlan);
+  };
 
   return (
     <div className="h-fit lg:h-full w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8">
@@ -106,7 +115,11 @@ export default function Plans({}: Props) {
       <div className="h-fit flex flex-col">
         {selectedPlan ? (
           <div>
-            <WorkoutPlanContent plan={selectedPlan} />
+            <WorkoutPlanContent
+              plan={selectedPlan}
+              allPlans={data.workoutPlans}
+              onSelectPlan={handleSelectPlan}
+            />
           </div>
         ) : (
           <GenWorkoutCard />

@@ -10,63 +10,35 @@ import {
     SelectGroup,
 } from "@/components/ui/select";
 
-import { RefreshCcw } from "lucide-react";
-
 type WorkoutSelectProps = {
     data: string[];
     onGenerateNew?: () => void;
 };
 
-export function WorkoutSelect({ data, onGenerateNew }: WorkoutSelectProps) {
-    const [workouts, setWorkouts] = useState(data);
-    const [selected, setSelected] = useState(data[0] || "");
-
+export function WorkoutSelect({ data, selected, onSelectPlan }: any) {
     const handleSelect = (value: string) => {
-        if (value === "new") {
-            handleGenerateNew();
-        } else {
-            setSelected(value);
-        }
+      if (onSelectPlan) onSelectPlan(value);
     };
-
-    const handleGenerateNew = () => {
-        const newWorkout = `Workout ${workouts.length + 1}`;
-        const updatedWorkouts = [...workouts, newWorkout];
-        setWorkouts(updatedWorkouts);
-        setSelected(newWorkout);
-        if (onGenerateNew) onGenerateNew();
-    };
-
+  
     return (
-        <Select onValueChange={handleSelect} value={selected}>
-            <SelectTrigger className="w-[240px] bg-primary h-[3rem] font-medium hover:bg-primary-dark hover:bg-opacity-90 transition">
-                <SelectValue
-                    className="text-xl"
-                    placeholder="Switch workout"
-                />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectGroup>
-                    {workouts.map((element, idx) => (
-                        <SelectItem
-                            value={element}
-                            key={idx}
-                            className="cursor-pointer"
-                        >
-                            {element}
-                        </SelectItem>
-                    ))}
-                    <SelectItem
-                        value="new"
-                        className="flex flex-row gap-2 items-center cursor-pointer"
-                    >
-                        <div className="flex items-center gap-2">
-                            <span>Generate New</span>
-                            <RefreshCcw className="h-4 w-4" />
-                        </div>
-                    </SelectItem>
-                </SelectGroup>
-            </SelectContent>
-        </Select>
+      <Select onValueChange={handleSelect} value={selected}>
+        <SelectTrigger className="w-[240px] bg-primary h-[3rem] font-medium hover:bg-primary-dark hover:bg-opacity-90 transition">
+          <SelectValue className="text-xl" placeholder="Switch workout" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {data.map((element: string, idx: number) => (
+              <SelectItem
+                value={element}
+                key={idx}
+                className="cursor-pointer"
+              >
+                {element}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     );
-}
+  }
+  
