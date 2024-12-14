@@ -71,7 +71,7 @@ export const signupUser = async (values: SignUpCredentials) => {
     return response.json()
 }
 
-export const updateUserProfile = async (values: ProfileData) => {
+export const updateUserProfile = async (values: Partial<ProfileData>) => {
     const response = await fetch(`${API}/user`, {
         method: 'PUT',
         credentials: "include",

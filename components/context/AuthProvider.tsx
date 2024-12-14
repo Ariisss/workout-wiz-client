@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences, updateWorkoutPreferences } from '@/app/api/auth';
 import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
@@ -37,6 +37,7 @@ type AuthContextProps = {
     setProfile: (values: ProfileData) => Promise<void>
     setWorkoutPrefs: (values: WorkoutPrefsData) => Promise<void>
     refreshPlans: () => Promise<void>
+    updateProfile: (values: Partial<ProfileData>) => Promise<void>
     updateWorkoutPrefs: (values: Partial<WorkoutPrefsData>) => Promise<void>
 
 }
@@ -135,9 +136,18 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const updateProfile = async (values: Partial<ProfileData>) => {
+        try {
+            await updateUserProfile(values)
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     const updateWorkoutPrefs = async (values: Partial<WorkoutPrefsData>) => {
         try {
-            await updateWorkoutPrefs(values)
+            await updateWorkoutPreferences(values)
             await fetchUserPrefs()
         } catch (error) {
             console.error(error);
@@ -215,6 +225,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             signup,
             setProfile,
             setWorkoutPrefs,
+            updateProfile,
             updateWorkoutPrefs,
             workouts,
             plans,

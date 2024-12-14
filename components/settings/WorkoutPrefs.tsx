@@ -138,7 +138,7 @@ export default function WorkoutPreferencesForm({
                                                     "has-[:checked]:border-primary-light"
                                                 )}>
                                                     <FormControl>
-                                                        <RadioGroupItem value={action.toString()} className="hidden" />
+                                                        <RadioGroupItem value={action.toString()} className="hidden" disabled={isLocked}/>
                                                     </FormControl>
                                                     <FormLabel className="font-medium flex w-full h-full items-center justify-center">
                                                         {action ? "Yes" : "No"}
@@ -230,7 +230,7 @@ export default function WorkoutPreferencesForm({
                                                     "has-[:checked]:border-primary-light",
                                                 )}>
                                                     <FormControl>
-                                                        <RadioGroupItem value={level} className="hidden" />
+                                                        <RadioGroupItem value={level} className="hidden" disabled={isLocked} />
                                                     </FormControl>
                                                     <FormLabel className="text-xs lg:text-sm flex w-full h-full items-center justify-center">
                                                         {level}
@@ -245,7 +245,7 @@ export default function WorkoutPreferencesForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isLocked} className="mt-8 lg:mt-0">Save</Button>
+                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0">Save</Button>
             </form>
         </Form>
     )
