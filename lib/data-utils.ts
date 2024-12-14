@@ -66,7 +66,7 @@ export const getCaloriesByWeek = (logs: ExerciseLog[]) => {
 export const countDailyExercises = (plan: WorkoutPlan, logs: ExerciseLog[]) => {
     if (!plan?.planExercises) return [];
 
-    const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     return weekDays.map(day => {
         const total = plan.planExercises.filter(ex =>
