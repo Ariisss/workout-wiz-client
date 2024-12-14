@@ -73,7 +73,7 @@ export default function Signup() {
             footer: (
                 <span className="flex flex-col lg:flex-row lg:space-x-2 text-sm">
                     <p className="text-gray-400">Already have an account?</p>
-                    <Link className="highlight" href={"login"}>Login here.</Link>
+                    <Link className="highlight hover:text-primary-light" href={"login"}>Login here.</Link>
                 </span>
             ),
         },

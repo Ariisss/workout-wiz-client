@@ -20,10 +20,10 @@ export default function Login() {
             </div>
             <LoginForm formId={formId} />
             <div className="text-xs md:text-sm lg:text-sm space-y-2">
-                <Link href={'forgotPassword'} className="highlight">Forgot Password?</Link>
+                <Link href={'forgotPassword'} className="highlight hover:text-primary-light">Forgot Password?</Link>
                 <span className="flex flex-col lg:flex-row lg:space-x-2">
                     <p className="text-gray-400">Don't have an account?</p>
-                    <Link href={'signup'} className="highlight">Sign up here.</Link>
+                    <Link href={'signup'} className="highlight hover:text-primary-light">Sign up here.</Link>
                 </span>
             </div>
         </div>
