@@ -58,6 +58,7 @@ export const GenWorkoutCard = ({ generateWorkout }: { generateWorkout: () => Pro
   );
   
 export type ExerciseProps = {
+    plan_exercise_id: number;
     exercise_name: string;
     description: string;
     sets: number;
@@ -67,6 +68,7 @@ export type ExerciseProps = {
     met_value: number;
     icon?: React.ReactElement
     className?: string
+    plan_id: number
 }
 
 export const ExerciseCard = ({
