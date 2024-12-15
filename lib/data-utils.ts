@@ -3,6 +3,7 @@ import { ExerciseLog, WorkoutPlan, DailyExerciseCount, PlanExercise, WeeklyCompa
 // needed data:
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
 // get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
+const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[], limit: number = 5) => {
     if (!logs.length) return [];
@@ -42,8 +43,6 @@ export const getWeeklyCompletion = (dailyExercises: Array<{ day: string; complet
 };
 
 export const getCaloriesByWeek = (logs: ExerciseLog[]) => {
-    const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
     return weekDays.map(day => {
         const dayCalories = logs.reduce((sum, log) => {
             if (!log?.date) return sum;
@@ -65,8 +64,6 @@ export const getCaloriesByWeek = (logs: ExerciseLog[]) => {
 
 export const countDailyExercises = (plan: WorkoutPlan, logs: ExerciseLog[]) => {
     if (!plan?.planExercises) return [];
-
-    const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     return weekDays.map(day => {
         const total = plan.planExercises.filter(ex =>
@@ -344,39 +341,37 @@ export const getActiveWorkoutPlan = (plans: WorkoutPlan[]): WorkoutPlan | null =
 // LOGS PAGE
 export const getUnfinishedExercisesToday = (plans: WorkoutPlan[], logs: ExerciseLog[]): PlanExercise[] => {
     const today = new Date();
-    const todayLogs = logs.filter(log => {
-        const logDate = new Date(log.date);
-        return logDate.toDateString() === today.toDateString();
-    });
+    const todayLogs = logs.filter(log => new Date(log.date).toDateString() === today.toDateString());
     const activePlan = getActiveWorkoutPlan(plans);
     if (!activePlan) return [];
 
     const todayWorkoutDays = activePlan.planExercises.filter(exercise => exercise.workout_day === today.toLocaleDateString('en-US', { weekday: 'long' }));
-    const completedExerciseIds = todayLogs.map(log => log.plan_exercise_id);
 
-    return todayWorkoutDays.filter(exercise => !completedExerciseIds.includes(exercise.plan_exercise_id));
+    return todayWorkoutDays.filter(exercise => !todayLogs.some(log => log.plan_exercise_id === exercise.plan_exercise_id));
 };
 
 export const getMissedExercisesThisWeek = (plans: WorkoutPlan[], logs: ExerciseLog[]): PlanExercise[] => {
     const today = new Date();
-    const lastWeek = new Date(today);
-    lastWeek.setDate(today.getDate() - 7);
-
-    const weeklyLogs = logs.filter(log => {
-        const logDate = new Date(log.date);
-        return logDate >= lastWeek && logDate < today;
-    });
     const activePlan = getActiveWorkoutPlan(plans);
     if (!activePlan) return [];
 
+    const startOfWeek = getStartOfWeek(today);
+    const weeklyLogs = logs.filter(log => new Date(log.date) >= startOfWeek && new Date(log.date) < today);
     const completedExerciseIds = weeklyLogs.map(log => log.plan_exercise_id);
 
-    // Get the planned exercises for this week
-    const weeklyExercises = activePlan.planExercises.filter(exercise => isWorkoutDayInWeek(exercise.workout_day, lastWeek));
+    const weeklyExercises = activePlan.planExercises.filter(exercise => {
+        const exerciseDate = getExerciseDateForWeek(today, exercise.workout_day);
+        return exerciseDate >= startOfWeek && exerciseDate < today;
+    });
 
-    // Get the missed exercises
     return weeklyExercises.filter(exercise => !completedExerciseIds.includes(exercise.plan_exercise_id));
 };
+
+const getStartOfWeek = (date: Date): Date => 
+    new Date(date.setDate(date.getDate() - date.getDay()));
+
+const getExerciseDateForWeek = (date: Date, day: string): Date => 
+    new Date(date.setDate(date.getDate() + weekDays.indexOf(day) - date.getDay()));
 
 // PROGRESS PAGE
 export const countAllWorkouts = (logs: ExerciseLog[]): number => logs.length;
@@ -610,6 +605,6 @@ export const getWeeklyComparison = (logs: ExerciseLog[], exercises: PlanExercise
 // SETTINGS
 export const convertBinaryDaysToWeekdays = (binaryDays: string): string[] => {
     const daysOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
-    return binaryDays.split('').map((char, index) => char === '1' ? 
-    daysOfWeek[index] : null).filter(day => day !== null) as string[];
+    return binaryDays.split('').map((char, index) => char === '1' ?
+        daysOfWeek[index] : null).filter(day => day !== null) as string[];
 };
