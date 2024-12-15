@@ -97,23 +97,23 @@ export type ExerciseCheckboxProps = {
 export const ExerciseCheckbox = ({ data, setData }: ExerciseCheckboxProps) => {
     const [checkedStates, setCheckedStates] = useState<Record<string, boolean>>({});
 
-    const handleCheckboxToggle = (id: number, checked: boolean) => {
-        setCheckedStates((prev) => ({ ...prev, [id]: checked })); // for "instant return" 
-        // !!!!!!!!!!!!!!!!!!! 
-        // MIGHT WANT TO PLACE IN A CONTEXT WRAPPER LATER FOR EASIER STATE MANAGEMENT AND SHIZZLERS
-        // !!!!!!!!!!!!!!!!!!!
-        if (checked) {
-            logExercise({plan_exercise_id: id}).then(() => {
-              // Delete the current exercise from data.current in Logs
-              // Assuming data.current is an array of exercises
-              const updatedData = data.filter((exercise) => exercise.plan_exercise_id !== id);
-              console.log("asdasdasd"+updatedData);
-              setData((prevData) => ({ ...prevData, current: updatedData }));
-            });
+    const handleCheckboxToggle = async (id: number, checked: boolean) => {
+        try {
+            setCheckedStates((prev) => ({ ...prev, [id]: checked }));
+
+            console.log("GRAHH" + id)
             
-          }
-        console.log(`Exercise ${id} is now ${checked ? "checked" : "unchecked"}`);
-        // Here you can update local state, JSON, or trigger a database update
+            if (checked) {
+                await logExercise({ plan_exercise_id: id });
+                const updatedData = data.filter((exercise) => exercise.plan_exercise_id !== id);
+                setData((prevData) => ({ ...prevData, current: updatedData }));
+            }
+        } catch (error) {
+            // Revert the checkbox state if the API call fails
+            setCheckedStates((prev) => ({ ...prev, [id]: !checked }));
+            console.error('Error logging exercise:', error);
+            // You might want to show an error toast here
+        }
     };
 
     return (
