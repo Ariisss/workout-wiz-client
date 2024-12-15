@@ -1,16 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityContent,
-    DashboardCard,
-    ValueContent,
-    WorkoutContent,
-} from "@/components/dashboard/DashboardCard";
-import clsx from "clsx";
-import {
     GenWorkoutCard,
     WorkoutPlanContent,
-    ExerciseProps,
 } from "@/components/plans/PlanCards";
 import { WorkoutPlan } from "@/types/workout";
 import { useAuth } from "@/components/context/AuthProvider";
@@ -19,6 +11,7 @@ import { toast } from "react-toastify";
 import { getActiveWorkoutPlan } from "@/lib/data-utils";
 import Loading from "./loading";
 import { generateWorkout } from "../api/workouts";
+import { DashboardCard, ValueContent } from "@/components/dashboard/DashboardCard";
 
 type Props = {};
 
@@ -26,15 +19,17 @@ export default function Plans({ }: Props) {
     const { plans, logs, loading, refreshPlans } = useAuth();
     const [activePlan, setActivePlan] = useState<WorkoutPlan | null>(null);
     const [workoutDays, setWorkoutDays] = useState<string[]>([]);
+    const [selectedPlan, setSelectedPlan] = useState<string>("");
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const fetchActivePlan = getActiveWorkoutPlan(plans)
-                setActivePlan(fetchActivePlan); 
+                const fetchActivePlan = getActiveWorkoutPlan(plans);
+                setActivePlan(fetchActivePlan);
                 setWorkoutDays(
                     Array.from(new Set(fetchActivePlan?.planExercises.map((exercise) => exercise.workout_day))) || []
                 );
+                setSelectedPlan(fetchActivePlan?.plan_name || "");
                 console.log(getActiveWorkoutPlan(plans))
             } catch (error) {
                 toast.error(<ToastError title="Data Retrieval Error" desc={error} />);
@@ -53,7 +48,13 @@ export default function Plans({ }: Props) {
         }
     };
 
+    const handlePlanChange = (planName: string) => {
+        const selected = plans.find(plan => plan.plan_name === planName);
+        setActivePlan(selected || null);
+    };
+
     if (loading) return <Loading />
+    
     return (
         <div className="h-fit lg:h-full w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8">
             <div>
@@ -64,19 +65,17 @@ export default function Plans({ }: Props) {
             </div>
             <div className="h-fit flex flex-col">
                 {activePlan ? (
-                    <div>
-                        <WorkoutPlanContent active={activePlan} plans={plans} workoutDays={workoutDays}/>
-                    </div>
+                    <WorkoutPlanContent
+                        active={activePlan}
+                        plans={plans}
+                        workoutDays={workoutDays}
+                    />
                 ) : (
                     <GenWorkoutCard generateWorkout={handleGenerateWorkout}/>
                 )}
             </div>
 
-            <div
-                className={clsx("h-fit md:h-[144px] flex flex-col lg:flex-row gap-6", {
-                    hidden: activePlan,
-                })}
-            >
+            <div className="h-fit md:h-[144px] flex flex-col lg:flex-row gap-6">
                 <DashboardCard title="Personalized Workouts">
                     <p className="text-muted-foreground font-roboto">
                         AI-generated plans tailored to your fitness level and goals.
@@ -97,4 +96,3 @@ export default function Plans({ }: Props) {
         </div>
     );
 }
-
