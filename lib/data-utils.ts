@@ -367,11 +367,17 @@ export const getMissedExercisesThisWeek = (plans: WorkoutPlan[], logs: ExerciseL
     return weeklyExercises.filter(exercise => !completedExerciseIds.includes(exercise.plan_exercise_id));
 };
 
-const getStartOfWeek = (date: Date): Date => 
-    new Date(date.setDate(date.getDate() - date.getDay()));
+const getStartOfWeek = (date: Date): Date => {
+    const day = date.getDay();
+    const diff = day === 0 ? 6 : day - 1;
+    return new Date(date.setDate(date.getDate() - diff));
+};
 
-const getExerciseDateForWeek = (date: Date, day: string): Date => 
-    new Date(date.setDate(date.getDate() + weekDays.indexOf(day) - date.getDay()));
+const getExerciseDateForWeek = (date: Date, day: string): Date => {
+    const dayIndex = weekDays.indexOf(day);
+    const diff = (7 + dayIndex - date.getDay()) % 7;
+    return new Date(date.setDate(date.getDate() + diff));
+};
 
 // PROGRESS PAGE
 export const countAllWorkouts = (logs: ExerciseLog[]): number => logs.length;
