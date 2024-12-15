@@ -8,6 +8,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CheckableWrapper } from "../general/CheckableWrapper";
 import clsx from "clsx";
 import { useState } from "react";
+import { logExercise } from "@/app/api/logs";
+import { LogData } from "@/types/workout";
 
 
 export type WorkoutPlan = {
@@ -53,9 +55,10 @@ export const WorkoutLogsContent = ({ plan }: WorkoutPlanProps) => {
 export type AWTProps = {
     missed: ExerciseProps[]
     current: ExerciseProps[]
+    setData: React.Dispatch<React.SetStateAction<LogData>>
 }
 
-export function ActiveWorkoutsTabs({ missed, current }: AWTProps) {
+export function ActiveWorkoutsTabs({ missed, current, setData }: AWTProps) {
     const tabTriggerClass = "flex flex-row gap-4 data-[state=active]:bg-primary rounded-lg h-[3rem] justify-center items-center"
     return (
         <Tabs defaultValue="current" className="w-full lg:w-[40%] space-y-4">
@@ -74,12 +77,12 @@ export function ActiveWorkoutsTabs({ missed, current }: AWTProps) {
             </TabsList>
             <TabsContent value="current">
                 <DashboardCard title={"Current Workouts"} className="w-full">
-                    <ExerciseCheckbox data={current} />
+                    <ExerciseCheckbox data={current} setData={setData} />
                 </DashboardCard>
             </TabsContent>
             <TabsContent value="missed">
                 <DashboardCard title={"Missed Workouts"} className="w-full">
-                    <ExerciseCheckbox data={missed} />
+                    <ExerciseCheckbox data={missed} setData={setData} />
                 </DashboardCard>
             </TabsContent>
         </Tabs>
@@ -88,16 +91,27 @@ export function ActiveWorkoutsTabs({ missed, current }: AWTProps) {
 
 export type ExerciseCheckboxProps = {
     data: ExerciseProps[]
+    setData: React.Dispatch<React.SetStateAction<LogData>>
 }
 
-export const ExerciseCheckbox = ({ data }: ExerciseCheckboxProps) => {
+export const ExerciseCheckbox = ({ data, setData }: ExerciseCheckboxProps) => {
     const [checkedStates, setCheckedStates] = useState<Record<string, boolean>>({});
 
-    const handleCheckboxToggle = (id: string, checked: boolean) => {
+    const handleCheckboxToggle = (id: number, checked: boolean) => {
         setCheckedStates((prev) => ({ ...prev, [id]: checked })); // for "instant return" 
         // !!!!!!!!!!!!!!!!!!! 
         // MIGHT WANT TO PLACE IN A CONTEXT WRAPPER LATER FOR EASIER STATE MANAGEMENT AND SHIZZLERS
         // !!!!!!!!!!!!!!!!!!!
+        if (checked) {
+            logExercise({plan_exercise_id: id}).then(() => {
+              // Delete the current exercise from data.current in Logs
+              // Assuming data.current is an array of exercises
+              const updatedData = data.filter((exercise) => exercise.plan_exercise_id !== id);
+              console.log("asdasdasd"+updatedData);
+              setData((prevData) => ({ ...prevData, current: updatedData }));
+            });
+            
+          }
         console.log(`Exercise ${id} is now ${checked ? "checked" : "unchecked"}`);
         // Here you can update local state, JSON, or trigger a database update
     };
@@ -112,7 +126,7 @@ export const ExerciseCheckbox = ({ data }: ExerciseCheckboxProps) => {
                         key={eidx}
                         enableCheckbox={true}
                         checkedState={isChecked}
-                        onClick={(checked) => handleCheckboxToggle(exercise.exercise_name, checked)}
+                        onClick={(checked) => handleCheckboxToggle(exercise.plan_exercise_id, checked)}
                     >
                         <ExerciseCard
                             className={clsx("border-muted-foreground", {
