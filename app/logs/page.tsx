@@ -44,7 +44,7 @@ export default function Logs({ }: Props) {
                 <ValueContent main="Workout Logs" sub="Track your exercises" />
             </div>
             <div className='flex flex-col lg:flex-row w-full h-full gap-4'>
-                    <ActiveWorkoutsTabs missed={data.missing} current={data.current} />
+                    <ActiveWorkoutsTabs missed={data.missing} current={data.current} setData={setData}/>
                 <DashboardCard
                     title='Past exercises'
                     className=''
