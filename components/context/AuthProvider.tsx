@@ -211,7 +211,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         try {
             const prefsRes = await getWorkoutPreferences()
             const prefsData = prefsRes?.data[0] || null
-            console.log(prefsData)
+            // console.log(prefsData)
             setUserPrefs(prefsData)
         } catch (error) {
             console.error('Failed to fetch workout preferences:', error);
