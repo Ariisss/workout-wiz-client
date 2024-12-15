@@ -23,17 +23,16 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useAuth } from "../context/AuthProvider"
+import { toast } from "react-toastify"
+import ToastError from "../general/ToastError"
 
 
 const formSchema = z.object({
     username: z
         .string()
         .min(1, { message: "Username is required." }),
-    email: z
-        .string()
-        .min(1, { message: "Email is required." })
-        .email("This is not a valid email."),
 
     date_of_birth: z
         .date(),
@@ -56,24 +55,55 @@ export default function UserProfileForm({
     formId,
     nextForm = () => null
 }: FormProps) {
+    const { userData, updateProfile } = useAuth()
     const { width } = useWindowSize()
     const [isLocked, setIsLocked] = useState(false) //TEMP ONLY
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            username: "Ced69",
-            date_of_birth: new Date("03/19/2003"),
-            height: 69,
-            weight: 42
+        defaultValues: userData ?? {
+            username: "",
+            date_of_birth: new Date(),
+            height: 0,
+            weight: 0
         },
     })
-    //     const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
+
+    console.log('form:', form);
+
+
+    useEffect(() => {
+        try {
+            const data = {
+                username: userData?.username || "",
+                date_of_birth: userData ? new Date(userData.date_of_birth) : new Date(),
+                height: userData?.height || 0,
+                weight: userData?.weight || 0,
+            }
+            console.log(data)
+            form.reset(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }, [userData])
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        setIsLocked(true)
-        console.log(values)
-        setIsLocked(false)
+        try {
+            setIsLocked(true)
+            const transformedValues = {
+                ...values,
+                date_of_birth: (values.date_of_birth instanceof Date)
+                    ? format(values.date_of_birth, 'yyyy-MM-dd') // Format the Date object to "YYYY-MM-DD"
+                    : values.date_of_birth, // Retain original if not a Date object
+            }
+
+            console.log(transformedValues)
+            await updateProfile(transformedValues)
+            toast.success("Successfully updated user profile.")
+        } catch (error) {
+            toast.error(<ToastError title="Submission Failed" desc={error} />)
+        } finally {
+            setIsLocked(false)
+        }
     }
     return (
         <Form {...form}>
@@ -84,6 +114,9 @@ export default function UserProfileForm({
                         name="username"
                         render={({ field }) => (
                             <FormItem>
+                                <FormLabel className="flex flex-row gap-2 items-center">
+                                    Username
+                                </FormLabel>
                                 <FormControl>
                                     <Input placeholder="Username" {...field} disabled={isLocked} />
                                 </FormControl>
@@ -96,6 +129,9 @@ export default function UserProfileForm({
                         name="date_of_birth"
                         render={({ field }) => (
                             <FormItem className="w-full">
+                                <FormLabel className="flex flex-row gap-2 items-center">
+                                    Date of Birth
+                                </FormLabel>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <FormControl>
@@ -146,7 +182,9 @@ export default function UserProfileForm({
                             name="height"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>Height</FormLabel>
+                                    <FormLabel className="flex flex-row gap-2 items-center">
+                                        Height <p className="text-sm text-muted-foreground">(cm)</p>
+                                    </FormLabel>
                                     <FormControl>
                                         <Input type="number" placeholder="cm" {...field} disabled={isLocked} />
                                     </FormControl>
@@ -159,7 +197,9 @@ export default function UserProfileForm({
                             name="weight"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>Weight</FormLabel>
+                                    <FormLabel className="flex flex-row gap-2 items-center">
+                                        Weight <p className="text-sm text-muted-foreground">(kg)</p>
+                                    </FormLabel>
                                     <FormControl>
                                         <Input type="number" placeholder="kg" {...field} disabled={isLocked} />
                                     </FormControl>
@@ -169,7 +209,7 @@ export default function UserProfileForm({
                         />
                     </div>
                 </div>
-                <Button type="submit" disabled={isLocked} className="mt-8 lg:mt-0">Save</Button>
+                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0">Save</Button>
             </form>
         </Form>
     )

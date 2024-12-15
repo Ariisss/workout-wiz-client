@@ -22,7 +22,9 @@ import { useEffect, useState } from "react"
 import { useWindowSize } from "react-use"
 import { useAuth } from "../context/AuthProvider"
 import { convertBinaryDaysToWeekdays } from "@/lib/data-utils"
-import { PreferencesForm } from "@/types/workout"
+import { Preferences, PreferencesForm } from "@/types/workout"
+import ToastError from "../general/ToastError"
+import { toast } from "react-toastify"
 
 const days_of_week = [
     { id: "monday", label: "Mon" },
@@ -59,7 +61,7 @@ export default function WorkoutPreferencesForm({
     formId,
     nextForm = () => null
 }: FormProps) {
-    const { prefs: workoutPrefs } = useAuth()
+    const { prefs: workoutPrefs, updateWorkoutPrefs } = useAuth()
     const { width } = useWindowSize()
     const [isLocked, setIsLocked] = useState(false)
     const [prefsData, setPrefsData] = useState<PreferencesForm>({
@@ -89,12 +91,23 @@ export default function WorkoutPreferencesForm({
         }
     }, [workoutPrefs])
 
-
-    //const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
+        try {
+            setIsLocked(true)
+            const { workout_days, ...filteredValues } = values
+            const filteredData: Partial<Preferences> = {
+                workout_days: days_of_week.reduce((acc, day) =>
+                    acc + (workout_days.includes(day.id) ? "1" : "0"), ""
+                ),
+                ...filteredValues
+            }
+            await updateWorkoutPrefs(filteredData)
+            toast.success("Successfully updated workout preferences.")
+        } catch (error) {
+            toast.error(<ToastError title="Submission Failed" desc={error} />)
+        } finally {
+            setIsLocked(false)
+        }
     }
 
     return (
@@ -125,7 +138,7 @@ export default function WorkoutPreferencesForm({
                                                     "has-[:checked]:border-primary-light"
                                                 )}>
                                                     <FormControl>
-                                                        <RadioGroupItem value={action.toString()} className="hidden" />
+                                                        <RadioGroupItem value={action.toString()} className="hidden" disabled={isLocked}/>
                                                     </FormControl>
                                                     <FormLabel className="font-medium flex w-full h-full items-center justify-center">
                                                         {action ? "Yes" : "No"}
@@ -205,7 +218,7 @@ export default function WorkoutPreferencesForm({
                                 <FormControl>
                                     <RadioGroup
                                         onValueChange={field.onChange}
-                                        defaultValue={field.value}
+                                        value={field.value}
                                         className="flex flex-row gap-0 bg-white h-[3rem] rounded-[16px] items-center"
                                     >
                                         {intensity_levels.map((level) => {
@@ -217,7 +230,7 @@ export default function WorkoutPreferencesForm({
                                                     "has-[:checked]:border-primary-light",
                                                 )}>
                                                     <FormControl>
-                                                        <RadioGroupItem value={level} className="hidden" />
+                                                        <RadioGroupItem value={level} className="hidden" disabled={isLocked} />
                                                     </FormControl>
                                                     <FormLabel className="text-xs lg:text-sm flex w-full h-full items-center justify-center">
                                                         {level}
@@ -232,7 +245,7 @@ export default function WorkoutPreferencesForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isLocked} className="mt-8 lg:mt-0">Save</Button>
+                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0">Save</Button>
             </form>
         </Form>
     )

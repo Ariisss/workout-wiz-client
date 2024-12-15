@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences, updateWorkoutPreferences, updateUserPassword } from '@/app/api/auth';
 import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
@@ -36,6 +36,10 @@ type AuthContextProps = {
     signup: (values: SignUpCredentials) => Promise<void>
     setProfile: (values: ProfileData) => Promise<void>
     setWorkoutPrefs: (values: WorkoutPrefsData) => Promise<void>
+    refreshPlans: () => Promise<void>
+    updateProfile: (values: Partial<ProfileData>) => Promise<void>
+    updateWorkoutPrefs: (values: Partial<WorkoutPrefsData>) => Promise<void>
+    updatePassword: (values: { oldPassword: string, newPassword: string }) => Promise<void>
 
 }
 
@@ -133,14 +137,46 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const updateProfile = async (values: Partial<ProfileData>) => {
+        try {
+            await updateUserProfile(values)
+            await fetchUserData()
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    const updateWorkoutPrefs = async (values: Partial<WorkoutPrefsData>) => {
+        try {
+            await updateWorkoutPreferences(values)
+            await fetchUserPrefs()
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    const updatePassword = async (values: { oldPassword: string, newPassword: string }) => {
+        try {
+            await updateUserPassword(values)
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 
     ////////////////////////
     //   DATA RETRIEVAL   //
     ////////////////////////
     const fetchAll = async () => {
+        toastId.current = toast.loading("Fetching User Data...", {
+            progressClassName: 'bg-[#66FFC7]'
+        });
         await fetchUserData()
         await fetchWorkoutData()
         await fetchUserPrefs()
+        if (toastId.current !== null) toast.done(toastId.current)
     }
     const fetchUserData = async () => {
         try {
@@ -148,16 +184,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             setUserData(data)
         } catch (error) {
             throw error
-        } finally {
-            if (toastId.current !== null) toast.done(toastId.current)
         }
     }
 
     const fetchWorkoutData = async () => {
         try {
-            toastId.current = toast.loading("Fetching User Data...", {
-                progressClassName: 'bg-[#66FFC7]'
-            });
             const [workoutsRes, plansRes, logsRes] = await Promise.all([
                 getWorkouts(),
                 getPlans(),
@@ -173,8 +204,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             setLogs(logsData);
         } catch (error) {
             console.error('Failed to fetch workout data:', error);
-        } finally {
-            if (toastId.current !== null) toast.done(toastId.current)
         }
     }
 
@@ -191,6 +220,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const refreshPlans = async () => {
+        const plansRes = await getPlans();
+        const plansData = plansRes?.data || [];
+        const updatedPlans = [...plans, ...plansData];
+        setPlans(updatedPlans);
+    };
+
     return (
         <AuthContext.Provider value={{
             userData: userData,
@@ -199,11 +235,15 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             signup,
             setProfile,
             setWorkoutPrefs,
+            updateProfile,
+            updateWorkoutPrefs,
+            updatePassword,
             workouts,
             plans,
             prefs,
             logs,
-            loading
+            loading,
+            refreshPlans
         }}>
             {children}
         </AuthContext.Provider>

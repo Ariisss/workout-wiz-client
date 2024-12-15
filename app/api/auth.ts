@@ -71,7 +71,7 @@ export const signupUser = async (values: SignUpCredentials) => {
     return response.json()
 }
 
-export const updateUserProfile = async (values: ProfileData) => {
+export const updateUserProfile = async (values: Partial<ProfileData>) => {
     const response = await fetch(`${API}/user`, {
         method: 'PUT',
         credentials: "include",
@@ -107,10 +107,46 @@ export const setWorkoutPreferences = async (values: Preferences) => {
     return response.json()
 }
 
+export const updateWorkoutPreferences = async (values: Partial<Preferences>) => {
+    const response = await fetch(`${API}/work-preference`, {
+        method: 'PUT',
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+    })
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message)
+    }
+
+    return response.json()
+}
+
 export const getWorkoutPreferences = async () => {
     const response = await fetch(`${API}/work-preference`, {
         method: 'GET',
         credentials: "include",
+    })
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message)
+    }
+
+    return response.json()
+}
+
+export const updateUserPassword = async (values: { oldPassword: string, newPassword: string }) => {
+    const response = await fetch(`${API}/user/password`, {
+        method: 'PUT',
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
     })
 
     if (!response.ok) {

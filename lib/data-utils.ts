@@ -360,9 +360,9 @@ export const getUnfinishedExercisesToday = (plans: WorkoutPlan[], logs: Exercise
 export const getMissedExercisesThisWeek = (plans: WorkoutPlan[], logs: ExerciseLog[]): PlanExercise[] => {
     const today = new Date();
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay()); // Move to Sunday
+    startOfWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7)); // Move to Monday
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 6); // Move to Saturday
+    endOfWeek.setDate(endOfWeek.getDate() + 6); // Move to Sunday
 
     const weeklyLogs = logs.filter(log => {
         const logDate = new Date(log.date);
@@ -375,10 +375,10 @@ export const getMissedExercisesThisWeek = (plans: WorkoutPlan[], logs: ExerciseL
 
     // Get the planned exercises for this week
     const weeklyExercises = activePlan.planExercises.filter(exercise => {
-        const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(exercise.workout_day);
+        const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(exercise.workout_day);
         const workoutDay = new Date(startOfWeek);
         workoutDay.setDate(startOfWeek.getDate() + dayIndex);
-        return workoutDay >= startOfWeek && workoutDay <= endOfWeek;
+        return workoutDay >= startOfWeek && workoutDay < today; // Changed endOfWeek to today and added <
     });
 
     // Get the missed exercises

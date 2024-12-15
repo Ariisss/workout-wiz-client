@@ -16,7 +16,7 @@ import { DashboardCard, ValueContent } from "@/components/dashboard/DashboardCar
 type Props = {};
 
 export default function Plans({ }: Props) {
-    const { plans, logs, loading } = useAuth();
+    const { plans, logs, loading, refreshPlans } = useAuth();
     const [activePlan, setActivePlan] = useState<WorkoutPlan | null>(null);
     const [workoutDays, setWorkoutDays] = useState<string[]>([]);
     const [selectedPlan, setSelectedPlan] = useState<string>("");
@@ -38,6 +38,15 @@ export default function Plans({ }: Props) {
 
         fetchData();
     }, [plans]);
+
+    const handleGenerateWorkout = async () => {
+        try {
+            await generateWorkout();
+            await refreshPlans();
+        } catch (error) {
+            toast.error(<ToastError title="Workout Generation Error" desc={error} />);
+        }
+    };
 
     const handlePlanChange = (planName: string) => {
         const selected = plans.find(plan => plan.plan_name === planName);
@@ -62,7 +71,7 @@ export default function Plans({ }: Props) {
                         workoutDays={workoutDays}
                     />
                 ) : (
-                    <GenWorkoutCard generateWorkout={generateWorkout}/>
+                    <GenWorkoutCard generateWorkout={handleGenerateWorkout}/>
                 )}
             </div>
 
