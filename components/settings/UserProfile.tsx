@@ -114,6 +114,9 @@ export default function UserProfileForm({
                         name="username"
                         render={({ field }) => (
                             <FormItem>
+                                <FormLabel className="flex flex-row gap-2 items-center">
+                                    Username
+                                </FormLabel>
                                 <FormControl>
                                     <Input placeholder="Username" {...field} disabled={isLocked} />
                                 </FormControl>
@@ -126,6 +129,9 @@ export default function UserProfileForm({
                         name="date_of_birth"
                         render={({ field }) => (
                             <FormItem className="w-full">
+                                <FormLabel className="flex flex-row gap-2 items-center">
+                                    Date of Birth
+                                </FormLabel>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <FormControl>
@@ -176,7 +182,9 @@ export default function UserProfileForm({
                             name="height"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>Height</FormLabel>
+                                    <FormLabel className="flex flex-row gap-2 items-center">
+                                        Height <p className="text-sm text-muted-foreground">(cm)</p>
+                                    </FormLabel>
                                     <FormControl>
                                         <Input type="number" placeholder="cm" {...field} disabled={isLocked} />
                                     </FormControl>
@@ -189,7 +197,9 @@ export default function UserProfileForm({
                             name="weight"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>Weight</FormLabel>
+                                    <FormLabel className="flex flex-row gap-2 items-center">
+                                        Weight <p className="text-sm text-muted-foreground">(kg)</p>
+                                    </FormLabel>
                                     <FormControl>
                                         <Input type="number" placeholder="kg" {...field} disabled={isLocked} />
                                     </FormControl>

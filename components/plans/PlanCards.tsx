@@ -5,7 +5,7 @@ import Logo from "../general/Logo";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardContent } from "../ui/card";
-import { WorkoutOptions, WorkoutSelect } from "./WorkoutOptions";
+import { WorkoutSelect } from "./WorkoutSelect";
 import { WorkoutPlan } from "@/types/workout";
 
 type TitleCardProps = {
@@ -16,22 +16,23 @@ type TitleCardProps = {
 }
 
 export const TitleCard = ({ title, duration, data, selected }: TitleCardProps) => {
-    return (
-        <DashboardCard
-            title={title}
-            desc={`Duration: ${duration} weeks`}
-            icon={
-                <div className="hidden lg:flex flex-row gap-2">
-                    <WorkoutSelect selected={selected} data={data} />
-                </div>
-            }
-        >
-            <div className="flex flex-col gap-2 lg:hidden">
-                <WorkoutSelect selected={selected} data={data} />
-            </div>
-        </DashboardCard>
-    )
+  return (
+      <DashboardCard
+          title={title}
+          desc={`Duration: ${duration} weeks`}
+          icon={
+              <div className="hidden lg:flex flex-row gap-2">
+                  <WorkoutSelect selected={selected} data={data} />
+              </div>
+          }
+      >
+          <div className="flex flex-col gap-2 lg:hidden">
+              <WorkoutSelect selected={selected} data={data} />
+          </div>
+      </DashboardCard>
+  )
 }
+
 
 export const GenWorkoutCard = ({ generateWorkout }: { generateWorkout: () => Promise<any> }) => (
     <DashboardCard
@@ -117,25 +118,27 @@ export type WorkoutPlanProps = {
 
 
 export const WorkoutPlanContent = ({ active, plans, workoutDays }: WorkoutPlanProps) => {
-    return (
-        <div className="flex flex-col gap-8">
-            <TitleCard
-                title={active.plan_name}
-                duration={active.duration_weeks}
-                selected={active.plan_name}
-                data={plans.map((plan) => plan.plan_name)}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {workoutDays.map((day, didx) => (
-                    <DashboardCard title={day} key={didx} className="w-full">
-                        <div className="flex flex-col gap-4 pt-2">
-                            {active.planExercises.filter((ex) => ex.workout_day == day).map((exercise, eidx) =>
-                                <ExerciseCard key={[didx, eidx].join('')} {...exercise} />
-                            )}
-                        </div>
-                    </DashboardCard>
-                ))}
-            </div>
-        </div>
-    )
+  return (
+      <div className="flex flex-col gap-8">
+          <TitleCard
+              title={active.plan_name}
+              duration={active.duration_weeks}
+              selected={active.plan_name}
+              data={plans.map((plan) => plan.plan_name)}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {workoutDays.map((day, didx) => (
+                  <DashboardCard title={day} key={didx} className="w-full">
+                      <div className="flex flex-col gap-4 pt-2">
+                          {active.planExercises
+                              .filter((ex) => ex.workout_day == day)
+                              .map((exercise, eidx) =>
+                                  <ExerciseCard key={[didx, eidx].join('')} {...exercise} />
+                              )}
+                      </div>
+                  </DashboardCard>
+              ))}
+          </div>
+      </div>
+  )
 }

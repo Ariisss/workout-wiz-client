@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/form"
 import { useState } from "react"
 import { Input } from "../ui/input"
+import { toast } from "react-toastify"
+import ToastError from "../general/ToastError"
+import { useAuth } from "../context/AuthProvider"
 
 const formSchema = z.object({
     current_password: z
@@ -23,9 +26,15 @@ const formSchema = z.object({
 
     new_password: z
         .string()
-        .min(1, { message: "Password is required." }),
+        .min(1, { message: "Password is required." }) // Ensure the field is not empty
+        .regex(/^(?=.*[a-z])(?=.*[A-Z]).{8,}$/, {
+            message: "Password must be at least 8 characters long, including one uppercase and one lowercase letter."
+        }),
     confirm: z
         .string()
+}).refine((data) => data.new_password === data.confirm, {
+    message: "Passwords do not match",
+    path: ["confirm"]
 })
 
 type FormProps = {
@@ -37,6 +46,7 @@ export default function PasswordForm({
     formId,
     nextForm = () => null
 }: FormProps) {
+    const { updatePassword } = useAuth()
     const [isLocked, setIsLocked] = useState(false) //TEMP ONLY
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -48,19 +58,26 @@ export default function PasswordForm({
         },
     })
 
-
-    //const { isLocked, lockForm, unlockForm, submitForm } = useFormContext(formId);
     async function onSubmit(values: z.infer<typeof formSchema>) {
-
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-
-        console.log(values)
+        try {
+            setIsLocked(true)
+            const passData = {
+                oldPassword: values.current_password,
+                newPassword: values.new_password
+            }
+            await updatePassword(passData)
+            toast.success("Successfully updated password.")
+            form.reset()
+        } catch (error) {
+            toast.error(<ToastError title="Submission Failed" desc={error} />)
+        } finally {
+            setIsLocked(false)
+        }
     }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full flex flex-col justify-between">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full lg:max-w-[320px] flex flex-col justify-between">
                 <div className="space-y-4 mt-8">
                     <FormField
                         control={form.control}
@@ -99,7 +116,7 @@ export default function PasswordForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isLocked} className="mt-8 lg:mt-0">Save</Button>
+                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0 bg-red-500 active:bg-red-900">Change Password</Button>
             </form>
         </Form >
     )

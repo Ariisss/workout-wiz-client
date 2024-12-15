@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences, updateWorkoutPreferences } from '@/app/api/auth';
+import { fetchUser, loginUser, logoutUser, signupUser, updateUserProfile, setWorkoutPreferences, getWorkoutPreferences, updateWorkoutPreferences, updateUserPassword } from '@/app/api/auth';
 import { LoginCredentials } from '../auth/LoginForm';
 import Cookies from 'js-cookie';
 import { SignUpCredentials } from '../auth/SignupForm';
@@ -39,6 +39,7 @@ type AuthContextProps = {
     refreshPlans: () => Promise<void>
     updateProfile: (values: Partial<ProfileData>) => Promise<void>
     updateWorkoutPrefs: (values: Partial<WorkoutPrefsData>) => Promise<void>
+    updatePassword: (values: { oldPassword: string, newPassword: string }) => Promise<void>
 
 }
 
@@ -139,6 +140,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const updateProfile = async (values: Partial<ProfileData>) => {
         try {
             await updateUserProfile(values)
+            await fetchUserData()
         } catch (error) {
             console.error(error);
             throw error;
@@ -155,6 +157,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
+    const updatePassword = async (values: { oldPassword: string, newPassword: string }) => {
+        try {
+            await updateUserPassword(values)
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 
     ////////////////////////
     //   DATA RETRIEVAL   //
@@ -227,6 +237,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             setWorkoutPrefs,
             updateProfile,
             updateWorkoutPrefs,
+            updatePassword,
             workouts,
             plans,
             prefs,
