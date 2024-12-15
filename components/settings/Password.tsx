@@ -116,7 +116,7 @@ export default function PasswordForm({
                         )}
                     />
                 </div>
-                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0 bg-red-500 active:bg-red-900">Change Password</Button>
+                <Button type="submit" disabled={isLocked || !(form.formState.isDirty)} className="mt-8 lg:mt-0 bg-red-500 active:bg-red-900 hover:bg-red-800">Change Password</Button>
             </form>
         </Form >
     )

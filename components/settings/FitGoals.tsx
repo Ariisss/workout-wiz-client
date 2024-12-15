@@ -92,7 +92,7 @@ export default function FitnessGoalsForm({
                                                 <FormItem
                                                     key={goal}
                                                     className={clsx(
-                                                        "flex flex-row items-center space-x-3 space-y-2",
+                                                        "flex items-center space-x-3 space-y-2",
                                                         "bg-white border-primary-light h-[3rem] rounded-[16px] text-black font-sans font-medium",
                                                         {
                                                             "bg-background-darkest text-white border-2": checkState
@@ -115,7 +115,7 @@ export default function FitnessGoalsForm({
                                                             disabled={isLocked}
                                                         />
                                                     </FormControl>
-                                                    <FormLabel className="text-sm font-medium w-full h-full flex items-center">
+                                                    <FormLabel className="text-sm font-medium w-full h-full flex items-center hover:cursor-pointer">
                                                         {goal}
                                                     </FormLabel>
                                                 </FormItem>
