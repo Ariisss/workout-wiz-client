@@ -30,7 +30,7 @@ export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[], li
     
         return {
             ...log,
-            exercise_name: exerciseName,  // Ensure exercise_name is present
+            // exercise_name: exerciseName,  // Ensure exercise_name is present
         };
     });
 };
