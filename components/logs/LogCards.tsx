@@ -102,15 +102,15 @@ export const ExerciseCheckbox = ({ data, setData }: ExerciseCheckboxProps) => {
             setCheckedStates((prev) => ({ ...prev, [id]: checked }));
 
             if (checked) {
-                const newLog = await logExercise({ plan_exercise_id: id });
+                const res = await logExercise({ plan_exercise_id: id });
+                const newLog = res.data;
                 
-                // console.log(newLog)
 
                 setData((prevData) => ({
                     ...prevData,
                     current: prevData.current.filter((exercise) => exercise.plan_exercise_id !== id),
                     missed: prevData.missed.filter((exercise) => exercise.plan_exercise_id !== id),
-                    past: [...prevData.past, newLog]
+                    past: [newLog, ...prevData.past]
                 }));
             }
         } catch (error) {
