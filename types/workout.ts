@@ -47,7 +47,7 @@ export interface DashboardData {
 export interface LogData {
     past: ExerciseLogWithName[];
     current: PlanExercise[];
-    missing: PlanExercise[];
+    missed: PlanExercise[];
 }
 
 export interface StatSum {

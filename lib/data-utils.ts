@@ -7,27 +7,35 @@ import { ExerciseLog, WorkoutPlan, DailyExerciseCount, PlanExercise, WeeklyCompa
 export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[], limit: number = 5) => {
     if (!logs.length) return [];
 
+    // Ensure logs are sorted by date in descending order, while handling missing or invalid dates
     const sortedLogs = [...logs]
-        .filter(log => log?.date)
-        .sort((a, b) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-        )
-        .slice(0, limit);
+        .filter(log => log?.date && !isNaN(new Date(log.date).getTime())) // Ensure valid date
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Sort by most recent
+        .slice(0, limit); // Limit the results to the most recent 'limit' entries
 
     return sortedLogs.map(log => {
+        console.log('Processing log:', log); // Debug log to check if `plan_exercise_id` and `date` are valid
+    
         const exercise = plans.reduce<PlanExercise | undefined>((found, plan) => {
             if (found) return found;
             return plan.planExercises?.find(ex =>
                 ex.plan_exercise_id === log.plan_exercise_id
             );
         }, undefined);
-
+    
+        console.log('Found exercise:', exercise); // Debug the found exercise object
+    
+        const exerciseName = exercise?.exercise_name || 'Unknown Exercise';
+        console.log('Exercise name:', exerciseName); // Debug the exercise name being assigned
+    
         return {
             ...log,
-            exercise_name: exercise?.exercise_name || 'Unknown Exercise'
+            exercise_name: exerciseName,  // Ensure exercise_name is present
         };
     });
 };
+
+
 
 export const getWeeklyCompletion = (dailyExercises: Array<{ day: string; completed: number; total: number }>) => {
     const activeDays = dailyExercises.filter(day => day.total > 0);
