@@ -221,10 +221,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }
 
     const refreshPlans = async () => {
-        const plansRes = await getPlans();
-        const plansData = plansRes?.data || [];
-        const updatedPlans = [...plans, ...plansData];
-        setPlans(updatedPlans);
+        try {
+            setLoading(true)
+            const plansRes = await getPlans()
+            const plansData = plansRes?.data || []
+            setPlans(plansData)
+        } catch (error) {
+            console.error("Failed to refresh plans:", error)
+            toast.error("Error refreshing workout plans. Please try again.")
+        } finally {
+            setLoading(false)
+        }
     };
 
     return (
