@@ -10,7 +10,7 @@ import ToastError from "@/components/general/ToastError";
 import { toast } from "react-toastify";
 import { getActiveWorkoutPlan } from "@/lib/data-utils";
 import Loading from "./loading";
-import { generateWorkout, switchWorkoutPlan } from "../api/workouts";
+import { generateWorkout, switchWorkoutPlan, deleteWorkoutPlan } from "../api/workouts";
 import { DashboardCard, ValueContent } from "@/components/dashboard/DashboardCard";
 
 type Props = {};
@@ -39,6 +39,29 @@ export default function Plans({ }: Props) {
 
         fetchData();
     }, [plans]);
+
+    const handleDeleteWorkout = async (planId: number): Promise<void> => {
+        try {
+            await deleteWorkoutPlan(planId);
+            toast.success("Workout plan deleted successfully!");
+    
+            await refreshPlans();
+    
+            const remainingPlans = plans.filter((plan) => plan.plan_id !== planId);     
+            if (remainingPlans.length > 0) {
+                const newActivePlan = remainingPlans[0];
+                await switchWorkoutPlan(newActivePlan.plan_id);
+                toast.success(`Switched to new active plan: ${newActivePlan.plan_name}`);
+            } else {
+                toast.info("No remaining workout plans to set as active.");
+            }
+    
+            await refreshPlans();
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+            toast.error(`Failed to delete or switch workout plan: ${errorMessage}`);
+        }
+    };
 
     const handleGenerateWorkout = async () => {
         try {
@@ -101,6 +124,7 @@ export default function Plans({ }: Props) {
                         plans={plans}
                         workoutDays={workoutDays}
                         onPlanChange={handlePlanChange}
+                        onDelete={handleDeleteWorkout}
                     />
                 ) : (
                     <GenWorkoutCard generateWorkout={handleGenerateWorkout}/>

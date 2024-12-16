@@ -14,16 +14,17 @@ type TitleCardProps = {
     data: string[]
     selected: string
     onPlanChange: (planName: string) => void
+    onDelete: () => void;
 }
 
-export const TitleCard = ({ title, duration, data, selected, onPlanChange }: TitleCardProps) => {
+export const TitleCard = ({ title, duration, data, selected, onPlanChange, onDelete }: TitleCardProps) => {
   return (
       <DashboardCard
           title={title}
           desc={`Duration: ${duration} weeks`}
           icon={
               <div className="hidden lg:flex flex-row gap-2">
-                  <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} />
+                  <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} onDelete={onDelete} />
               </div>
           }
       >
@@ -116,10 +117,11 @@ export type WorkoutPlanProps = {
     plans: WorkoutPlan[]
     workoutDays: string[]
     onPlanChange: (planName: string) => void
+    onDelete: (planId: number) => void;
 }
 
 
-export const WorkoutPlanContent = ({ active, plans, workoutDays, onPlanChange }: WorkoutPlanProps) => {
+export const WorkoutPlanContent = ({ active, plans, workoutDays, onPlanChange, onDelete }: WorkoutPlanProps) => {
   return (
       <div className="flex flex-col gap-8">
           <TitleCard
@@ -128,6 +130,7 @@ export const WorkoutPlanContent = ({ active, plans, workoutDays, onPlanChange }:
               selected={active.plan_name}
               data={plans.map((plan) => plan.plan_name)}
               onPlanChange={onPlanChange}
+              onDelete={() => onDelete(active.plan_id)}
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {workoutDays.map((day, didx) => (
