@@ -45,7 +45,7 @@ export default function Dashboard({ }: Props) {
                     recentExercises: getRecentExercises(logs, plans),
                     workoutStats: countTotalWorkouts(logs),
                     caloriesStats: calculateCaloriesBurned(logs),
-                    dailyExercises: countDailyExercises(plans[0], logs),
+                    dailyExercises: countDailyExercises(plans, logs),
                     todaysWorkout: getWorkoutToday(plans, logs),
                     weeklyCalories: getCaloriesByWeek(logs)
                 };
