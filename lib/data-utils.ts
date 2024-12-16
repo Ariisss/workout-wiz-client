@@ -364,17 +364,18 @@ export const getMissedExercisesThisWeek = (plans: WorkoutPlan[], logs: ExerciseL
 
     const weeklyLogs = logs.filter(log => {
         const logDate = new Date(log.date);
-        return logDate >= lastWeek && logDate < today;
+        return logDate >= lastWeek && logDate <= today && logDate.getDay() === today.getDay();
     });
     const activePlan = getActiveWorkoutPlan(plans);
     if (!activePlan) return [];
 
     const completedExerciseIds = weeklyLogs.map(log => log.plan_exercise_id);
 
-    // Get the planned exercises for this week
-    const weeklyExercises = activePlan.planExercises.filter(exercise => isWorkoutDayInWeek(exercise.workout_day, lastWeek));
+    const weeklyExercises = activePlan.planExercises.filter(exercise => 
+        isWorkoutDayInWeek(exercise.workout_day, lastWeek) && 
+        exercise.workout_day !== today.toLocaleDateString('en-US', { weekday: 'long' })
+    );
 
-    // Get the missed exercises
     return weeklyExercises.filter(exercise => !completedExerciseIds.includes(exercise.plan_exercise_id));
 };
 
