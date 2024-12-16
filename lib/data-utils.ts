@@ -13,26 +13,7 @@ export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[], li
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Sort by most recent
         .slice(0, limit); // Limit the results to the most recent 'limit' entries
 
-    return sortedLogs.map(log => {
-        console.log('Processing log:', log); // Debug log to check if `plan_exercise_id` and `date` are valid
-    
-        const exercise = plans.reduce<PlanExercise | undefined>((found, plan) => {
-            if (found) return found;
-            return plan.planExercises?.find(ex =>
-                ex.plan_exercise_id === log.plan_exercise_id
-            );
-        }, undefined);
-    
-        console.log('Found exercise:', exercise); // Debug the found exercise object
-    
-        const exerciseName = exercise?.exercise_name || 'Unknown Exercise';
-        console.log('Exercise name:', exerciseName); // Debug the exercise name being assigned
-    
-        return {
-            ...log,
-            // exercise_name: exerciseName,  // Ensure exercise_name is present
-        };
-    });
+    return sortedLogs
 };
 
 
