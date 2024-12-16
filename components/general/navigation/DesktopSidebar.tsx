@@ -12,7 +12,7 @@ import { useAuth } from "@/components/context/AuthProvider";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import Logo from "../Logo";
+import Image from "next/image";
 
 type Props = {};
 
@@ -96,11 +96,16 @@ export default function DesktopSidebar({}: Props) {
                 label: "Workout Wizard",
                 href: "#",
                 icon: (
-                  <div className="transition-all duration-300 ease-in-out">
-                    <Logo
-                      width={32}
-                      height={32}
-                      className="transition-all duration-300 ease-in-out"
+                  <div
+                    className="flex items-center justify-start"
+                    style={{ minWidth: "28px", minHeight: "28px" }} 
+                  >
+                    <Image
+                      src="/logo_mini.svg"
+                      alt="Workout Wizard Logo"
+                      width={28}
+                      height={28}
+                      className="object-contain"
                     />
                   </div>
                 ),
