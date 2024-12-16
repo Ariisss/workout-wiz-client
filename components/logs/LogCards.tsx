@@ -101,18 +101,20 @@ export const ExerciseCheckbox = ({ data, setData }: ExerciseCheckboxProps) => {
         try {
             setCheckedStates((prev) => ({ ...prev, [id]: checked }));
 
-            console.log("GRAHH" + id)
-            
             if (checked) {
-                await logExercise({ plan_exercise_id: id });
-                const updatedData = data.filter((exercise) => exercise.plan_exercise_id !== id);
-                setData((prevData) => ({ ...prevData, current: updatedData }));
+                const newLog = await logExercise({ plan_exercise_id: id });
+                
+                // console.log(newLog)
+
+                setData((prevData) => ({
+                    ...prevData,
+                    current: prevData.current.filter((exercise) => exercise.plan_exercise_id !== id),
+                    past: [...prevData.past, newLog]
+                }));
             }
         } catch (error) {
-            // Revert the checkbox state if the API call fails
             setCheckedStates((prev) => ({ ...prev, [id]: !checked }));
             console.error('Error logging exercise:', error);
-            // You might want to show an error toast here
         }
     };
 
