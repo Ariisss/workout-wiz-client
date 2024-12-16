@@ -3,7 +3,7 @@ import { useAuth } from '@/components/context/AuthProvider'
 import { ActivityContent, DashboardCard, ValueContent } from '@/components/dashboard/DashboardCard'
 import { ActiveWorkoutsTabs } from '@/components/logs/LogCards'
 import { getMissedExercisesThisWeek, getRecentExercises, getUnfinishedExercisesToday } from '@/lib/data-utils'
-import { ExerciseLogWithName, LogData, PlanExercise, WorkoutPlan } from '@/types/workout'
+import { LogData } from '@/types/workout'
 import React, { useEffect, useState } from 'react'
 import Loading from './loading'
 import ToastError from '@/components/general/ToastError'
@@ -16,7 +16,7 @@ export default function Logs({ }: Props) {
     const [data, setData] = useState<LogData>({
         past: [],
         current: [],
-        missing: [],
+        missed: [],
     });
 
     useEffect(() => {
@@ -25,7 +25,7 @@ export default function Logs({ }: Props) {
                 const computedData: LogData = {
                     past: getRecentExercises(logs, plans),
                     current: getUnfinishedExercisesToday(plans, logs),
-                    missing: getMissedExercisesThisWeek(plans, logs),
+                    missed: getMissedExercisesThisWeek(plans, logs),
                 };
                 setData(computedData)
                 console.log(computedData)
@@ -44,7 +44,7 @@ export default function Logs({ }: Props) {
                 <ValueContent main="Workout Logs" sub="Track your exercises" />
             </div>
             <div className='flex flex-col lg:flex-row w-full h-full gap-4'>
-                    <ActiveWorkoutsTabs missed={data.missing} current={data.current} setData={setData}/>
+                    <ActiveWorkoutsTabs missed={data.missed} current={data.current} setData={setData}/>
                 <DashboardCard
                     title='Past exercises'
                     className=''

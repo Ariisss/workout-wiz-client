@@ -109,6 +109,7 @@ export const ExerciseCheckbox = ({ data, setData }: ExerciseCheckboxProps) => {
                 setData((prevData) => ({
                     ...prevData,
                     current: prevData.current.filter((exercise) => exercise.plan_exercise_id !== id),
+                    missed: prevData.missed.filter((exercise) => exercise.plan_exercise_id !== id),
                     past: [...prevData.past, newLog]
                 }));
             }
