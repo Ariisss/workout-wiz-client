@@ -4,22 +4,23 @@ import {
     GenWorkoutCard,
     WorkoutPlanContent,
 } from "@/components/plans/PlanCards";
-import { WorkoutPlan } from "@/types/workout";
+import { PlanExercise, WorkoutPlan } from "@/types/workout";
 import { useAuth } from "@/components/context/AuthProvider";
 import ToastError from "@/components/general/ToastError";
 import { toast } from "react-toastify";
 import { getActiveWorkoutPlan } from "@/lib/data-utils";
 import Loading from "./loading";
-import { generateWorkout } from "../api/workouts";
+import { generateWorkout, switchWorkoutPlan } from "../api/workouts";
 import { DashboardCard, ValueContent } from "@/components/dashboard/DashboardCard";
 
 type Props = {};
 
 export default function Plans({ }: Props) {
-    const { plans, logs, loading, refreshPlans } = useAuth();
+    const { plans, logs, loading, refreshPlans, userData } = useAuth();
     const [activePlan, setActivePlan] = useState<WorkoutPlan | null>(null);
     const [workoutDays, setWorkoutDays] = useState<string[]>([]);
     const [selectedPlan, setSelectedPlan] = useState<string>("");
+    const [isSwitching, setIsSwitching] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,7 +28,7 @@ export default function Plans({ }: Props) {
                 const fetchActivePlan = getActiveWorkoutPlan(plans);
                 setActivePlan(fetchActivePlan);
                 setWorkoutDays(
-                    Array.from(new Set(fetchActivePlan?.planExercises.map((exercise) => exercise.workout_day))) || []
+                    Array.from(new Set(fetchActivePlan?.planExercises.map((exercise: PlanExercise) => exercise.workout_day))) || []
                 );
                 setSelectedPlan(fetchActivePlan?.plan_name || "");
                 console.log(getActiveWorkoutPlan(plans))
@@ -48,10 +49,40 @@ export default function Plans({ }: Props) {
         }
     };
 
-    const handlePlanChange = (planName: string) => {
+    const handlePlanChange = async (planName: string) => {
+        if (planName === "new") {
+            handleGenerateWorkout();
+            return;
+        }
+    
         const selected = plans.find(plan => plan.plan_name === planName);
-        setActivePlan(selected || null);
+        if (!selected) {
+            toast.error(<ToastError title="Selection Error" desc="Selected plan not found." />);
+            return;
+        }
+    
+        try {
+            setIsSwitching(true);
+            await switchWorkoutPlan(selected.plan_id);
+            toast.success("Workout plan switched successfully!");
+    
+            await refreshPlans();
+            const updatedActivePlan = getActiveWorkoutPlan(plans);
+            setActivePlan(updatedActivePlan);
+            setWorkoutDays(
+                Array.from(
+                    new Set(updatedActivePlan?.planExercises.map(ex => ex.workout_day)) || []
+                )
+            );
+        } catch (error) {
+            toast.error(
+                <ToastError title="Switch Error" desc={error instanceof Error ? error.message : 'Unknown error'} />
+            );
+        } finally {
+            setIsSwitching(false);
+        }
     };
+    
 
     if (loading) return <Loading />
     
@@ -69,6 +100,7 @@ export default function Plans({ }: Props) {
                         active={activePlan}
                         plans={plans}
                         workoutDays={workoutDays}
+                        onPlanChange={handlePlanChange}
                     />
                 ) : (
                     <GenWorkoutCard generateWorkout={handleGenerateWorkout}/>

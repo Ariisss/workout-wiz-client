@@ -13,21 +13,22 @@ type TitleCardProps = {
     duration: number
     data: string[]
     selected: string
+    onPlanChange: (planName: string) => void
 }
 
-export const TitleCard = ({ title, duration, data, selected }: TitleCardProps) => {
+export const TitleCard = ({ title, duration, data, selected, onPlanChange }: TitleCardProps) => {
   return (
       <DashboardCard
           title={title}
           desc={`Duration: ${duration} weeks`}
           icon={
               <div className="hidden lg:flex flex-row gap-2">
-                  <WorkoutSelect selected={selected} data={data} />
+                  <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} />
               </div>
           }
       >
           <div className="flex flex-col gap-2 lg:hidden">
-              <WorkoutSelect selected={selected} data={data} />
+              <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} />
           </div>
       </DashboardCard>
   )
@@ -114,10 +115,11 @@ export type WorkoutPlanProps = {
     active: WorkoutPlan
     plans: WorkoutPlan[]
     workoutDays: string[]
+    onPlanChange: (planName: string) => void
 }
 
 
-export const WorkoutPlanContent = ({ active, plans, workoutDays }: WorkoutPlanProps) => {
+export const WorkoutPlanContent = ({ active, plans, workoutDays, onPlanChange }: WorkoutPlanProps) => {
   return (
       <div className="flex flex-col gap-8">
           <TitleCard
@@ -125,6 +127,7 @@ export const WorkoutPlanContent = ({ active, plans, workoutDays }: WorkoutPlanPr
               duration={active.duration_weeks}
               selected={active.plan_name}
               data={plans.map((plan) => plan.plan_name)}
+              onPlanChange={onPlanChange}
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {workoutDays.map((day, didx) => (
