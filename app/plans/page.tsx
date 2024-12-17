@@ -12,6 +12,7 @@ import { getActiveWorkoutPlan } from "@/lib/data-utils";
 import Loading from "./loading";
 import { generateWorkout, switchWorkoutPlan, deleteWorkoutPlan } from "../api/workouts";
 import { DashboardCard, ValueContent } from "@/components/dashboard/DashboardCard";
+import clsx from "clsx";
 
 type Props = {};
 
@@ -44,10 +45,10 @@ export default function Plans({ }: Props) {
         try {
             await deleteWorkoutPlan(planId);
             toast.success("Workout plan deleted successfully!");
-    
+
             await refreshPlans();
-    
-            const remainingPlans = plans.filter((plan) => plan.plan_id !== planId);     
+
+            const remainingPlans = plans.filter((plan) => plan.plan_id !== planId);
             if (remainingPlans.length > 0) {
                 const newActivePlan = remainingPlans[0];
                 await switchWorkoutPlan(newActivePlan.plan_id);
@@ -55,7 +56,7 @@ export default function Plans({ }: Props) {
             } else {
                 toast.info("No remaining workout plans to set as active.");
             }
-    
+
             await refreshPlans();
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
@@ -77,18 +78,18 @@ export default function Plans({ }: Props) {
             handleGenerateWorkout();
             return;
         }
-    
+
         const selected = plans.find(plan => plan.plan_name === planName);
         if (!selected) {
             toast.error(<ToastError title="Selection Error" desc="Selected plan not found." />);
             return;
         }
-    
+
         try {
             setIsSwitching(true);
             await switchWorkoutPlan(selected.plan_id);
             toast.success("Workout plan switched successfully!");
-    
+
             await refreshPlans();
             const updatedActivePlan = getActiveWorkoutPlan(plans);
             setActivePlan(updatedActivePlan);
@@ -105,10 +106,10 @@ export default function Plans({ }: Props) {
             setIsSwitching(false);
         }
     };
-    
+
 
     if (loading) return <Loading />
-    
+
     return (
         <div className="h-fit lg:h-full w-full flex flex-col gap-8 py-8 pl-8 md:pl-16 pr-8">
             <div>
@@ -127,11 +128,11 @@ export default function Plans({ }: Props) {
                         onDelete={handleDeleteWorkout}
                     />
                 ) : (
-                    <GenWorkoutCard generateWorkout={handleGenerateWorkout}/>
+                    <GenWorkoutCard generateWorkout={handleGenerateWorkout} />
                 )}
             </div>
 
-            <div className="h-fit md:h-[144px] flex flex-col lg:flex-row gap-6">
+            <div className={clsx("h-fit md:h-[144px] flex flex-col lg:flex-row gap-6", { "hidden": activePlan })}>
                 <DashboardCard title="Personalized Workouts">
                     <p className="text-muted-foreground font-roboto">
                         AI-generated plans tailored to your fitness level and goals.
