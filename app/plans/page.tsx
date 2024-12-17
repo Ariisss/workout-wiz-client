@@ -10,14 +10,14 @@ import ToastError from "@/components/general/ToastError";
 import { toast } from "react-toastify";
 import { getActiveWorkoutPlan } from "@/lib/data-utils";
 import Loading from "./loading";
-import { generateWorkout, switchWorkoutPlan, deleteWorkoutPlan } from "../api/workouts";
+import { switchWorkoutPlan, deleteWorkoutPlan } from "../api/workouts";
 import { DashboardCard, ValueContent } from "@/components/dashboard/DashboardCard";
 import clsx from "clsx";
 
 type Props = {};
 
 export default function Plans({ }: Props) {
-    const { plans, logs, loading, refreshPlans, userData } = useAuth();
+    const { plans, logs, loading, refreshPlans, handleGenerateWorkout } = useAuth();
     const [activePlan, setActivePlan] = useState<WorkoutPlan | null>(null);
     const [workoutDays, setWorkoutDays] = useState<string[]>([]);
     const [selectedPlan, setSelectedPlan] = useState<string>("");
@@ -61,15 +61,6 @@ export default function Plans({ }: Props) {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
             toast.error(`Failed to delete or switch workout plan: ${errorMessage}`);
-        }
-    };
-
-    const handleGenerateWorkout = async () => {
-        try {
-            await generateWorkout();
-            await refreshPlans();
-        } catch (error) {
-            toast.error(<ToastError title="Workout Generation Error" desc={error} />);
         }
     };
 

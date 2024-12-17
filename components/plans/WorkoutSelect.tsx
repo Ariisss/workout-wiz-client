@@ -1,4 +1,4 @@
-import * as React from "react"
+import { useState } from "react"
 import {
     Select,
     SelectContent,
@@ -10,6 +10,7 @@ import {
 import clsx from "clsx"
 import { RefreshCcw, Trash2 } from "lucide-react"
 import { Button } from "../ui/button"
+import { useAuth } from "../context/AuthProvider"
 
 type WorkoutSelectProps = {
     selected: string
@@ -19,6 +20,8 @@ type WorkoutSelectProps = {
 }
 
 export function WorkoutSelect({ selected, data, onSelect, onDelete }: WorkoutSelectProps) {
+    const { workoutGenerating } = useAuth()
+    const [isSubmitted, setIsSubmitted] = useState(false)
     return (
         <div className="flex flex-row gap-2">
             <Select value={selected} onValueChange={onSelect}>
@@ -38,7 +41,12 @@ export function WorkoutSelect({ selected, data, onSelect, onDelete }: WorkoutSel
                             </SelectItem>
                         ))}
                     </SelectGroup>
-                    <SelectItem value={"new"} className="w-full">
+                    <SelectItem
+                        value={"new"}
+                        className="w-full"
+                        disabled={(workoutGenerating || isSubmitted)}
+                        onClick={() => setIsSubmitted(true)}
+                    >
                         <div className="flex flex-row gap-2 items-center justify-between w-full cursor-pointer">
                             Generate New
                             <RefreshCcw className="h-4 w-4" />

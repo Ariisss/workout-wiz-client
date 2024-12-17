@@ -8,7 +8,9 @@ import { SignUpCredentials } from '../auth/SignupForm';
 import { ProfileData } from '../auth/ProfileForm';
 import { ExerciseLog, PlanExercise, WorkoutPlan, Preferences as WorkoutPrefsData } from '@/types/workout';
 import { toast } from 'react-toastify';
-import { getLogs, getPlans, getWorkouts } from '@/app/api/workouts';
+import { generateWorkout, getLogs, getPlans, getWorkouts } from '@/app/api/workouts';
+import ToastError from "@/components/general/ToastError";
+
 
 type userType = {
     user_id: number;
@@ -31,6 +33,7 @@ type AuthContextProps = {
     plans: WorkoutPlan[]
     logs: ExerciseLog[]
     loading: boolean
+    workoutGenerating: boolean
     login: (values: LoginCredentials) => Promise<void>
     logout: () => Promise<void>
     signup: (values: SignUpCredentials) => Promise<void>
@@ -41,6 +44,7 @@ type AuthContextProps = {
     updateWorkoutPrefs: (values: Partial<WorkoutPrefsData>) => Promise<void>
     updatePassword: (values: { oldPassword: string, newPassword: string }) => Promise<void>
     refreshLogs: () => Promise<void>
+    handleGenerateWorkout: () => Promise<void>
 }
 
 
@@ -52,7 +56,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const router = useRouter()
     const pathname = usePathname()
     const toastId = useRef<string | number | null>(null)
+    const genToastId = useRef<string | number | null>(null)
 
+    const [workoutGenerating, setWorkoutGenerating] = useState(false)
     const [loading, setLoading] = useState(true)
     const [userData, setUserData] = useState<userType>(null)
     const [prefs, setUserPrefs] = useState<WorkoutPrefsData | null>(null)
@@ -248,6 +254,22 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     };
 
+    const handleGenerateWorkout = async () => {
+        try {
+            setWorkoutGenerating(true)
+            genToastId.current = toast.loading("Generating your workout!", {
+                progressClassName: 'bg-[#66FFC7]'
+            });
+            await generateWorkout();
+            await refreshPlans();
+        } catch (error) {
+            toast.error(<ToastError title="Workout Generation Error" desc={error} />);
+        } finally {
+            if (genToastId.current !== null) toast.done(genToastId.current)
+            setWorkoutGenerating(false)
+        }
+    };
+
     return (
         <AuthContext.Provider value={{
             userData: userData,
@@ -264,8 +286,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             prefs,
             logs,
             loading,
+            workoutGenerating,
             refreshPlans,
-            refreshLogs
+            refreshLogs,
+            handleGenerateWorkout
         }}>
             {children}
         </AuthContext.Provider>
