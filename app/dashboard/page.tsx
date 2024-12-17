@@ -138,10 +138,12 @@ export default function Dashboard({ }: Props) {
                             <Progress value={(completedDays / totalDays) * 100} className='h-[16px] bg-black/50' />
                         </div>
                         <WeeklyProgress data={dashboardData.dailyExercises} />
-                        <Button className='min-h-[3rem]'>
-                            <ChartNoAxesColumn />
-                            View Progress
-                        </Button>
+                        <Link href={'progress'}>
+                            <Button className='min-h-[3rem]'>
+                                <ChartNoAxesColumn />
+                                View Progress
+                            </Button>
+                        </Link>
                     </div>
                 </DashboardCard>
             </div>
