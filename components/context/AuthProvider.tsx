@@ -10,6 +10,7 @@ import { ExerciseLog, PlanExercise, WorkoutPlan, Preferences as WorkoutPrefsData
 import { toast } from 'react-toastify';
 import { generateWorkout, getLogs, getPlans, getWorkouts } from '@/app/api/workouts';
 import ToastError from "@/components/general/ToastError";
+import ToastProgress from '../general/ToastProgress';
 
 
 type userType = {
@@ -57,6 +58,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const pathname = usePathname()
     const toastId = useRef<string | number | null>(null)
     const genToastId = useRef<string | number | null>(null)
+    const isPageUnloading = useRef(false);
 
     const [workoutGenerating, setWorkoutGenerating] = useState(false)
     const [loading, setLoading] = useState(true)
@@ -68,9 +70,20 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     // loading handler
     useEffect(() => {
-        if (token !== undefined) {
+        if (token !== undefined) { // assumes refreshed state
             fetchAll()
+            handleGenerateOnRefresh()
         }
+
+        const handleBeforeUnload = () => {
+            isPageUnloading.current = true;
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
     }, []);
 
     useEffect(() => {
@@ -84,6 +97,21 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             router.replace('/auth/login');
         }
     }, [userData, pathname]);
+
+
+    const toastLoadingContent = (
+        <ToastProgress title='Generating Workout' desc={'This make take a bit...'} />
+    )
+    useEffect(() => {
+        if (workoutGenerating) {
+            genToastId.current = toast.loading(toastLoadingContent, {
+                progressClassName: 'bg-[#66FFC7]',
+                className: 'color-primary-light',
+            });
+        } else if (!workoutGenerating && genToastId.current !== null) {
+            toast.dismiss(genToastId.current);
+        }
+    }, [workoutGenerating]);
 
 
     ///////////////////////
@@ -179,9 +207,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         toastId.current = toast.loading("Fetching User Data...", {
             progressClassName: 'bg-[#66FFC7]'
         });
+        setWorkoutGenerating(sessionStorage.getItem("generatingWorkout") === "true")
         await fetchUserData()
         await fetchWorkoutData()
         await fetchUserPrefs()
+
         if (toastId.current !== null) toast.done(toastId.current)
     }
     const fetchUserData = async () => {
@@ -217,7 +247,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         try {
             const prefsRes = await getWorkoutPreferences()
             const prefsData = prefsRes?.data[0] || null
-            // console.log(prefsData)
+
             setUserPrefs(prefsData)
         } catch (error) {
             console.error('Failed to fetch workout preferences:', error);
@@ -257,18 +287,50 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const handleGenerateWorkout = async () => {
         try {
             setWorkoutGenerating(true)
-            genToastId.current = toast.loading("Generating your workout!", {
-                progressClassName: 'bg-[#66FFC7]'
-            });
+            sessionStorage.setItem("generatingWorkout", "true");
+            sessionStorage.setItem("generatingWorkoutDate", new Date().toISOString());
+
+            console.log(sessionStorage.getItem("generatingWorkout"))
             await generateWorkout();
             await refreshPlans();
         } catch (error) {
             toast.error(<ToastError title="Workout Generation Error" desc={error} />);
         } finally {
-            if (genToastId.current !== null) toast.done(genToastId.current)
-            setWorkoutGenerating(false)
+            if (!isPageUnloading.current) {
+                console.log("YEAH REMOVED");
+                sessionStorage.removeItem("generatingWorkout");
+                setWorkoutGenerating(false);
+            }
         }
     };
+
+    const handleGenerateOnRefresh = async () => {
+        console.log(sessionStorage.getItem("generatingWorkout"))
+        if (sessionStorage.getItem("generatingWorkout") === "true") {
+            const timeSecs = 90; // max limit of workout generation (1 min 30 secs)
+            const genDate = sessionStorage.getItem("generatingWorkoutDate");
+            const doneGenerating = () => {
+                sessionStorage.removeItem("generatingWorkout");
+                sessionStorage.removeItem("generatingWorkoutDate");
+                setWorkoutGenerating(false);
+            }
+
+            if (genDate) {
+                const diff = (new Date().getTime() - new Date(genDate).getTime()) / 1000;
+
+                if (diff < timeSecs) {
+                    setTimeout(() => {
+                        doneGenerating()
+                    }, (timeSecs - diff) * 1000);
+
+                } else {
+                    doneGenerating()
+                }
+            } else {
+                doneGenerating()
+            }
+        }
+    }
 
     return (
         <AuthContext.Provider value={{
@@ -286,7 +348,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             prefs,
             logs,
             loading,
-            workoutGenerating,
+            workoutGenerating: workoutGenerating,
             refreshPlans,
             refreshLogs,
             handleGenerateWorkout

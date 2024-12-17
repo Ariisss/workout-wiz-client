@@ -27,12 +27,8 @@ export const TitleCard = ({ title, duration, data, selected, onPlanChange, onDel
             icon={
                 data &&
                 <div className="hidden lg:flex flex-row gap-2">
-                    <WorkoutSelect
-                        selected={selected}
-                        data={data}
-                        onSelect={onPlanChange}
-                        onDelete={onDelete}
-                    />
+                    <WorkoutSelect 
+                    selected={selected} data={data} onSelect={onPlanChange} onDelete={onDelete} />
                 </div>
             }
         >

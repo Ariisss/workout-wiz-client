@@ -21,7 +21,8 @@ type WorkoutSelectProps = {
 
 export function WorkoutSelect({ selected, data, onSelect, onDelete }: WorkoutSelectProps) {
     const { workoutGenerating } = useAuth()
-    const [isSubmitted, setIsSubmitted] = useState(false)
+    const [isGenerating, setIsGenerating] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
     return (
         <div className="flex flex-row gap-2">
             <Select value={selected} onValueChange={onSelect}>
@@ -44,8 +45,8 @@ export function WorkoutSelect({ selected, data, onSelect, onDelete }: WorkoutSel
                     <SelectItem
                         value={"new"}
                         className="w-full"
-                        disabled={(workoutGenerating || isSubmitted)}
-                        onClick={() => setIsSubmitted(true)}
+                        disabled={(workoutGenerating || isGenerating)}
+                        onClick={() => setIsGenerating(true)}
                     >
                         <div className="flex flex-row gap-2 items-center justify-between w-full cursor-pointer">
                             Generate New
@@ -56,7 +57,11 @@ export function WorkoutSelect({ selected, data, onSelect, onDelete }: WorkoutSel
             </Select>
             <Button
                 className="w-full lg:w-fit bg-red-600 hover:bg-destructive"
-                onClick={onDelete}
+                onClick={() => {
+                    setIsDeleting(true)
+                    onDelete && onDelete();
+                }}
+                disabled={isDeleting}
             >
                 <Trash2 className="stroke-[2px]" />
             </Button>

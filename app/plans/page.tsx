@@ -22,6 +22,7 @@ export default function Plans({ }: Props) {
     const [workoutDays, setWorkoutDays] = useState<string[]>([]);
     const [selectedPlan, setSelectedPlan] = useState<string>("");
     const [isSwitching, setIsSwitching] = useState<boolean>(false);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,7 +33,6 @@ export default function Plans({ }: Props) {
                     Array.from(new Set(fetchActivePlan?.planExercises.map((exercise: PlanExercise) => exercise.workout_day))) || []
                 );
                 setSelectedPlan(fetchActivePlan?.plan_name || "");
-                console.log(getActiveWorkoutPlan(plans))
             } catch (error) {
                 toast.error(<ToastError title="Data Retrieval Error" desc={error} />);
             }
