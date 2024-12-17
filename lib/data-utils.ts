@@ -3,6 +3,7 @@ import { ExerciseLog, WorkoutPlan, DailyExerciseCount, PlanExercise, WeeklyCompa
 // needed data:
 // get workouts (count of workouts today, workout datas for today, count of workouts for eachday this week)
 // get exercise logs (total logs, total logs compare to last week, calories burned(compare to last week), weekly streak, calories for last 5 workouts)
+const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 export const getRecentExercises = (logs: ExerciseLog[], plans: WorkoutPlan[], limit: number = 5) => {
     if (!logs.length) return [];
@@ -31,8 +32,6 @@ export const getWeeklyCompletion = (dailyExercises: Array<{ day: string; complet
 };
 
 export const getCaloriesByWeek = (logs: ExerciseLog[]) => {
-    const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
     return weekDays.map(day => {
         const dayCalories = logs.reduce((sum, log) => {
             if (!log?.date) return sum;
@@ -342,17 +341,13 @@ export const getActiveWorkoutPlan = (plans: WorkoutPlan[]): WorkoutPlan | null =
 // LOGS PAGE
 export const getUnfinishedExercisesToday = (plans: WorkoutPlan[], logs: ExerciseLog[]): PlanExercise[] => {
     const today = new Date();
-    const todayLogs = logs.filter(log => {
-        const logDate = new Date(log.date);
-        return logDate.toDateString() === today.toDateString();
-    });
+    const todayLogs = logs.filter(log => new Date(log.date).toDateString() === today.toDateString());
     const activePlan = getActiveWorkoutPlan(plans);
     if (!activePlan) return [];
 
     const todayWorkoutDays = activePlan.planExercises.filter(exercise => exercise.workout_day === today.toLocaleDateString('en-US', { weekday: 'long' }));
-    const completedExerciseIds = todayLogs.map(log => log.plan_exercise_id);
 
-    return todayWorkoutDays.filter(exercise => !completedExerciseIds.includes(exercise.plan_exercise_id));
+    return todayWorkoutDays.filter(exercise => !todayLogs.some(log => log.plan_exercise_id === exercise.plan_exercise_id));
 };
 
 export const getMissedExercisesThisWeek = (plans: WorkoutPlan[], logs: ExerciseLog[]): PlanExercise[] => {
@@ -375,6 +370,18 @@ export const getMissedExercisesThisWeek = (plans: WorkoutPlan[], logs: ExerciseL
     );
 
     return weeklyExercises.filter(exercise => !completedExerciseIds.includes(exercise.plan_exercise_id));
+};
+
+const getStartOfWeek = (date: Date): Date => {
+    const day = date.getDay();
+    const diff = day === 0 ? 6 : day - 1;
+    return new Date(date.setDate(date.getDate() - diff));
+};
+
+const getExerciseDateForWeek = (date: Date, day: string): Date => {
+    const dayIndex = weekDays.indexOf(day);
+    const diff = (7 + dayIndex - date.getDay()) % 7;
+    return new Date(date.setDate(date.getDate() + diff));
 };
 
 // PROGRESS PAGE
@@ -609,6 +616,6 @@ export const getWeeklyComparison = (logs: ExerciseLog[], exercises: PlanExercise
 // SETTINGS
 export const convertBinaryDaysToWeekdays = (binaryDays: string): string[] => {
     const daysOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
-    return binaryDays.split('').map((char, index) => char === '1' ? 
-    daysOfWeek[index] : null).filter(day => day !== null) as string[];
+    return binaryDays.split('').map((char, index) => char === '1' ?
+        daysOfWeek[index] : null).filter(day => day !== null) as string[];
 };
