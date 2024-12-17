@@ -6,6 +6,11 @@ A modern, user-friendly fitness tracking application built with Next.js that hel
 
 [Workout Wiz - Fitness Tracker App (Server)](https://github.com/Ariisss/workout-wiz-server)
 
+## Members:
+- **Prince Isaac Pantino**
+- **Fitzsixto Angelo Singh**
+- **Matthew Cedric Calaycay**
+
 ## Features
 
 - Track your daily workouts and exercises
