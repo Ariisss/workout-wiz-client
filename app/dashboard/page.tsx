@@ -45,7 +45,7 @@ export default function Dashboard({ }: Props) {
                     recentExercises: getRecentExercises(logs, plans),
                     workoutStats: countTotalWorkouts(logs),
                     caloriesStats: calculateCaloriesBurned(logs),
-                    dailyExercises: countDailyExercises(plans[0], logs),
+                    dailyExercises: countDailyExercises(plans, logs),
                     todaysWorkout: getWorkoutToday(plans, logs),
                     weeklyCalories: getCaloriesByWeek(logs)
                 };
@@ -59,73 +59,6 @@ export default function Dashboard({ }: Props) {
         fetchData();
     }, [plans, logs, userData]);
 
-    
-    const data = {
-        credentials: {
-            name: 'Ced69'
-        },
-        statSum: {
-            totalWorkouts: { val: '24', last: 2 },
-            caloriesBurned: { val: '2,736', last: 168 },
-            weekStreak: 7
-        },
-        workoutData: {
-            workoutName: 'Epic Leg Day',
-            date: 'Today',
-            hasWorkoutToday: true,
-            upcomingExercise: { name: 'Squats', sets: 3, reps: 12 }
-        },
-        activities: [
-            {
-                title: 'Lower Body',
-                date: 'Today',
-                calories: '320',
-                duration: '45'
-            },
-            {
-                title: 'Cardio',
-                date: 'Yesterday',
-                calories: '270',
-                duration: '30'
-            },
-            {
-                title: 'Upper Body',
-                date: '2 days ago',
-                calories: '410',
-                duration: '50'
-            },
-            {
-                title: 'Upper Body',
-                date: '2 days ago',
-                calories: '410',
-                duration: '50'
-            },
-            {
-                title: 'Upper Body',
-                date: '2 days ago',
-                calories: '410',
-                duration: '50'
-            }
-        ],
-        chartData: {
-            calories: [
-                { period: "Monday", value: 186 },
-                { period: "Tuesday", value: 305 },
-                { period: "Wednesday", value: 237 },
-                { period: "Thursday", value: 73 },
-                { period: "Friday", value: 209 },
-                { period: "Saturday", value: 214 },
-                { period: "Sundary", value: 10 },
-            ],
-            progressEx: [
-                { day: "Monday", progress: 70 },
-                { day: "Tuesday", progress: 100 },
-                { day: "Wednesday", progress: 0 },
-                { day: "Thursday", progress: 10 },
-                { day: "Friday", progress: 80 },
-            ]
-        }
-    }
 
     const { completedDays, totalDays } = getWeeklyCompletion(dashboardData.dailyExercises);
 
@@ -208,7 +141,7 @@ export default function Dashboard({ }: Props) {
                         <Link href={'progress'}>
                             <Button className='min-h-[3rem]'>
                                 <ChartNoAxesColumn />
-                                    View Progress
+                                View Progress
                             </Button>
                         </Link>
                     </div>
@@ -233,7 +166,7 @@ export default function Dashboard({ }: Props) {
                                         dashboardData.recentExercises.map((activity, idx) => (
                                             <ActivityContent
                                                 key={idx}
-                                                last={idx == data.activities.length - 1}
+                                                last={idx == dashboardData.recentExercises.length - 1}
                                                 title={activity.exercise_name}
                                                 date={activity.date}
                                                 calories={Math.ceil(activity.calories_burned) + " cal"}

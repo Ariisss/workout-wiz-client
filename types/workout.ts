@@ -24,6 +24,7 @@ export interface ExerciseLog {
     log_id: number;
     user_id: number;
     plan_exercise_id: number;
+    exercise_name: string;
     date: string;
     duration_mins: number;
     calories_burned: number;
@@ -47,7 +48,7 @@ export interface DashboardData {
 export interface LogData {
     past: ExerciseLogWithName[];
     current: PlanExercise[];
-    missing: PlanExercise[];
+    missed: PlanExercise[];
 }
 
 export interface StatSum {

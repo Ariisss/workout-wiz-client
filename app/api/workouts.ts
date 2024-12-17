@@ -9,6 +9,47 @@ interface ApiResponse<T> {
     error?: string;
 }
 
+export const deleteWorkoutPlan = async (planId: number) => {
+    try {
+        const response = await fetch(`${API}/workout-plan/${planId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to delete workout plan');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('Delete Workout Plan Error:', error);
+        throw error;
+    }
+};
+
+
+export const switchWorkoutPlan = async (planId: number) => {
+    const response = await fetch(`${API}/workout-plan/switch/${planId}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ planId: planId }),
+    })
+
+    if(!response.ok){
+        const error = await response.json()
+        throw new Error(error.message)
+    }
+
+    return response.json()
+}
+
 export const generateWorkout = async () => {
 
     const response = await fetch(`${API}/workout-plan/generate/preferences`, {

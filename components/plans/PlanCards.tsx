@@ -13,21 +13,23 @@ type TitleCardProps = {
     duration: number
     data: string[]
     selected: string
+    onPlanChange: (planName: string) => void
+    onDelete: () => void;
 }
 
-export const TitleCard = ({ title, duration, data, selected }: TitleCardProps) => {
+export const TitleCard = ({ title, duration, data, selected, onPlanChange, onDelete }: TitleCardProps) => {
   return (
       <DashboardCard
           title={title}
           desc={`Duration: ${duration} weeks`}
           icon={
               <div className="hidden lg:flex flex-row gap-2">
-                  <WorkoutSelect selected={selected} data={data} />
+                  <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} onDelete={onDelete} />
               </div>
           }
       >
           <div className="flex flex-col gap-2 lg:hidden">
-              <WorkoutSelect selected={selected} data={data} />
+              <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} />
           </div>
       </DashboardCard>
   )
@@ -59,6 +61,7 @@ export const GenWorkoutCard = ({ generateWorkout }: { generateWorkout: () => Pro
   );
   
 export type ExerciseProps = {
+    plan_exercise_id: number;
     exercise_name: string;
     description: string;
     sets: number;
@@ -68,6 +71,7 @@ export type ExerciseProps = {
     met_value: number;
     icon?: React.ReactElement
     className?: string
+    plan_id: number
 }
 
 export const ExerciseCard = ({
@@ -112,10 +116,12 @@ export type WorkoutPlanProps = {
     active: WorkoutPlan
     plans: WorkoutPlan[]
     workoutDays: string[]
+    onPlanChange: (planName: string) => void
+    onDelete: (planId: number) => void;
 }
 
 
-export const WorkoutPlanContent = ({ active, plans, workoutDays }: WorkoutPlanProps) => {
+export const WorkoutPlanContent = ({ active, plans, workoutDays, onPlanChange, onDelete }: WorkoutPlanProps) => {
   return (
       <div className="flex flex-col gap-8">
           <TitleCard
@@ -123,6 +129,8 @@ export const WorkoutPlanContent = ({ active, plans, workoutDays }: WorkoutPlanPr
               duration={active.duration_weeks}
               selected={active.plan_name}
               data={plans.map((plan) => plan.plan_name)}
+              onPlanChange={onPlanChange}
+              onDelete={() => onDelete(active.plan_id)}
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {workoutDays.map((day, didx) => (

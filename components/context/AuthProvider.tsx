@@ -40,7 +40,7 @@ type AuthContextProps = {
     updateProfile: (values: Partial<ProfileData>) => Promise<void>
     updateWorkoutPrefs: (values: Partial<WorkoutPrefsData>) => Promise<void>
     updatePassword: (values: { oldPassword: string, newPassword: string }) => Promise<void>
-
+    refreshLogs: () => Promise<void>
 }
 
 
@@ -211,7 +211,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         try {
             const prefsRes = await getWorkoutPreferences()
             const prefsData = prefsRes?.data[0] || null
-            console.log(prefsData)
+            // console.log(prefsData)
             setUserPrefs(prefsData)
         } catch (error) {
             console.error('Failed to fetch workout preferences:', error);
@@ -221,10 +221,31 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }
 
     const refreshPlans = async () => {
-        const plansRes = await getPlans();
-        const plansData = plansRes?.data || [];
-        const updatedPlans = [...plans, ...plansData];
-        setPlans(updatedPlans);
+        try {
+            setLoading(true)
+            const plansRes = await getPlans()
+            const plansData = plansRes?.data || []
+            setPlans(plansData)
+        } catch (error) {
+            console.error("Failed to refresh plans:", error)
+            toast.error("Error refreshing workout plans. Please try again.")
+        } finally {
+            setLoading(false)
+        }
+    };
+
+    const refreshLogs = async () => {
+        try {
+            setLoading(true)
+            const logsRes = await getLogs()
+            const logsData = logsRes?.data || []
+            setLogs(logsData)
+        } catch (error) {
+            console.error("Failed to refresh logs:", error)
+            toast.error("Error refreshing logs. Please try again.")
+        } finally {
+            setLoading(false)
+        }
     };
 
     return (
@@ -243,7 +264,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             prefs,
             logs,
             loading,
-            refreshPlans
+            refreshPlans,
+            refreshLogs
         }}>
             {children}
         </AuthContext.Provider>

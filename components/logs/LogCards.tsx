@@ -8,6 +8,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CheckableWrapper } from "../general/CheckableWrapper";
 import clsx from "clsx";
 import { useState } from "react";
+import { logExercise } from "@/app/api/logs";
+import { LogData } from "@/types/workout";
+import { useAuth } from "../context/AuthProvider";
 
 
 export type WorkoutPlan = {
@@ -53,9 +56,10 @@ export const WorkoutLogsContent = ({ plan }: WorkoutPlanProps) => {
 export type AWTProps = {
     missed: ExerciseProps[]
     current: ExerciseProps[]
+    setData: React.Dispatch<React.SetStateAction<LogData>>
 }
 
-export function ActiveWorkoutsTabs({ missed, current }: AWTProps) {
+export function ActiveWorkoutsTabs({ missed, current, setData }: AWTProps) {
     const tabTriggerClass = "flex flex-row gap-4 data-[state=active]:bg-primary rounded-lg h-[3rem] justify-center items-center"
     return (
         <Tabs defaultValue="current" className="w-full lg:w-[40%] space-y-4">
@@ -74,12 +78,12 @@ export function ActiveWorkoutsTabs({ missed, current }: AWTProps) {
             </TabsList>
             <TabsContent value="current">
                 <DashboardCard title={"Current Workouts"} className="w-full">
-                    <ExerciseCheckbox data={current} />
+                    <ExerciseCheckbox data={current} setData={setData} />
                 </DashboardCard>
             </TabsContent>
             <TabsContent value="missed">
                 <DashboardCard title={"Missed Workouts"} className="w-full">
-                    <ExerciseCheckbox data={missed} />
+                    <ExerciseCheckbox data={missed} setData={setData} />
                 </DashboardCard>
             </TabsContent>
         </Tabs>
@@ -88,18 +92,34 @@ export function ActiveWorkoutsTabs({ missed, current }: AWTProps) {
 
 export type ExerciseCheckboxProps = {
     data: ExerciseProps[]
+    setData: React.Dispatch<React.SetStateAction<LogData>>
 }
 
-export const ExerciseCheckbox = ({ data }: ExerciseCheckboxProps) => {
+export const ExerciseCheckbox = ({ data, setData }: ExerciseCheckboxProps) => {
     const [checkedStates, setCheckedStates] = useState<Record<string, boolean>>({});
+    const { refreshLogs } = useAuth();
 
-    const handleCheckboxToggle = (id: string, checked: boolean) => {
-        setCheckedStates((prev) => ({ ...prev, [id]: checked })); // for "instant return" 
-        // !!!!!!!!!!!!!!!!!!! 
-        // MIGHT WANT TO PLACE IN A CONTEXT WRAPPER LATER FOR EASIER STATE MANAGEMENT AND SHIZZLERS
-        // !!!!!!!!!!!!!!!!!!!
-        console.log(`Exercise ${id} is now ${checked ? "checked" : "unchecked"}`);
-        // Here you can update local state, JSON, or trigger a database update
+    const handleCheckboxToggle = async (id: number, checked: boolean) => {
+        try {
+            setCheckedStates((prev) => ({ ...prev, [id]: checked }));
+
+            if (checked) {
+                const res = await logExercise({ plan_exercise_id: id });
+                const newLog = res.data;
+                
+
+                setData((prevData) => ({
+                    ...prevData,
+                    current: prevData.current.filter((exercise) => exercise.plan_exercise_id !== id),
+                    missed: prevData.missed.filter((exercise) => exercise.plan_exercise_id !== id),
+                    past: [newLog, ...prevData.past]
+                }));
+                refreshLogs();
+            }
+        } catch (error) {
+            setCheckedStates((prev) => ({ ...prev, [id]: !checked }));
+            console.error('Error logging exercise:', error);
+        }
     };
 
     return (
@@ -112,7 +132,7 @@ export const ExerciseCheckbox = ({ data }: ExerciseCheckboxProps) => {
                         key={eidx}
                         enableCheckbox={true}
                         checkedState={isChecked}
-                        onClick={(checked) => handleCheckboxToggle(exercise.exercise_name, checked)}
+                        onClick={(checked) => handleCheckboxToggle(exercise.plan_exercise_id, checked)}
                     >
                         <ExerciseCard
                             className={clsx("border-muted-foreground", {
