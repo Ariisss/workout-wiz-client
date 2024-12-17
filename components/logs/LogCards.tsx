@@ -10,6 +10,7 @@ import clsx from "clsx";
 import { useState } from "react";
 import { logExercise } from "@/app/api/logs";
 import { LogData } from "@/types/workout";
+import { useAuth } from "../context/AuthProvider";
 
 
 export type WorkoutPlan = {
@@ -96,6 +97,7 @@ export type ExerciseCheckboxProps = {
 
 export const ExerciseCheckbox = ({ data, setData }: ExerciseCheckboxProps) => {
     const [checkedStates, setCheckedStates] = useState<Record<string, boolean>>({});
+    const { refreshLogs } = useAuth();
 
     const handleCheckboxToggle = async (id: number, checked: boolean) => {
         try {
@@ -112,6 +114,7 @@ export const ExerciseCheckbox = ({ data, setData }: ExerciseCheckboxProps) => {
                     missed: prevData.missed.filter((exercise) => exercise.plan_exercise_id !== id),
                     past: [newLog, ...prevData.past]
                 }));
+                refreshLogs();
             }
         } catch (error) {
             setCheckedStates((prev) => ({ ...prev, [id]: !checked }));
