@@ -11,55 +11,58 @@ import { WorkoutPlan } from "@/types/workout";
 type TitleCardProps = {
     title: string
     duration: number
-    data: string[]
+    data?: string[]
     selected: string
-    onPlanChange: (planName: string) => void
-    onDelete: () => void;
+    onPlanChange?: (planName: string) => void
+    onDelete?: () => void;
 }
 
 export const TitleCard = ({ title, duration, data, selected, onPlanChange, onDelete }: TitleCardProps) => {
-  return (
-      <DashboardCard
-          title={title}
-          desc={`Duration: ${duration} weeks`}
-          icon={
-              <div className="hidden lg:flex flex-row gap-2">
-                  <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} onDelete={onDelete} />
-              </div>
-          }
-      >
-          <div className="flex flex-col gap-2 lg:hidden">
-              <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} />
-          </div>
-      </DashboardCard>
-  )
+    return (
+        <DashboardCard
+            title={title}
+            desc={`Duration: ${duration} weeks`}
+            icon={
+                data &&
+                <div className="hidden lg:flex flex-row gap-2">
+                    <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} onDelete={onDelete} />
+                </div>
+            }
+        >
+            { data &&
+                <div className="flex flex-col gap-2 lg:hidden">
+                    <WorkoutSelect selected={selected} data={data} onSelect={onPlanChange} />
+                </div>
+            }
+        </DashboardCard>
+    )
 }
 
 
 export const GenWorkoutCard = ({ generateWorkout }: { generateWorkout: () => Promise<any> }) => (
     <DashboardCard
-      title='Create your first workout plan'
-      desc='Get started with a personalized AI-generated workout plan'
-      className='p-0'
-      glow
+        title='Create your first workout plan'
+        desc='Get started with a personalized AI-generated workout plan'
+        className='p-0'
+        glow
     >
-      <div className='flex flex-col h-full items-center justify-center gap-4'>
-        <Logo width={200} height={200} />
-        <p className='font-roboto text-muted-foreground text-justify lg:text-right'>
-          No workout plans generated yet.
-          Let's create a customized plan tailored to your fitness goals!
-        </p>
-        <Button
-          className='w-full lg:w-[50%]'
-          onClick={() => generateWorkout()}
-        >
-          <RefreshCcw />
-          Generate Workout
-        </Button>
-      </div>
+        <div className='flex flex-col h-full items-center justify-center gap-4'>
+            <Logo width={200} height={200} />
+            <p className='font-roboto text-muted-foreground text-justify lg:text-right'>
+                No workout plans generated yet.
+                Let's create a customized plan tailored to your fitness goals!
+            </p>
+            <Button
+                className='w-full lg:w-[50%]'
+                onClick={() => generateWorkout()}
+            >
+                <RefreshCcw />
+                Generate Workout
+            </Button>
+        </div>
     </DashboardCard>
-  );
-  
+);
+
 export type ExerciseProps = {
     plan_exercise_id: number;
     exercise_name: string;
@@ -122,29 +125,29 @@ export type WorkoutPlanProps = {
 
 
 export const WorkoutPlanContent = ({ active, plans, workoutDays, onPlanChange, onDelete }: WorkoutPlanProps) => {
-  return (
-      <div className="flex flex-col gap-8">
-          <TitleCard
-              title={active.plan_name}
-              duration={active.duration_weeks}
-              selected={active.plan_name}
-              data={plans.map((plan) => plan.plan_name)}
-              onPlanChange={onPlanChange}
-              onDelete={() => onDelete(active.plan_id)}
-          />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {workoutDays.map((day, didx) => (
-                  <DashboardCard title={day} key={didx} className="w-full">
-                      <div className="flex flex-col gap-4 pt-2">
-                          {active.planExercises
-                              .filter((ex) => ex.workout_day == day)
-                              .map((exercise, eidx) =>
-                                  <ExerciseCard key={[didx, eidx].join('')} {...exercise} />
-                              )}
-                      </div>
-                  </DashboardCard>
-              ))}
-          </div>
-      </div>
-  )
+    return (
+        <div className="flex flex-col gap-8">
+            <TitleCard
+                title={active.plan_name}
+                duration={active.duration_weeks}
+                selected={active.plan_name}
+                data={plans.map((plan) => plan.plan_name)}
+                onPlanChange={onPlanChange}
+                onDelete={() => onDelete(active.plan_id)}
+            />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {workoutDays.map((day, didx) => (
+                    <DashboardCard title={day} key={didx} className="w-full">
+                        <div className="flex flex-col gap-4 pt-2">
+                            {active.planExercises
+                                .filter((ex) => ex.workout_day == day)
+                                .map((exercise, eidx) =>
+                                    <ExerciseCard key={[didx, eidx].join('')} {...exercise} />
+                                )}
+                        </div>
+                    </DashboardCard>
+                ))}
+            </div>
+        </div>
+    )
 }
